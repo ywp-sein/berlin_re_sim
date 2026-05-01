@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Berlin Real Estate Sim</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="topbar">
+        <div>
+          <h1>Berlin Real Estate Sim</h1>
+          <p>Mitte prototype</p>
+        </div>
+        <div class="run-controls" aria-label="simulation controls">
+          <button id="stepBtn" type="button" title="Advance one month">Step</button>
+          <button id="playBtn" type="button" title="Run or pause the simulation">Play</button>
+          <button id="resetBtn" type="button" title="Reset scenario">Reset</button>
+        </div>
+      </header>
+
+      <section class="metrics" aria-label="market metrics">
+        <article>
+          <span>Month</span>
+          <strong id="monthMetric">0</strong>
+        </article>
+        <article>
+          <span>Median rent</span>
+          <strong id="rentMetric">-</strong>
+        </article>
+        <article>
+          <span>Median sale</span>
+          <strong id="saleMetric">-</strong>
+        </article>
+        <article>
+          <span>Vacancy</span>
+          <strong id="vacancyMetric">-</strong>
+        </article>
+        <article>
+          <span>Stress</span>
+          <strong id="stressMetric">-</strong>
+        </article>
+      </section>
+
+      <section class="workspace">
+        <aside class="panel controls-panel" aria-label="policy levers">
+          <h2>Policy Levers</h2>
+          <label>
+            Rent regulation
+            <input id="rentControl" type="range" min="0" max="100" value="55" />
+            <output id="rentControlValue">55%</output>
+          </label>
+          <label>
+            Vacancy enforcement
+            <input id="vacancyControl" type="range" min="0" max="100" value="40" />
+            <output id="vacancyControlValue">40%</output>
+          </label>
+          <label>
+            Public acquisition
+            <input id="publicControl" type="range" min="0" max="100" value="20" />
+            <output id="publicControlValue">20%</output>
+          </label>
+          <label>
+            Investor pressure
+            <input id="investorControl" type="range" min="0" max="100" value="68" />
+            <output id="investorControlValue">68%</output>
+          </label>
+        </aside>
+
+        <section class="map-panel" aria-label="neighborhood map">
+          <div class="section-heading">
+            <h2>Mitte Areas</h2>
+            <span id="selectedName">Alexanderplatz</span>
+          </div>
+          <div id="mapGrid" class="map-grid"></div>
+        </section>
+
+        <section class="panel detail-panel" aria-label="selected neighborhood details">
+          <h2>Area Details</h2>
+          <dl id="areaDetails"></dl>
+          <div class="unit-list" id="unitList"></div>
+        </section>
+      </section>
+
+      <section class="chart-panel" aria-label="simulation charts">
+        <div>
+          <div class="section-heading">
+            <h2>Market Signals</h2>
+            <span>rent, sale, vacancy, stress</span>
+          </div>
+          <canvas id="marketChart" width="900" height="260"></canvas>
+        </div>
+        <div class="event-log">
+          <div class="section-heading">
+            <h2>Events</h2>
+            <span id="eventCount">0</span>
+          </div>
+          <ol id="eventLog"></ol>
+        </div>
+      </section>
+    </main>
+
+    <script src="game.js"></script>
+  </body>
+</html>

@@ -1,0 +1,389 @@
+const scenarioSeed = {
+  neighborhoods: [
+    { id: "alexanderplatz", name: "Alexanderplatz", demandPressure: 0.9, incomeMix: "high" },
+    { id: "wedding_edge", name: "Wedding edge", demandPressure: 0.68, incomeMix: "mixed" },
+    { id: "spree_office", name: "Spree office belt", demandPressure: 0.82, incomeMix: "high" },
+    { id: "museum_quarter", name: "Museum quarter", demandPressure: 0.76, incomeMix: "tourism" },
+    { id: "north_mitte", name: "North Mitte", demandPressure: 0.61, incomeMix: "mixed" },
+    { id: "rosenthaler", name: "Rosenthaler edge", demandPressure: 0.86, incomeMix: "high" },
+    { id: "tiergarten_edge", name: "Tiergarten edge", demandPressure: 0.7, incomeMix: "mixed" },
+    { id: "public_anchor", name: "Public anchor", demandPressure: 0.58, incomeMix: "protected" },
+  ],
+  owners: [
+    { id: "owner_private_001", kind: "private", riskTolerance: 0.62, socialMission: 0.1 },
+    { id: "owner_coop_001", kind: "cooperative", riskTolerance: 0.28, socialMission: 0.86 },
+    { id: "owner_company_001", kind: "company", riskTolerance: 0.78, socialMission: 0.05 },
+    { id: "owner_public_001", kind: "public", riskTolerance: 0.12, socialMission: 0.95 },
+  ],
+  units: [
+    unit("unit_001", "alexanderplatz", "owner_private_001", 62, 1050, 455000, true, false, 4200, 0.34),
+    unit("unit_002", "alexanderplatz", "owner_private_001", 88, 1680, 690000, false, true, 0, 0.34),
+    unit("unit_003", "wedding_edge", "owner_coop_001", 54, 690, 310000, true, false, 2350, 0.36),
+    unit("unit_004", "spree_office", "owner_company_001", 74, 1420, 590000, false, false, 3900, 0.33),
+    unit("unit_005", "museum_quarter", "owner_company_001", 44, 980, 405000, false, true, 0, 0.35),
+    unit("unit_006", "north_mitte", "owner_private_001", 71, 1010, 430000, true, false, 2950, 0.35),
+    unit("unit_007", "rosenthaler", "owner_company_001", 93, 2140, 820000, false, false, 6200, 0.32),
+    unit("unit_008", "tiergarten_edge", "owner_private_001", 58, 890, 380000, true, false, 2700, 0.35),
+    unit("unit_009", "public_anchor", "owner_public_001", 67, 620, 300000, true, false, 2100, 0.38),
+    unit("unit_010", "public_anchor", "owner_public_001", 49, 510, 245000, true, false, 1850, 0.38),
+  ],
+};
+
+const state = {
+  month: 0,
+  selectedNeighborhood: "alexanderplatz",
+  playing: false,
+  timer: null,
+  events: [],
+  history: [],
+  policy: {
+    rentControl: 0.55,
+    vacancyEnforcement: 0.4,
+    publicAcquisition: 0.2,
+    investorPressure: 0.68,
+  },
+  neighborhoods: [],
+  owners: [],
+  units: [],
+};
+
+const controls = {
+  rentControl: document.querySelector("#rentControl"),
+  vacancyControl: document.querySelector("#vacancyControl"),
+  publicControl: document.querySelector("#publicControl"),
+  investorControl: document.querySelector("#investorControl"),
+};
+
+function unit(id, neighborhoodId, ownerId, sqm, rent, salePrice, regulated, vacant, income, tolerance) {
+  return {
+    id,
+    neighborhoodId,
+    ownerId,
+    sqm,
+    rent,
+    salePrice,
+    regulated,
+    vacant,
+    household: income > 0 ? { income, tolerance, stress: 0 } : null,
+    convertedToSale: false,
+  };
+}
+
+function resetGame() {
+  state.month = 0;
+  state.events = [];
+  state.history = [];
+  state.neighborhoods = structuredClone(scenarioSeed.neighborhoods);
+  state.owners = structuredClone(scenarioSeed.owners);
+  state.units = structuredClone(scenarioSeed.units);
+  collectMetrics();
+  render();
+}
+
+function stepGame() {
+  state.month += 1;
+  updateDemand();
+  updateOwnersAndUnits();
+  updateHouseholds();
+  collectMetrics();
+  render();
+}
+
+function updateDemand() {
+  for (const area of state.neighborhoods) {
+    const investorPull = state.policy.investorPressure * 0.006;
+    const protection = state.policy.publicAcquisition * 0.003;
+    area.demandPressure = clamp(area.demandPressure + investorPull - protection, 0.25, 1);
+  }
+}
+
+function updateOwnersAndUnits() {
+  for (const currentUnit of state.units) {
+    const owner = state.owners.find((item) => item.id === currentUnit.ownerId);
+    const area = getNeighborhood(currentUnit.neighborhoodId);
+    const regulation = currentUnit.regulated ? state.policy.rentControl : state.policy.rentControl * 0.25;
+    const marketRentGrowth = area.demandPressure * owner.riskTolerance * 0.012;
+    const allowedRentGrowth = marketRentGrowth * (1 - regulation * 0.78);
+
+    currentUnit.rent *= 1 + Math.max(0.001, allowedRentGrowth);
+    currentUnit.salePrice *= 1 + area.demandPressure * (1 - owner.socialMission) * state.policy.investorPressure * 0.011;
+
+    const vacancyReleaseChance = state.policy.vacancyEnforcement * 0.08;
+    if (currentUnit.vacant && Math.random() < vacancyReleaseChance) {
+      currentUnit.vacant = false;
+      currentUnit.household = {
+        income: currentUnit.rent / 0.34,
+        tolerance: 0.34,
+        stress: 0.08,
+      };
+      pushEvent(`${area.name}: vacancy enforcement returned ${currentUnit.id} to rental supply.`);
+    }
+
+    const conversionPressure =
+      area.demandPressure * owner.riskTolerance * state.policy.investorPressure -
+      state.policy.rentControl * 0.22 -
+      owner.socialMission * 0.3;
+    if (!currentUnit.convertedToSale && !currentUnit.regulated && conversionPressure > 0.55) {
+      currentUnit.convertedToSale = true;
+      currentUnit.salePrice *= 1.035;
+      pushEvent(`${area.name}: ${currentUnit.id} shifted toward the purchase market.`);
+    }
+  }
+}
+
+function updateHouseholds() {
+  for (const currentUnit of state.units) {
+    if (!currentUnit.household) continue;
+    const burden = currentUnit.rent / Math.max(currentUnit.household.income, 1);
+    const stressDelta = (burden - currentUnit.household.tolerance) * 0.22;
+    currentUnit.household.stress = clamp(currentUnit.household.stress + stressDelta, 0, 1);
+
+    if (currentUnit.household.stress > 0.82 && Math.random() < 0.08) {
+      currentUnit.vacant = true;
+      currentUnit.household = null;
+      pushEvent(`${getNeighborhood(currentUnit.neighborhoodId).name}: a household was displaced.`);
+    }
+  }
+}
+
+function collectMetrics() {
+  const rents = state.units.map((item) => item.rent / item.sqm);
+  const sales = state.units.map((item) => item.salePrice / item.sqm);
+  const stresses = state.units.filter((item) => item.household).map((item) => item.household.stress);
+  state.history.push({
+    month: state.month,
+    rent: median(rents),
+    sale: median(sales),
+    vacancy: state.units.filter((item) => item.vacant).length / state.units.length,
+    stress: stresses.length ? average(stresses) : 0,
+  });
+}
+
+function render() {
+  const latest = state.history[state.history.length - 1];
+  document.querySelector("#monthMetric").textContent = latest.month;
+  document.querySelector("#rentMetric").textContent = euro(latest.rent) + "/sqm";
+  document.querySelector("#saleMetric").textContent = euro(latest.sale) + "/sqm";
+  document.querySelector("#vacancyMetric").textContent = percent(latest.vacancy);
+  document.querySelector("#stressMetric").textContent = percent(latest.stress);
+  document.querySelector("#eventCount").textContent = state.events.length;
+  document.querySelector("#selectedName").textContent = getNeighborhood(state.selectedNeighborhood).name;
+
+  renderControls();
+  renderMap();
+  renderDetails();
+  renderEvents();
+  drawChart();
+}
+
+function renderControls() {
+  const pairs = [
+    ["rentControl", "rentControlValue"],
+    ["vacancyControl", "vacancyControlValue"],
+    ["publicControl", "publicControlValue"],
+    ["investorControl", "investorControlValue"],
+  ];
+  for (const [controlId, outputId] of pairs) {
+    document.querySelector(`#${outputId}`).textContent = `${document.querySelector(`#${controlId}`).value}%`;
+  }
+}
+
+function renderMap() {
+  const mapGrid = document.querySelector("#mapGrid");
+  mapGrid.innerHTML = "";
+  for (const area of state.neighborhoods) {
+    const button = document.createElement("button");
+    button.className = `tile ${area.id === state.selectedNeighborhood ? "selected" : ""}`;
+    button.style.setProperty("--heat", `${Math.round(area.demandPressure * 100)}%`);
+    button.type = "button";
+    button.innerHTML = `
+      <span class="heat"></span>
+      <h3>${area.name}</h3>
+      <small>${percent(area.demandPressure)} demand</small>
+    `;
+    button.addEventListener("click", () => {
+      state.selectedNeighborhood = area.id;
+      render();
+    });
+    mapGrid.append(button);
+  }
+}
+
+function renderDetails() {
+  const area = getNeighborhood(state.selectedNeighborhood);
+  const units = state.units.filter((item) => item.neighborhoodId === area.id);
+  const rents = units.map((item) => item.rent / item.sqm);
+  const sales = units.map((item) => item.salePrice / item.sqm);
+  const stress = units.filter((item) => item.household).map((item) => item.household.stress);
+  const details = document.querySelector("#areaDetails");
+  details.innerHTML = `
+    <dt>Demand pressure</dt><dd>${percent(area.demandPressure)}</dd>
+    <dt>Income mix</dt><dd>${area.incomeMix}</dd>
+    <dt>Median rent</dt><dd>${euro(median(rents))}/sqm</dd>
+    <dt>Median sale</dt><dd>${euro(median(sales))}/sqm</dd>
+    <dt>Vacant units</dt><dd>${units.filter((item) => item.vacant).length}/${units.length}</dd>
+    <dt>Local stress</dt><dd>${percent(stress.length ? average(stress) : 0)}</dd>
+  `;
+
+  const list = document.querySelector("#unitList");
+  list.innerHTML = "";
+  for (const currentUnit of units) {
+    const row = document.createElement("div");
+    row.className = "unit-row";
+    row.innerHTML = `
+      <strong>${currentUnit.id} · ${currentUnit.sqm} sqm</strong>
+      <span class="tag">${currentUnit.vacant ? "vacant" : currentUnit.regulated ? "regulated" : "market"}</span>
+      <span>${euro(currentUnit.rent)} rent</span>
+      <span>${euro(currentUnit.salePrice / currentUnit.sqm)}/sqm sale</span>
+    `;
+    list.append(row);
+  }
+}
+
+function renderEvents() {
+  const eventLog = document.querySelector("#eventLog");
+  eventLog.innerHTML = "";
+  for (const event of state.events.slice(-12).reverse()) {
+    const item = document.createElement("li");
+    item.textContent = event;
+    eventLog.append(item);
+  }
+}
+
+function drawChart() {
+  const canvas = document.querySelector("#marketChart");
+  const ctx = canvas.getContext("2d");
+  const width = canvas.width;
+  const height = canvas.height;
+  ctx.clearRect(0, 0, width, height);
+  ctx.fillStyle = "#fffefa";
+  ctx.fillRect(0, 0, width, height);
+  ctx.strokeStyle = "#d9d7ca";
+  ctx.lineWidth = 1;
+  for (let i = 1; i < 5; i += 1) {
+    const y = (height / 5) * i;
+    ctx.beginPath();
+    ctx.moveTo(36, y);
+    ctx.lineTo(width - 12, y);
+    ctx.stroke();
+  }
+
+  drawSeries(ctx, "rent", "#2f7d5b", scaleValues(state.history.map((item) => item.rent)), width, height);
+  drawSeries(ctx, "sale", "#386d9f", scaleValues(state.history.map((item) => item.sale)), width, height);
+  drawSeries(ctx, "vacancy", "#b98321", state.history.map((item) => item.vacancy), width, height);
+  drawSeries(ctx, "stress", "#b44435", state.history.map((item) => item.stress), width, height);
+  drawLegend(ctx);
+}
+
+function drawSeries(ctx, label, color, values, width, height) {
+  if (values.length < 2) return;
+  const left = 36;
+  const right = width - 16;
+  const top = 18;
+  const bottom = height - 28;
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  values.forEach((value, index) => {
+    const x = left + ((right - left) * index) / Math.max(values.length - 1, 1);
+    const y = bottom - clamp(value, 0, 1) * (bottom - top);
+    if (index === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+}
+
+function drawLegend(ctx) {
+  const items = [
+    ["rent", "#2f7d5b"],
+    ["sale", "#386d9f"],
+    ["vacancy", "#b98321"],
+    ["stress", "#b44435"],
+  ];
+  ctx.font = "13px sans-serif";
+  items.forEach(([label, color], index) => {
+    const x = 42 + index * 92;
+    ctx.fillStyle = color;
+    ctx.fillRect(x, 12, 12, 12);
+    ctx.fillStyle = "#222826";
+    ctx.fillText(label, x + 18, 23);
+  });
+}
+
+function scaleValues(values) {
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  if (max === min) return values.map(() => 0.5);
+  return values.map((value) => (value - min) / (max - min));
+}
+
+function getNeighborhood(id) {
+  return state.neighborhoods.find((item) => item.id === id);
+}
+
+function pushEvent(text) {
+  state.events.push(`Month ${state.month}: ${text}`);
+}
+
+function average(values) {
+  return values.reduce((sum, value) => sum + value, 0) / values.length;
+}
+
+function median(values) {
+  if (!values.length) return 0;
+  const sorted = [...values].sort((a, b) => a - b);
+  const middle = Math.floor(sorted.length / 2);
+  return sorted.length % 2 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) / 2;
+}
+
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function euro(value) {
+  return new Intl.NumberFormat("de-DE", {
+    style: "currency",
+    currency: "EUR",
+    maximumFractionDigits: value > 100 ? 0 : 2,
+  }).format(value);
+}
+
+function percent(value) {
+  return `${Math.round(value * 100)}%`;
+}
+
+document.querySelector("#stepBtn").addEventListener("click", stepGame);
+document.querySelector("#playBtn").addEventListener("click", () => {
+  state.playing = !state.playing;
+  document.querySelector("#playBtn").textContent = state.playing ? "Pause" : "Play";
+  if (state.playing) {
+    state.timer = window.setInterval(stepGame, 700);
+  } else {
+    window.clearInterval(state.timer);
+  }
+});
+document.querySelector("#resetBtn").addEventListener("click", () => {
+  state.playing = false;
+  window.clearInterval(state.timer);
+  document.querySelector("#playBtn").textContent = "Play";
+  resetGame();
+});
+
+controls.rentControl.addEventListener("input", (event) => {
+  state.policy.rentControl = Number(event.target.value) / 100;
+  render();
+});
+controls.vacancyControl.addEventListener("input", (event) => {
+  state.policy.vacancyEnforcement = Number(event.target.value) / 100;
+  render();
+});
+controls.publicControl.addEventListener("input", (event) => {
+  state.policy.publicAcquisition = Number(event.target.value) / 100;
+  render();
+});
+controls.investorControl.addEventListener("input", (event) => {
+  state.policy.investorPressure = Number(event.target.value) / 100;
+  render();
+});
+
+resetGame();

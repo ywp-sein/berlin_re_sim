@@ -26,9 +26,13 @@ pieces with real data later.
 python3 -m berlin_re_sim
 ```
 
+For the first browser prototype, open `web/index.html`.
+
 ## Project Map
 
 - `docs/model_design.md` explains the data structure and simulation loop.
+- `docs/visualization_values.md` lists the signals worth showing in the game.
 - `data/scenarios/mitte_seed.json` is the first small scenario.
 - `src/berlin_re_sim/schemas.py` defines the durable domain objects.
 - `src/berlin_re_sim/model.py` contains the Mesa-compatible model skeleton.
+- `web/index.html` is a dependency-free visualization/game prototype.
