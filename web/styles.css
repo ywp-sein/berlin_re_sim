@@ -16,6 +16,11 @@
   box-sizing: border-box;
 }
 
+html,
+body {
+  overflow-x: hidden;
+}
+
 body {
   margin: 0;
   background: var(--bg);
@@ -40,6 +45,7 @@ input[type="range"] {
   display: grid;
   gap: 16px;
   min-height: 100vh;
+  max-width: 100vw;
   padding: max(18px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right))
     max(18px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
 }
@@ -49,6 +55,7 @@ input[type="range"] {
 .workspace,
 .chart-panel {
   width: min(1380px, 100%);
+  min-width: 0;
   margin: 0 auto;
 }
 
@@ -69,6 +76,7 @@ h1 {
   font-size: 28px;
   font-weight: 760;
   letter-spacing: 0;
+  line-height: 1.08;
 }
 
 h2 {
@@ -93,6 +101,7 @@ dd {
   border-bottom: 1px dotted currentColor;
   cursor: help;
   outline: none;
+  max-width: 100%;
 }
 
 .info::after {
@@ -162,6 +171,7 @@ dd {
 .run-controls {
   display: flex;
   gap: 8px;
+  min-width: 0;
 }
 
 button {
@@ -182,6 +192,7 @@ button:hover {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 10px;
+  min-width: 0;
 }
 
 .metrics article,
@@ -203,18 +214,21 @@ button:hover {
 .metrics strong {
   font-size: 23px;
   letter-spacing: 0;
+  overflow-wrap: anywhere;
 }
 
 .workspace {
   display: grid;
-  grid-template-columns: 270px minmax(360px, 1fr) 330px;
+  grid-template-columns: 270px minmax(0, 1fr) 330px;
   gap: 16px;
   align-items: stretch;
+  min-width: 0;
 }
 
 .panel,
 .map-panel,
 .chart-panel {
+  min-width: 0;
   padding: 16px;
 }
 
@@ -244,18 +258,25 @@ button:hover {
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 12px;
+  min-width: 0;
+}
+
+.section-heading > * {
+  min-width: 0;
 }
 
 .map-canvas {
   display: grid;
   gap: 10px;
-  min-height: 430px;
+  min-height: 0;
+  min-width: 0;
 }
 
 .mitte-map {
   display: block;
   width: 100%;
-  min-height: 390px;
+  height: auto;
+  aspect-ratio: 690 / 620;
   border: 1px solid var(--line);
   border-radius: 8px;
   background:
@@ -407,10 +428,13 @@ dd {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 340px;
   gap: 16px;
+  min-width: 0;
 }
 
 canvas {
+  display: block;
   width: 100%;
+  height: auto;
   max-height: 260px;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -460,7 +484,7 @@ canvas {
   }
 
   h1 {
-    font-size: 24px;
+    font-size: 22px;
   }
 
   .run-controls {
@@ -507,15 +531,15 @@ canvas {
   }
 
   .mitte-map {
-    min-height: 300px;
+    aspect-ratio: 690 / 700;
   }
 
   .map-area text {
-    font-size: 18px;
+    font-size: 17px;
   }
 
   .map-area tspan + tspan {
-    font-size: 16px;
+    font-size: 15px;
   }
 
   .map-place-labels {
@@ -530,17 +554,36 @@ canvas {
     justify-self: start;
   }
 
-  .chart-panel > div:first-child {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
   canvas {
-    width: 720px;
-    max-width: none;
+    width: 100%;
+    max-width: 100%;
   }
 
   .event-log ol {
     max-height: 180px;
+  }
+}
+
+@media (max-width: 420px) {
+  .metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .controls-panel label,
+  dl {
+    grid-template-columns: 1fr;
+  }
+
+  .controls-panel output,
+  dd {
+    justify-self: start;
+  }
+
+  .map-area text {
+    font-size: 15px;
+  }
+
+  .map-area tspan + tspan {
+    font-size: 13px;
   }
 }

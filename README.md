@@ -36,6 +36,16 @@ python3 -m http.server 8000 --bind 0.0.0.0
 
 Then open `http://YOUR_COMPUTER_IP:8000` from a phone on the same Wi-Fi.
 
+If the phone cannot connect:
+
+- confirm the phone is not on mobile data or a guest Wi-Fi network
+- check that the phone IP and computer IP start with the same first three parts,
+  for example `192.168.139.x`
+- try `http://192.168.139.227:8000` if this machine is still on the same network
+- allow incoming connections for Python or port `8000` in the computer firewall
+- if this project is running inside WSL, Docker, a VM, or a remote IDE, start the
+  server from the host machine instead of the isolated environment
+
 ## Project Map
 
 - `docs/model_design.md` explains the data structure and simulation loop.
