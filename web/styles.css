@@ -77,6 +77,80 @@ dd {
   color: var(--muted);
 }
 
+.info {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  border-bottom: 1px dotted currentColor;
+  cursor: help;
+  outline: none;
+}
+
+.info::after {
+  position: absolute;
+  z-index: 20;
+  left: 0;
+  bottom: calc(100% + 9px);
+  width: min(280px, calc(100vw - 36px));
+  padding: 9px 10px;
+  border: 1px solid #202623;
+  border-radius: 7px;
+  background: #202623;
+  color: #fffdf7;
+  box-shadow: 0 10px 26px rgba(34, 40, 38, 0.22);
+  content: attr(data-tooltip);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.35;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(4px);
+  transition:
+    opacity 140ms ease,
+    transform 140ms ease;
+}
+
+.info::before {
+  position: absolute;
+  z-index: 21;
+  left: 14px;
+  bottom: calc(100% + 3px);
+  border: 6px solid transparent;
+  border-top-color: #202623;
+  content: "";
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 140ms ease;
+}
+
+.info:hover::after,
+.info:focus-visible::after,
+.info:hover::before,
+.info:focus-visible::before {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.info:focus-visible {
+  border-radius: 3px;
+  box-shadow: 0 0 0 3px rgba(56, 109, 159, 0.24);
+}
+
+.topbar .info::after,
+.metrics .info::after {
+  top: calc(100% + 9px);
+  bottom: auto;
+}
+
+.topbar .info::before,
+.metrics .info::before {
+  top: calc(100% + 3px);
+  bottom: auto;
+  border-top-color: transparent;
+  border-bottom-color: #202623;
+}
+
 .run-controls {
   display: flex;
   gap: 8px;
