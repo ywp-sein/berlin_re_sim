@@ -1,0 +1,19 @@
+{
+  "name": "Berlin Real Estate Sim",
+  "short_name": "Berlin RE",
+  "description": "A mobile-friendly prototype for exploring Berlin real estate dynamics.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f5ef",
+  "theme_color": "#303734",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

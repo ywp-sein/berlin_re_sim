@@ -22,6 +22,7 @@ body {
   color: var(--ink);
   font-family:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  -webkit-text-size-adjust: 100%;
 }
 
 button,
@@ -29,11 +30,18 @@ input {
   font: inherit;
 }
 
+button,
+.map-area,
+input[type="range"] {
+  touch-action: manipulation;
+}
+
 .app {
   display: grid;
   gap: 16px;
   min-height: 100vh;
-  padding: 18px;
+  padding: max(18px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right))
+    max(18px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
 }
 
 .topbar,
@@ -158,7 +166,7 @@ dd {
 
 button {
   min-width: 76px;
-  height: 40px;
+  min-height: 44px;
   border: 1px solid var(--dark);
   border-radius: 6px;
   background: var(--dark);
@@ -226,6 +234,7 @@ button:hover {
 .controls-panel input {
   grid-column: 1 / -1;
   width: 100%;
+  min-height: 34px;
   accent-color: var(--green);
 }
 
@@ -434,12 +443,24 @@ canvas {
 
 @media (max-width: 620px) {
   .app {
-    padding: 12px;
+    gap: 12px;
+    padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right))
+      max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
   }
 
   .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
     align-items: stretch;
+    padding: 10px 0 8px;
+    background: rgba(246, 245, 239, 0.96);
+    backdrop-filter: blur(12px);
     flex-direction: column;
+  }
+
+  h1 {
+    font-size: 24px;
   }
 
   .run-controls {
@@ -451,7 +472,75 @@ canvas {
     min-width: 0;
   }
 
+  .metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .metrics article {
+    min-height: 68px;
+    padding: 10px;
+  }
+
+  .metrics strong {
+    font-size: 20px;
+  }
+
+  .panel,
+  .map-panel,
+  .chart-panel {
+    padding: 12px;
+  }
+
+  .controls-panel {
+    gap: 14px;
+  }
+
+  .section-heading {
+    align-items: start;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .map-canvas {
+    min-height: 0;
+  }
+
   .mitte-map {
     min-height: 300px;
+  }
+
+  .map-area text {
+    font-size: 18px;
+  }
+
+  .map-area tspan + tspan {
+    font-size: 16px;
+  }
+
+  .map-place-labels {
+    display: none;
+  }
+
+  .unit-row {
+    grid-template-columns: 1fr;
+  }
+
+  .tag {
+    justify-self: start;
+  }
+
+  .chart-panel > div:first-child {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  canvas {
+    width: 720px;
+    max-width: none;
+  }
+
+  .event-log ol {
+    max-height: 180px;
   }
 }

@@ -26,7 +26,15 @@ pieces with real data later.
 python3 -m berlin_re_sim
 ```
 
-For the first browser prototype, open `web/index.html`.
+For the first browser prototype, open `web/index.html`, or serve it on your
+local network for phone testing:
+
+```bash
+cd web
+python3 -m http.server 8000 --bind 0.0.0.0
+```
+
+Then open `http://YOUR_COMPUTER_IP:8000` from a phone on the same Wi-Fi.
 
 ## Project Map
 
