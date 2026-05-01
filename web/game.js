@@ -29,6 +29,57 @@ const scenarioSeed = {
   ],
 };
 
+const mapShapes = {
+  north_mitte: {
+    label: "North Mitte",
+    path: "M210 38 L350 54 L384 126 L332 188 L202 168 L162 92 Z",
+    labelX: 272,
+    labelY: 108,
+  },
+  wedding_edge: {
+    label: "Wedding edge",
+    path: "M76 112 L162 92 L202 168 L172 276 L72 264 L38 182 Z",
+    labelX: 122,
+    labelY: 192,
+  },
+  rosenthaler: {
+    label: "Rosenthaler edge",
+    path: "M384 126 L506 104 L580 166 L548 254 L430 242 L332 188 Z",
+    labelX: 472,
+    labelY: 182,
+  },
+  museum_quarter: {
+    label: "Museum quarter",
+    path: "M202 168 L332 188 L430 242 L398 330 L262 348 L172 276 Z",
+    labelX: 304,
+    labelY: 260,
+  },
+  alexanderplatz: {
+    label: "Alexanderplatz",
+    path: "M430 242 L548 254 L610 346 L546 432 L406 410 L398 330 Z",
+    labelX: 493,
+    labelY: 334,
+  },
+  tiergarten_edge: {
+    label: "Tiergarten edge",
+    path: "M72 264 L172 276 L262 348 L220 448 L92 430 L36 340 Z",
+    labelX: 148,
+    labelY: 354,
+  },
+  public_anchor: {
+    label: "Public anchor",
+    path: "M262 348 L398 330 L406 410 L344 496 L218 474 L220 448 Z",
+    labelX: 312,
+    labelY: 416,
+  },
+  spree_office: {
+    label: "Spree office belt",
+    path: "M344 496 L406 410 L546 432 L648 508 L586 580 L430 572 Z",
+    labelX: 494,
+    labelY: 506,
+  },
+};
+
 const state = {
   month: 0,
   selectedNeighborhood: "alexanderplatz",
@@ -191,22 +242,70 @@ function renderControls() {
 function renderMap() {
   const mapGrid = document.querySelector("#mapGrid");
   mapGrid.innerHTML = "";
-  for (const area of state.neighborhoods) {
-    const button = document.createElement("button");
-    button.className = `tile ${area.id === state.selectedNeighborhood ? "selected" : ""}`;
-    button.style.setProperty("--heat", `${Math.round(area.demandPressure * 100)}%`);
-    button.type = "button";
-    button.innerHTML = `
-      <span class="heat"></span>
-      <h3>${area.name}</h3>
-      <small>${percent(area.demandPressure)} demand</small>
-    `;
-    button.addEventListener("click", () => {
-      state.selectedNeighborhood = area.id;
-      render();
+  mapGrid.className = "map-canvas";
+  const areas = state.neighborhoods
+    .map((area) => {
+      const shape = mapShapes[area.id];
+      const selected = area.id === state.selectedNeighborhood;
+      const fill = demandColor(area.demandPressure);
+      return `
+        <g
+          class="map-area ${selected ? "selected" : ""}"
+          data-id="${area.id}"
+          tabindex="0"
+          role="button"
+          aria-label="${shape.label}, ${percent(area.demandPressure)} demand"
+        >
+          <title>${shape.label}: ${percent(area.demandPressure)} demand pressure. Click to inspect local units.</title>
+          <path d="${shape.path}" fill="${fill}"></path>
+          <text x="${shape.labelX}" y="${shape.labelY}" text-anchor="middle">
+            <tspan x="${shape.labelX}" dy="0">${shape.label}</tspan>
+            <tspan x="${shape.labelX}" dy="18">${percent(area.demandPressure)} demand</tspan>
+          </text>
+        </g>
+      `;
+    })
+    .join("");
+
+  mapGrid.innerHTML = `
+    <svg class="mitte-map" viewBox="0 0 690 620" role="img" aria-label="Stylized Mitte real estate simulation map">
+      <rect class="map-water" x="30" y="476" width="640" height="42" rx="21"></rect>
+      <path class="map-river" d="M42 500 C154 452 238 520 342 482 C446 444 520 464 652 522"></path>
+      <path class="map-ring" d="M72 112 L210 38 L350 54 L506 104 L610 346 L648 508 L586 580 L430 572 L218 474 L92 430 L36 340 L38 182 Z"></path>
+      ${areas}
+      <g class="map-place-labels" aria-hidden="true">
+        <text x="84" y="92">north-west edge</text>
+        <text x="594" y="132">east edge</text>
+        <text x="590" y="548">Spree / office belt</text>
+      </g>
+    </svg>
+    <div class="map-legend" aria-label="map legend">
+      <span><i class="low"></i>Lower demand</span>
+      <span><i class="high"></i>Higher demand</span>
+      <span><i class="line"></i>Spree corridor</span>
+    </div>
+  `;
+
+  for (const areaShape of mapGrid.querySelectorAll(".map-area")) {
+    areaShape.addEventListener("click", () => selectNeighborhood(areaShape.dataset.id));
+    areaShape.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        selectNeighborhood(areaShape.dataset.id);
+      }
     });
-    mapGrid.append(button);
   }
+}
+
+function selectNeighborhood(id) {
+  state.selectedNeighborhood = id;
+  render();
+}
+
+function demandColor(value) {
+  const lightness = 89 - value * 32;
+  const saturation = 38 + value * 32;
+  return `hsl(8 ${saturation}% ${lightness}%)`;
 }
 
 function renderDetails() {
