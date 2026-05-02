@@ -213,6 +213,7 @@ const state = {
   month: 0,
   method: "agent_based",
   marketRegime: "stable_affordable",
+  chartMode: "overall",
   selectedNeighborhood: "alexanderplatz",
   playing: false,
   timer: null,
@@ -231,6 +232,7 @@ const state = {
 
 const controls = {
   methodControl: document.querySelector("#methodControl"),
+  chartModeControl: document.querySelector("#chartModeControl"),
   rentControl: document.querySelector("#rentControl"),
   vacancyControl: document.querySelector("#vacancyControl"),
   publicControl: document.querySelector("#publicControl"),
@@ -434,6 +436,7 @@ function render() {
 
 function renderControls() {
   controls.methodControl.value = state.method;
+  controls.chartModeControl.value = state.chartMode;
   document.querySelector("#methodDescription").textContent =
     state.method === "markov_chain" || state.method === "mcmc_state"
       ? `${simulationMethods[state.method].description} Current regime: ${marketRegimeEffects[state.marketRegime].label}.`
@@ -573,6 +576,18 @@ function renderEvents() {
 
 function drawChart() {
   const canvas = document.querySelector("#marketChart");
+  const viewport = document.querySelector("#chartViewport");
+  const previousScrollLeft = viewport.scrollLeft;
+  const wasAtEnd =
+    viewport.scrollWidth <= viewport.clientWidth ||
+    viewport.scrollLeft + viewport.clientWidth >= viewport.scrollWidth - 4;
+  const isTimeSeries = state.chartMode === "time_series";
+  const chartWidth =
+    isTimeSeries
+      ? Math.max(900, 100 + Math.max(state.history.length - 1, 1) * 48)
+      : 900;
+  canvas.width = chartWidth;
+  viewport.classList.toggle("scrollable", isTimeSeries);
   const ctx = canvas.getContext("2d");
   const width = canvas.width;
   const height = canvas.height;
@@ -594,7 +609,16 @@ function drawChart() {
   drawSeries(ctx, "vacancy", "#b98321", state.history.map((item) => item.vacancy), width, height);
   drawSeries(ctx, "stress", "#b44435", state.history.map((item) => item.stress), width, height);
   drawSeries(ctx, "burden", "#7b5aa6", state.history.map((item) => item.rentBurden), width, height);
+  if (isTimeSeries) {
+    drawTimeAxis(ctx, width, height);
+  }
   drawLegend(ctx);
+
+  if (isTimeSeries) {
+    viewport.scrollLeft = wasAtEnd ? viewport.scrollWidth : previousScrollLeft;
+  } else {
+    viewport.scrollLeft = 0;
+  }
 }
 
 function drawSeries(ctx, label, color, values, width, height) {
@@ -613,6 +637,25 @@ function drawSeries(ctx, label, color, values, width, height) {
     else ctx.lineTo(x, y);
   });
   ctx.stroke();
+}
+
+function drawTimeAxis(ctx, width, height) {
+  const left = 36;
+  const right = width - 16;
+  const bottom = height - 28;
+  const step = Math.max(1, Math.ceil(state.history.length / 12));
+  ctx.strokeStyle = "#d9d7ca";
+  ctx.fillStyle = "#66716b";
+  ctx.font = "12px sans-serif";
+  state.history.forEach((point, index) => {
+    if (index % step !== 0 && index !== state.history.length - 1) return;
+    const x = left + ((right - left) * index) / Math.max(state.history.length - 1, 1);
+    ctx.beginPath();
+    ctx.moveTo(x, bottom + 4);
+    ctx.lineTo(x, bottom + 10);
+    ctx.stroke();
+    ctx.fillText(`M${point.month}`, x - 10, bottom + 24);
+  });
 }
 
 function drawLegend(ctx) {
@@ -704,6 +747,11 @@ controls.methodControl.addEventListener("change", (event) => {
   state.method = event.target.value;
   resetGame();
   pushEvent(`Simulation method switched to ${simulationMethods[state.method].label}.`);
+  render();
+});
+
+controls.chartModeControl.addEventListener("change", (event) => {
+  state.chartMode = event.target.value;
   render();
 });
 

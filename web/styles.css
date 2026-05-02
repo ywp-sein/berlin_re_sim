@@ -450,6 +450,46 @@ dd {
   min-width: 0;
 }
 
+.chart-tools {
+  display: flex;
+  justify-content: flex-end;
+  margin: -4px 0 8px;
+}
+
+.chart-tools label {
+  display: inline-grid;
+  grid-template-columns: auto 148px;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.chart-tools select {
+  min-height: 38px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fbfaf4;
+  color: var(--ink);
+}
+
+.chart-viewport {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.chart-viewport.scrollable {
+  overflow-x: auto;
+  padding-bottom: 8px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.chart-viewport.scrollable canvas {
+  width: auto;
+  max-width: none;
+}
+
 canvas {
   display: block;
   width: 100%;
@@ -571,6 +611,20 @@ canvas {
 
   .tag {
     justify-self: start;
+  }
+
+  .chart-tools {
+    justify-content: stretch;
+  }
+
+  .chart-tools label {
+    width: 100%;
+    grid-template-columns: 1fr;
+  }
+
+  .chart-viewport.scrollable canvas {
+    width: auto;
+    max-width: none;
   }
 
   canvas {

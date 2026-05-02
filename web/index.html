@@ -203,7 +203,22 @@
               data-tooltip="Green is rent, blue is sale price, yellow is vacancy, red is displacement stress."
             >rent, sale, vacancy, stress</span>
           </div>
-          <canvas id="marketChart" width="900" height="260"></canvas>
+          <div class="chart-tools" aria-label="market signal display options">
+            <label>
+              <span
+                class="info"
+                tabindex="0"
+                data-tooltip="Overall compresses the full timeline into the visible chart. Time-series scroll gives each month fixed horizontal space and scrolls to the latest step."
+              >Display</span>
+              <select id="chartModeControl">
+                <option value="overall">Overall</option>
+                <option value="time_series">Time-series scroll</option>
+              </select>
+            </label>
+          </div>
+          <div id="chartViewport" class="chart-viewport">
+            <canvas id="marketChart" width="900" height="260"></canvas>
+          </div>
         </div>
         <div class="event-log">
           <div class="section-heading">
