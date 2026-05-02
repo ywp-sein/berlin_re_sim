@@ -1,6 +1,6 @@
 const currentVersion = {
-  label: "Prototype 0.5.0",
-  summary: "Documentation UI, dictionary wiki, version ledger, and implementation notes.",
+  label: "Prototype 0.5.1",
+  summary: "GitHub Pages deployment workflow and deployment notes.",
 };
 
 const implementationNotes = [
@@ -60,9 +60,26 @@ const implementationNotes = [
       "The app can be served over the local network and cached by the service worker. Cache versions are bumped when web assets change so phones do not hold stale pages.",
     files: "web/service-worker.js, web/manifest.webmanifest",
   },
+  {
+    area: "Deployment",
+    title: "GitHub Pages publishes the static web folder",
+    body:
+      "The repository uses a GitHub Actions Pages workflow to deploy the web/ folder directly. This avoids moving the static app into the repository root or docs/ folder.",
+    files: ".github/workflows/pages.yml, docs/deployment.md",
+  },
 ];
 
 const versions = [
+  {
+    version: "0.5.1",
+    date: "2026-05-02",
+    title: "GitHub Pages deployment",
+    changes: [
+      "Added GitHub Actions workflow that deploys web/ to GitHub Pages.",
+      "Added deployment notes for default Pages URL and custom domain binding.",
+      "Recorded deployment as an implementation area.",
+    ],
+  },
   {
     version: "0.5.0",
     date: "2026-05-02",

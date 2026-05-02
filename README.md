@@ -59,6 +59,9 @@ For project-wide implementation memory and version tracking, open
 `web/notes.html`. It records milestone versions, architecture notes, open gaps,
 and the files connected to each area.
 
+For internet access through GitHub Pages, see `docs/deployment.md`. The included
+GitHub Actions workflow publishes the static `web/` folder.
+
 If the phone cannot connect:
 
 - confirm the phone is not on mobile data or a guest Wi-Fi network
@@ -72,6 +75,7 @@ If the phone cannot connect:
 ## Project Map
 
 - `docs/model_design.md` explains the data structure and simulation loop.
+- `docs/deployment.md` explains GitHub Pages and custom-domain setup.
 - `docs/scenario_schema.md` describes the canonical scenario contract.
 - `docs/visualization_values.md` lists the signals worth showing in the game.
 - `docs/data_sources.md` maps future real datasets to model variables.
