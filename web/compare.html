@@ -43,36 +43,64 @@
             >Shared Inputs</span>
           </h2>
           <label>
-            <span>Steps</span>
+            <span
+              class="info"
+              tabindex="0"
+              data-tooltip="How many simulation updates each method runs. For Markov and MCMC methods, one step means one state transition or sample."
+            >Steps</span>
             <input id="compareStepsControl" type="range" min="4" max="60" value="24" />
             <output id="compareStepsValue">24</output>
           </label>
           <label>
-            <span>Random seed</span>
+            <span
+              class="info"
+              tabindex="0"
+              data-tooltip="A fixed number that makes random methods repeatable, so the same settings can be compared again."
+            >Random seed</span>
             <input id="compareSeedControl" type="number" min="1" max="999999" value="19" />
           </label>
           <label>
-            <span>Rent regulation</span>
+            <span
+              class="info"
+              tabindex="0"
+              data-tooltip="Higher values slow rent growth, especially for regulated units and public-stabilized regimes."
+            >Rent regulation</span>
             <input id="compareRentControl" type="range" min="0" max="100" value="55" />
             <output id="compareRentValue">55%</output>
           </label>
           <label>
-            <span>Vacancy enforcement</span>
+            <span
+              class="info"
+              tabindex="0"
+              data-tooltip="Represents pressure against leaving homes empty. Higher values reduce persistent vacancy in the aggregate model."
+            >Vacancy enforcement</span>
             <input id="compareVacancyControl" type="range" min="0" max="100" value="40" />
             <output id="compareVacancyValue">40%</output>
           </label>
           <label>
-            <span>Public acquisition</span>
+            <span
+              class="info"
+              tabindex="0"
+              data-tooltip="Represents public or social ownership expansion. Higher values dampen speculative sale-price pressure."
+            >Public acquisition</span>
             <input id="comparePublicControl" type="range" min="0" max="100" value="20" />
             <output id="comparePublicValue">20%</output>
           </label>
           <label>
-            <span>Investor pressure</span>
+            <span
+              class="info"
+              tabindex="0"
+              data-tooltip="External purchase and redevelopment demand. Higher values raise demand pressure and spillover intensity."
+            >Investor pressure</span>
             <input id="compareInvestorControl" type="range" min="0" max="100" value="68" />
             <output id="compareInvestorValue">68%</output>
           </label>
           <label class="toggle-row">
-            <span>Area influences</span>
+            <span
+              class="info"
+              tabindex="0"
+              data-tooltip="Turns neighborhood spillovers on or off, such as office-belt pressure affecting nearby housing areas."
+            >Area influences</span>
             <input id="compareInfluenceControl" type="checkbox" checked />
           </label>
           <h2>
@@ -83,27 +111,51 @@
             >Calibration Targets</span>
           </h2>
           <label>
-            <span>Rent / sqm</span>
+            <span
+              class="info"
+              tabindex="0"
+              data-tooltip="Target median monthly rent per square meter. The methods try to get close to this reference value."
+            >Rent / sqm</span>
             <input id="targetRentControl" type="number" min="0" step="0.1" value="18.5" />
           </label>
           <label>
-            <span>Sale / sqm</span>
+            <span
+              class="info"
+              tabindex="0"
+              data-tooltip="Target median purchase price per square meter for apartments or similar units."
+            >Sale / sqm</span>
             <input id="targetSaleControl" type="number" min="0" step="100" value="7600" />
           </label>
           <label>
-            <span>Vacancy %</span>
+            <span
+              class="info"
+              tabindex="0"
+              data-tooltip="Target share of units that are empty or unavailable for an occupied household."
+            >Vacancy %</span>
             <input id="targetVacancyControl" type="number" min="0" max="100" step="1" value="6" />
           </label>
           <label>
-            <span>Stress %</span>
+            <span
+              class="info"
+              tabindex="0"
+              data-tooltip="Target average displacement stress. Zero means stable households; one hundred means severe pressure."
+            >Stress %</span>
             <input id="targetStressControl" type="number" min="0" max="100" step="1" value="28" />
           </label>
           <label>
-            <span>Rent burden %</span>
+            <span
+              class="info"
+              tabindex="0"
+              data-tooltip="Target average share of monthly household income spent on rent."
+            >Rent burden %</span>
             <input id="targetBurdenControl" type="number" min="0" max="100" step="1" value="32" />
           </label>
           <label>
-            <span>Buy years</span>
+            <span
+              class="info"
+              tabindex="0"
+              data-tooltip="Target purchase-price-to-income ratio, expressed as years of average individual income."
+            >Buy years</span>
             <input id="targetBuyYearsControl" type="number" min="0" step="0.5" value="18" />
           </label>
           <button id="saveTargetsBtn" type="button">Save targets JSON</button>
@@ -114,14 +166,26 @@
           <section class="chart-panel compare-chart-panel" aria-label="comparison charts">
             <div>
               <div class="section-heading">
-                <h2>Rent Signal</h2>
+                <h2>
+                  <span
+                    class="info"
+                    tabindex="0"
+                    data-tooltip="Shows each method's rent path on a normalized scale, so different methods can be compared by direction and volatility."
+                  >Rent Signal</span>
+                </h2>
                 <span>normalized median rent per sqm</span>
               </div>
               <canvas id="compareRentChart" width="900" height="240"></canvas>
             </div>
             <div>
               <div class="section-heading">
-                <h2>Risk Signal</h2>
+                <h2>
+                  <span
+                    class="info"
+                    tabindex="0"
+                    data-tooltip="Shows displacement stress as solid lines and vacancy as dashed lines, using the same color for each method."
+                  >Risk Signal</span>
+                </h2>
                 <span>vacancy and stress</span>
               </div>
               <canvas id="compareRiskChart" width="900" height="240"></canvas>

@@ -1,8 +1,38 @@
 const methods = {
-  agent_based: { label: "Agent-based", color: "#2f7d5b", step: "month" },
-  analytical: { label: "Analytical", color: "#7b5aa6", step: "iteration" },
-  markov_chain: { label: "Markov chain", color: "#386d9f", step: "transition" },
-  mcmc_state: { label: "MCMC state", color: "#b44435", step: "sample" },
+  agent_based: {
+    label: "Agent-based",
+    color: "#2f7d5b",
+    step: "month",
+    tooltip: "Simulates individual units, owners, households, area demand, rent pressure, and sale-price behavior over time.",
+  },
+  analytical: {
+    label: "Analytical",
+    color: "#7b5aa6",
+    step: "iteration",
+    tooltip: "Uses aggregate equations as a deterministic baseline, useful for checking whether the larger trend is plausible.",
+  },
+  markov_chain: {
+    label: "Markov chain",
+    color: "#386d9f",
+    step: "transition",
+    tooltip: "Moves between named market regimes using transition probabilities, such as stable, rent pressure, or speculative conversion.",
+  },
+  mcmc_state: {
+    label: "MCMC state",
+    color: "#b44435",
+    step: "sample",
+    tooltip: "Samples likely market regimes with an acceptance rule, useful for exploring time-independent state likelihoods.",
+  },
+};
+
+const metricTooltips = {
+  rent: "Final median monthly rent per square meter produced by this method.",
+  sale: "Final median purchase price per square meter produced by this method.",
+  vacancy: "Final share of units treated as vacant or unavailable for an occupied household.",
+  stress: "Final average displacement stress. Higher values mean households are under more pressure.",
+  buyYears: "Final purchase-price-to-income ratio. Higher values mean buying takes more years of average individual income.",
+  meanError: "Average relative distance from all target values. Lower means the method is closer to the calibration target overall.",
+  rmse: "Root mean square relative error. It punishes one very wrong metric more strongly than the mean error.",
 };
 
 const comparisonSeed = {
@@ -277,20 +307,28 @@ function renderCards(results) {
     const card = document.createElement("article");
     card.className = "comparison-card";
     card.innerHTML = `
-      <h2>${methods[result.method].label}</h2>
+      <h2>${infoLabel(methods[result.method].label, methods[result.method].tooltip)}</h2>
       <span>${methods[result.method].step} steps</span>
       <dl>
-        <dt>Rent</dt><dd>${euro(latest.rent)}/sqm</dd>
-        <dt>Sale</dt><dd>${euro(latest.sale)}/sqm</dd>
-        <dt>Vacancy</dt><dd>${percent(latest.vacancy)}</dd>
-        <dt>Stress</dt><dd>${percent(latest.stress)}</dd>
-        <dt>Buy years</dt><dd>${latest.buyYears.toFixed(1)}y</dd>
-        <dt>Mean error</dt><dd>${percent(error.meanRelativeError)}</dd>
-        <dt>Error RMSE</dt><dd>${percent(error.rmse)}</dd>
+        <dt>${infoLabel("Rent", metricTooltips.rent)}</dt><dd>${euro(latest.rent)}/sqm</dd>
+        <dt>${infoLabel("Sale", metricTooltips.sale)}</dt><dd>${euro(latest.sale)}/sqm</dd>
+        <dt>${infoLabel("Vacancy", metricTooltips.vacancy)}</dt><dd>${percent(latest.vacancy)}</dd>
+        <dt>${infoLabel("Stress", metricTooltips.stress)}</dt><dd>${percent(latest.stress)}</dd>
+        <dt>${infoLabel("Buy years", metricTooltips.buyYears)}</dt><dd>${latest.buyYears.toFixed(1)}y</dd>
+        <dt>${infoLabel("Mean error", metricTooltips.meanError)}</dt><dd>${percent(error.meanRelativeError)}</dd>
+        <dt>${infoLabel("Error RMSE", metricTooltips.rmse)}</dt><dd>${percent(error.rmse)}</dd>
       </dl>
     `;
     host.append(card);
   }
+}
+
+function infoLabel(label, tooltip) {
+  return `<span class="info" tabindex="0" data-tooltip="${escapeAttribute(tooltip)}">${label}</span>`;
+}
+
+function escapeAttribute(value) {
+  return value.replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("<", "&lt;");
 }
 
 function calculateError(point, targets) {
