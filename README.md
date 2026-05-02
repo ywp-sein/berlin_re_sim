@@ -84,6 +84,7 @@ If the phone cannot connect:
 ## Project Map
 
 - `docs/model_design.md` explains the data structure and simulation loop.
+- `docs/compute_usage.md` explains runtime and power-use estimates.
 - `docs/deployment.md` explains GitHub Pages and custom-domain setup.
 - `docs/scenario_schema.md` describes the canonical scenario contract.
 - `docs/visualization_values.md` lists the signals worth showing in the game.
@@ -96,6 +97,7 @@ If the phone cannot connect:
 - `src/berlin_re_sim/schemas.py` defines the durable domain objects.
 - `src/berlin_re_sim/model.py` contains the Mesa-compatible model skeleton.
 - `src/berlin_re_sim/methods/` contains selectable simulation methods.
+- `scripts/estimate_usage.py` estimates simulation work units and energy usage.
 - `web/index.html` is a dependency-free visualization/game prototype.
 - `web/wiki.html` is the searchable terminology and implementation dictionary.
 - `web/notes.html` is the project implementation and version ledger.

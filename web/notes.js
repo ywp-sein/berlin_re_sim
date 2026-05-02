@@ -1,6 +1,6 @@
 const currentVersion = {
-  label: "Prototype 0.5.11",
-  summary: "Docs page has a generated JS fallback bundle for local and cached use.",
+  label: "Prototype 0.5.12",
+  summary: "Compute and power usage estimator for scenario-size planning.",
 };
 
 const implementationNotes = [
@@ -15,8 +15,8 @@ const implementationNotes = [
     area: "Simulation methods",
     title: "Selectable method layer",
     body:
-      "Methods are separated behind a factory so agent-based, analytical, Markov chain, and MCMC state simulations can be compared without changing the scenario contract.",
-    files: "src/berlin_re_sim/methods/",
+      "Methods are separated behind a factory so agent-based, analytical, Markov chain, and MCMC state simulations can be compared without changing the scenario contract. Usage estimates track how each method scales with units, households, areas, edges, states, and steps.",
+    files: "src/berlin_re_sim/methods/, scripts/estimate_usage.py, docs/compute_usage.md",
   },
   {
     area: "Data",
@@ -77,6 +77,16 @@ const implementationNotes = [
 ];
 
 const versions = [
+  {
+    version: "0.5.12",
+    date: "2026-05-02",
+    title: "Compute and power usage estimator",
+    changes: [
+      "Added scripts/estimate_usage.py for work-unit, runtime, compute Wh, and session Wh estimates.",
+      "Added docs/compute_usage.md with scaling assumptions and interpretation guidance.",
+      "Linked the compute usage doc and estimator from README.",
+    ],
+  },
   {
     version: "0.5.11",
     date: "2026-05-02",
