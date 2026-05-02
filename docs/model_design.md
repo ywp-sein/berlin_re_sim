@@ -517,6 +517,15 @@ same scenario data. A useful interface would be:
 Scenario data -> Model adapter -> Simulation result -> UI indicators
 ```
 
+Current code structure:
+
+- `src/berlin_re_sim/methods/base.py`: method enum and common protocol
+- `src/berlin_re_sim/methods/abm.py`: Mesa-backed agent-based method
+- `src/berlin_re_sim/methods/markov.py`: time-independent Markov state method
+- `src/berlin_re_sim/methods/mcmc.py`: Metropolis-Hastings state sampler
+- `src/berlin_re_sim/methods/factory.py`: method selection entry point
+- `web/game.js`: browser method selector for the playable prototype
+
 Candidate model types:
 
 - **Agent-based model:** best for heterogeneous actors, behavioral rules, and

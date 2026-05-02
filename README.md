@@ -26,6 +26,14 @@ pieces with real data later.
 python3 -m berlin_re_sim
 ```
 
+Choose a simulation method:
+
+```bash
+python3 -m berlin_re_sim --method agent_based
+python3 -m berlin_re_sim --method markov_chain
+python3 -m berlin_re_sim --method mcmc_state
+```
+
 For the first browser prototype, open `web/index.html`, or serve it on your
 local network for phone testing:
 
@@ -53,4 +61,5 @@ If the phone cannot connect:
 - `data/scenarios/mitte_seed.json` is the first small scenario.
 - `src/berlin_re_sim/schemas.py` defines the durable domain objects.
 - `src/berlin_re_sim/model.py` contains the Mesa-compatible model skeleton.
+- `src/berlin_re_sim/methods/` contains selectable simulation methods.
 - `web/index.html` is a dependency-free visualization/game prototype.

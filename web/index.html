@@ -113,6 +113,19 @@
             <span
               class="info"
               tabindex="0"
+              data-tooltip="Choose the simulation method. Agent-based follows unit and household rules; Markov chain samples market regimes from a transition matrix."
+            >Method</span>
+            <select id="methodControl">
+              <option value="agent_based">Agent-based</option>
+              <option value="markov_chain">Markov chain</option>
+              <option value="mcmc_state">MCMC state sampler</option>
+            </select>
+          </label>
+          <p id="methodDescription" class="method-description"></p>
+          <label>
+            <span
+              class="info"
+              tabindex="0"
               data-tooltip="Higher values slow rent increases, especially for regulated units. This can reduce stress but may shift owner incentives."
             >Rent regulation</span>
             <input id="rentControl" type="range" min="0" max="100" value="55" />

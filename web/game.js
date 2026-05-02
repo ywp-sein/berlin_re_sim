@@ -80,8 +80,139 @@ const mapShapes = {
   },
 };
 
+const simulationMethods = {
+  agent_based: {
+    label: "Agent-based",
+    description: "Heterogeneous units, owners, and households update every month from local rules.",
+  },
+  markov_chain: {
+    label: "Markov chain",
+    description: "A time-independent state machine samples market regimes from transition probabilities.",
+  },
+  mcmc_state: {
+    label: "MCMC state sampler",
+    description: "A Metropolis-Hastings sampler explores plausible market regimes from target weights.",
+  },
+};
+
+const marketRegimeEffects = {
+  stable_affordable: {
+    label: "Stable affordable",
+    demand: 0.52,
+    rentMultiplier: 1.0,
+    saleMultiplier: 1.0,
+    vacancy: 0.06,
+    stress: 0.12,
+  },
+  rent_pressure: {
+    label: "Rent pressure",
+    demand: 0.78,
+    rentMultiplier: 1.18,
+    saleMultiplier: 1.08,
+    vacancy: 0.04,
+    stress: 0.35,
+  },
+  purchase_pressure: {
+    label: "Purchase pressure",
+    demand: 0.82,
+    rentMultiplier: 1.08,
+    saleMultiplier: 1.24,
+    vacancy: 0.05,
+    stress: 0.22,
+  },
+  vacancy_pressure: {
+    label: "Vacancy pressure",
+    demand: 0.7,
+    rentMultiplier: 1.1,
+    saleMultiplier: 1.16,
+    vacancy: 0.18,
+    stress: 0.26,
+  },
+  displacement_pressure: {
+    label: "Displacement pressure",
+    demand: 0.9,
+    rentMultiplier: 1.28,
+    saleMultiplier: 1.18,
+    vacancy: 0.09,
+    stress: 0.68,
+  },
+  speculative_conversion: {
+    label: "Speculative conversion",
+    demand: 0.86,
+    rentMultiplier: 1.14,
+    saleMultiplier: 1.38,
+    vacancy: 0.14,
+    stress: 0.48,
+  },
+  public_stabilized: {
+    label: "Public stabilized",
+    demand: 0.42,
+    rentMultiplier: 0.92,
+    saleMultiplier: 0.88,
+    vacancy: 0.03,
+    stress: 0.08,
+  },
+};
+
+const markovTransitions = {
+  stable_affordable: [
+    ["stable_affordable", 0.46],
+    ["rent_pressure", 0.18],
+    ["purchase_pressure", 0.16],
+    ["public_stabilized", 0.2],
+  ],
+  rent_pressure: [
+    ["rent_pressure", 0.38],
+    ["displacement_pressure", 0.24],
+    ["speculative_conversion", 0.18],
+    ["public_stabilized", 0.2],
+  ],
+  purchase_pressure: [
+    ["purchase_pressure", 0.4],
+    ["speculative_conversion", 0.28],
+    ["rent_pressure", 0.16],
+    ["stable_affordable", 0.16],
+  ],
+  vacancy_pressure: [
+    ["vacancy_pressure", 0.36],
+    ["rent_pressure", 0.2],
+    ["speculative_conversion", 0.22],
+    ["public_stabilized", 0.22],
+  ],
+  displacement_pressure: [
+    ["displacement_pressure", 0.42],
+    ["vacancy_pressure", 0.18],
+    ["public_stabilized", 0.24],
+    ["rent_pressure", 0.16],
+  ],
+  speculative_conversion: [
+    ["speculative_conversion", 0.44],
+    ["purchase_pressure", 0.22],
+    ["displacement_pressure", 0.18],
+    ["public_stabilized", 0.16],
+  ],
+  public_stabilized: [
+    ["public_stabilized", 0.5],
+    ["stable_affordable", 0.24],
+    ["rent_pressure", 0.14],
+    ["purchase_pressure", 0.12],
+  ],
+};
+
+const mcmcTargetWeights = {
+  stable_affordable: 0.16,
+  rent_pressure: 0.18,
+  purchase_pressure: 0.16,
+  vacancy_pressure: 0.1,
+  displacement_pressure: 0.14,
+  speculative_conversion: 0.14,
+  public_stabilized: 0.12,
+};
+
 const state = {
   month: 0,
+  method: "agent_based",
+  marketRegime: "stable_affordable",
   selectedNeighborhood: "alexanderplatz",
   playing: false,
   timer: null,
@@ -99,6 +230,7 @@ const state = {
 };
 
 const controls = {
+  methodControl: document.querySelector("#methodControl"),
   rentControl: document.querySelector("#rentControl"),
   vacancyControl: document.querySelector("#vacancyControl"),
   publicControl: document.querySelector("#publicControl"),
@@ -112,7 +244,9 @@ function unit(id, neighborhoodId, ownerId, sqm, rent, salePrice, regulated, vaca
     ownerId,
     sqm,
     rent,
+    baseRent: rent,
     salePrice,
+    baseSalePrice: salePrice,
     regulated,
     vacant,
     household: income > 0 ? { income, size, tolerance, stress: 0 } : null,
@@ -122,6 +256,7 @@ function unit(id, neighborhoodId, ownerId, sqm, rent, salePrice, regulated, vaca
 
 function resetGame() {
   state.month = 0;
+  state.marketRegime = "stable_affordable";
   state.events = [];
   state.history = [];
   state.neighborhoods = structuredClone(scenarioSeed.neighborhoods);
@@ -133,11 +268,57 @@ function resetGame() {
 
 function stepGame() {
   state.month += 1;
-  updateDemand();
-  updateOwnersAndUnits();
-  updateHouseholds();
+  if (state.method === "agent_based") {
+    updateDemand();
+    updateOwnersAndUnits();
+    updateHouseholds();
+  } else {
+    updateStateMachine();
+  }
   collectMetrics();
   render();
+}
+
+function updateStateMachine() {
+  state.marketRegime =
+    state.method === "mcmc_state"
+      ? sampleMCMCRegime(state.marketRegime)
+      : sampleMarkovRegime(state.marketRegime);
+  const effect = marketRegimeEffects[state.marketRegime];
+  for (const area of state.neighborhoods) {
+    area.demandPressure = clamp(area.demandPressure * 0.65 + effect.demand * 0.35, 0.25, 1);
+  }
+  for (const currentUnit of state.units) {
+    const owner = state.owners.find((item) => item.id === currentUnit.ownerId);
+    const missionModifier = 1 - owner.socialMission * 0.12;
+    currentUnit.rent = currentUnit.baseRent * effect.rentMultiplier * missionModifier;
+    currentUnit.salePrice = currentUnit.baseSalePrice * effect.saleMultiplier * missionModifier;
+    currentUnit.vacant = stableHash(`${state.marketRegime}-${currentUnit.id}`) < effect.vacancy;
+    if (currentUnit.household) {
+      currentUnit.household.stress = effect.stress;
+    }
+  }
+  pushEvent(`${simulationMethods[state.method].label} regime: ${effect.label}.`);
+}
+
+function sampleMarkovRegime(currentRegime) {
+  const draw = Math.random();
+  let cumulative = 0;
+  for (const [nextRegime, probability] of markovTransitions[currentRegime]) {
+    cumulative += probability;
+    if (draw <= cumulative) return nextRegime;
+  }
+  return markovTransitions[currentRegime].at(-1)[0];
+}
+
+function sampleMCMCRegime(currentRegime) {
+  const proposals = markovTransitions[currentRegime].map(([regime]) => regime);
+  const proposal = proposals[Math.floor(Math.random() * proposals.length)];
+  const acceptance = Math.min(
+    1,
+    mcmcTargetWeights[proposal] / Math.max(mcmcTargetWeights[currentRegime], 0.0001),
+  );
+  return Math.random() <= acceptance ? proposal : currentRegime;
 }
 
 function updateDemand() {
@@ -201,22 +382,30 @@ function updateHouseholds() {
 function collectMetrics() {
   const rents = state.units.map((item) => item.rent / item.sqm);
   const sales = state.units.map((item) => item.salePrice / item.sqm);
-  const occupiedUnits = state.units.filter((item) => item.household);
+  const occupiedUnits = state.units.filter((item) => item.household && !item.vacant);
   const households = occupiedUnits.map((item) => item.household);
   const stresses = households.map((item) => item.stress);
   const individualIncomes = households.map((item) => item.income / Math.max(item.size, 1));
   const rentBurdens = occupiedUnits.map((item) => item.rent / Math.max(item.household.income, 1));
   const averageIndividualIncome = individualIncomes.length ? average(individualIncomes) : 0;
+  const regimeEffect =
+    state.method === "markov_chain" || state.method === "mcmc_state"
+      ? marketRegimeEffects[state.marketRegime]
+      : null;
   state.history.push({
     month: state.month,
     rent: median(rents),
     sale: median(sales),
-    vacancy: state.units.filter((item) => item.vacant).length / state.units.length,
-    stress: stresses.length ? average(stresses) : 0,
+    vacancy: regimeEffect
+      ? regimeEffect.vacancy
+      : state.units.filter((item) => item.vacant).length / state.units.length,
+    stress: regimeEffect ? regimeEffect.stress : stresses.length ? average(stresses) : 0,
     averageIndividualIncome,
     rentBurden: rentBurdens.length ? average(rentBurdens) : 0,
     buyYears: median(state.units.map((item) => item.salePrice)) / Math.max(averageIndividualIncome * 12, 1),
     regulatedShare: state.units.filter((item) => item.regulated).length / state.units.length,
+    method: state.method,
+    regime: state.marketRegime,
   });
 }
 
@@ -231,7 +420,10 @@ function render() {
   document.querySelector("#burdenMetric").textContent = percent(latest.rentBurden);
   document.querySelector("#buyYearsMetric").textContent = `${latest.buyYears.toFixed(1)}y`;
   document.querySelector("#eventCount").textContent = state.events.length;
-  document.querySelector("#selectedName").textContent = getNeighborhood(state.selectedNeighborhood).name;
+  document.querySelector("#selectedName").textContent =
+    state.method === "markov_chain" || state.method === "mcmc_state"
+      ? `${getNeighborhood(state.selectedNeighborhood).name} · ${marketRegimeEffects[state.marketRegime].label}`
+      : getNeighborhood(state.selectedNeighborhood).name;
 
   renderControls();
   renderMap();
@@ -241,6 +433,11 @@ function render() {
 }
 
 function renderControls() {
+  controls.methodControl.value = state.method;
+  document.querySelector("#methodDescription").textContent =
+    state.method === "markov_chain" || state.method === "mcmc_state"
+      ? `${simulationMethods[state.method].description} Current regime: ${marketRegimeEffects[state.marketRegime].label}.`
+      : simulationMethods[state.method].description;
   const pairs = [
     ["rentControl", "rentControlValue"],
     ["vacancyControl", "vacancyControlValue"],
@@ -326,15 +523,18 @@ function renderDetails() {
   const units = state.units.filter((item) => item.neighborhoodId === area.id);
   const rents = units.map((item) => item.rent / item.sqm);
   const sales = units.map((item) => item.salePrice / item.sqm);
-  const stress = units.filter((item) => item.household).map((item) => item.household.stress);
+  const occupiedUnits = units.filter((item) => item.household && !item.vacant);
+  const stress = occupiedUnits.map((item) => item.household.stress);
   const individualIncomes = units
-    .filter((item) => item.household)
+    .filter((item) => item.household && !item.vacant)
     .map((item) => item.household.income / Math.max(item.household.size, 1));
   const rentBurdens = units
-    .filter((item) => item.household)
+    .filter((item) => item.household && !item.vacant)
     .map((item) => item.rent / Math.max(item.household.income, 1));
   const details = document.querySelector("#areaDetails");
   details.innerHTML = `
+    <dt>Method</dt><dd>${simulationMethods[state.method].label}</dd>
+    <dt>Regime</dt><dd>${state.method === "agent_based" ? "monthly rules" : marketRegimeEffects[state.marketRegime].label}</dd>
     <dt>Demand pressure</dt><dd>${percent(area.demandPressure)}</dd>
     <dt>Income mix</dt><dd>${area.incomeMix}</dd>
     <dt>Avg income/person</dt><dd>${euro(individualIncomes.length ? average(individualIncomes) : 0)}</dd>
@@ -355,7 +555,7 @@ function renderDetails() {
       <span class="tag">${currentUnit.vacant ? "vacant" : currentUnit.regulated ? "regulated" : "market"}</span>
       <span>${euro(currentUnit.rent)} rent</span>
       <span>${euro(currentUnit.salePrice / currentUnit.sqm)}/sqm sale</span>
-      <span>${currentUnit.household ? euro(currentUnit.household.income / Math.max(currentUnit.household.size, 1)) : "-"} income/person</span>
+      <span>${currentUnit.household && !currentUnit.vacant ? euro(currentUnit.household.income / Math.max(currentUnit.household.size, 1)) : "-"} income/person</span>
     `;
     list.append(row);
   }
@@ -448,6 +648,14 @@ function pushEvent(text) {
   state.events.push(`Month ${state.month}: ${text}`);
 }
 
+function stableHash(value) {
+  let hash = 0;
+  for (let index = 0; index < value.length; index += 1) {
+    hash = (hash * 31 + value.charCodeAt(index)) % 1000;
+  }
+  return hash / 1000;
+}
+
 function average(values) {
   return values.reduce((sum, value) => sum + value, 0) / values.length;
 }
@@ -490,6 +698,13 @@ document.querySelector("#resetBtn").addEventListener("click", () => {
   window.clearInterval(state.timer);
   document.querySelector("#playBtn").textContent = "Play";
   resetGame();
+});
+
+controls.methodControl.addEventListener("change", (event) => {
+  state.method = event.target.value;
+  resetGame();
+  pushEvent(`Simulation method switched to ${simulationMethods[state.method].label}.`);
+  render();
 });
 
 controls.rentControl.addEventListener("input", (event) => {

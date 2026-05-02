@@ -31,7 +31,8 @@ body {
 }
 
 button,
-input {
+input,
+select {
   font: inherit;
 }
 
@@ -250,6 +251,24 @@ button:hover {
   width: 100%;
   min-height: 34px;
   accent-color: var(--green);
+}
+
+.controls-panel select {
+  grid-column: 1 / -1;
+  width: 100%;
+  min-height: 42px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fbfaf4;
+  color: var(--ink);
+}
+
+.method-description {
+  margin-top: -8px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.35;
 }
 
 .section-heading {
