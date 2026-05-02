@@ -51,6 +51,10 @@ external policy and influence settings. The compare page has editable
 calibration targets, a reproducible random seed, mean target error, error RMSE,
 and a button to save the current target vector as JSON.
 
+For terminology and implementation notes, open `web/wiki.html`. It includes a
+local search over model methods, metrics, calibration terms, policy levers, and
+data structures.
+
 If the phone cannot connect:
 
 - confirm the phone is not on mobile data or a guest Wi-Fi network
@@ -74,3 +78,4 @@ If the phone cannot connect:
 - `src/berlin_re_sim/model.py` contains the Mesa-compatible model skeleton.
 - `src/berlin_re_sim/methods/` contains selectable simulation methods.
 - `web/index.html` is a dependency-free visualization/game prototype.
+- `web/wiki.html` is the searchable terminology and implementation dictionary.

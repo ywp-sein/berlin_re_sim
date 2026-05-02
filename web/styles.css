@@ -54,7 +54,8 @@ input[type="range"] {
 .topbar,
 .metrics,
 .workspace,
-.chart-panel {
+.chart-panel,
+.wiki-layout {
   width: min(1380px, 100%);
   min-width: 0;
   margin: 0 auto;
@@ -171,6 +172,7 @@ dd {
 
 .run-controls {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   min-width: 0;
 }
@@ -580,6 +582,107 @@ dd {
   grid-template-columns: 1fr;
 }
 
+.wiki-layout {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.wiki-search-panel {
+  display: grid;
+  gap: 16px;
+}
+
+.wiki-search-panel label {
+  display: grid;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.wiki-search-panel input,
+.wiki-search-panel select {
+  width: 100%;
+  min-height: 42px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fbfaf4;
+  color: var(--ink);
+}
+
+.wiki-count {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.wiki-content {
+  min-width: 0;
+}
+
+.wiki-results {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.wiki-entry {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+}
+
+.wiki-entry p {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.wiki-entry details {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.wiki-entry summary {
+  color: var(--ink);
+  cursor: pointer;
+  font-weight: 680;
+}
+
+.wiki-entry details p {
+  margin-top: 10px;
+}
+
+.wiki-category {
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 780;
+  text-transform: uppercase;
+}
+
+.wiki-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.wiki-tags span {
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: #e9ece5;
+  color: var(--dark);
+  font-size: 12px;
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+}
+
 .chart-tools {
   display: flex;
   justify-content: flex-end;
@@ -646,7 +749,8 @@ canvas {
 @media (max-width: 980px) {
   .workspace,
   .chart-panel,
-  .compare-layout {
+  .compare-layout,
+  .wiki-layout {
     grid-template-columns: 1fr;
   }
 
@@ -654,7 +758,8 @@ canvas {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .comparison-cards {
+  .comparison-cards,
+  .wiki-results {
     grid-template-columns: 1fr;
   }
 }
@@ -683,7 +788,7 @@ canvas {
 
   .run-controls {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
   }
 
   button {
