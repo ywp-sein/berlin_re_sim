@@ -1,6 +1,6 @@
 const currentVersion = {
-  label: "Prototype 0.5.19",
-  summary: "Notes sidebar now surfaces the current milestone and roadmap.",
+  label: "Prototype 0.5.20",
+  summary: "Automated baseline reports for pre-real-data comparison.",
 };
 
 const implementationNotes = [
@@ -84,7 +84,8 @@ const currentMilestone = {
     "Canonical scenario feeds Python, game, and comparison UI.",
     "Scenario validator passes for the current Mitte seed.",
     "Synthetic observations are recorded before import.",
-    "Next: move coefficients to parameters and automate baseline reports.",
+    "Baseline reports are generated as JSON and markdown.",
+    "Next: move coefficients and state-machine probabilities to parameter files.",
   ],
 };
 
@@ -114,7 +115,7 @@ const milestoneRoadmap = [
     ],
   },
   {
-    status: "Next",
+    status: "Done",
     title: "Baseline reporting",
     goal:
       "Generate repeatable reports from the current scenario before and after every data import.",
@@ -164,6 +165,17 @@ const milestoneRoadmap = [
 ];
 
 const versions = [
+  {
+    version: "0.5.20",
+    date: "2026-05-02",
+    title: "Automated baseline report",
+    changes: [
+      "Added scripts/build_baseline_report.py to run methods and write baseline outputs.",
+      "Generated data/baselines/latest_baseline.json for machine-readable method metrics and errors.",
+      "Generated docs/generated/baseline_report.md for the Docs page and wiki search.",
+      "Updated current observations, readiness docs, README, and milestone roadmap for baseline automation.",
+    ],
+  },
   {
     version: "0.5.19",
     date: "2026-05-02",

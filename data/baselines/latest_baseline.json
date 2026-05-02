@@ -1,0 +1,89 @@
+{
+  "generated_at": "2026-05-02T21:59:06+00:00",
+  "scenario_path": "data/scenarios/mitte_seed.json",
+  "target_path": "data/targets/mitte_targets.json",
+  "steps": 12,
+  "seed": 7,
+  "scenario_size": {
+    "districts": 1,
+    "neighborhoods": 8,
+    "parcels": 8,
+    "buildings": 8,
+    "units": 10,
+    "owners": 4,
+    "households": 8,
+    "influence_edges": 8
+  },
+  "targets": {
+    "median_rent_per_sqm": 18.5,
+    "median_sale_price_per_sqm": 7600,
+    "vacancy_rate": 0.06,
+    "average_displacement_stress": 0.28,
+    "average_rent_burden": 0.32,
+    "purchase_price_to_income_years": 18
+  },
+  "methods": [
+    {
+      "method": "agent_based",
+      "status": "unavailable",
+      "reason": "Missing Python module: mesa"
+    },
+    {
+      "method": "analytical",
+      "status": "ok",
+      "tick": 12,
+      "metrics": {
+        "median_rent_per_sqm": 16.799641,
+        "median_sale_price_per_sqm": 7358.50171,
+        "vacancy_rate": 0.181614,
+        "average_displacement_stress": 0.470114,
+        "average_individual_income_monthly": 2203.125,
+        "average_rent_burden": 0.324722,
+        "purchase_price_to_income_years": 16.731685,
+        "regulated_unit_share": 0.6
+      },
+      "error": {
+        "mean_relative_error": 0.485797,
+        "rmse": 0.874069
+      }
+    },
+    {
+      "method": "markov_chain",
+      "status": "ok",
+      "tick": 12,
+      "metrics": {
+        "median_rent_per_sqm": 18.399778,
+        "median_sale_price_per_sqm": 9584.399333,
+        "vacancy_rate": 0.14,
+        "average_displacement_stress": 0.48,
+        "average_individual_income_monthly": 2203.125,
+        "average_rent_burden": 0.355651,
+        "purchase_price_to_income_years": 21.792908,
+        "regulated_unit_share": 0.6
+      },
+      "error": {
+        "mean_relative_error": 0.439378,
+        "rmse": 0.634166
+      }
+    },
+    {
+      "method": "mcmc_state",
+      "status": "ok",
+      "tick": 12,
+      "metrics": {
+        "median_rent_per_sqm": 17.431368,
+        "median_sale_price_per_sqm": 8612.068966,
+        "vacancy_rate": 0.05,
+        "average_displacement_stress": 0.22,
+        "average_individual_income_monthly": 2203.125,
+        "average_rent_burden": 0.336933,
+        "purchase_price_to_income_years": 19.582033,
+        "regulated_unit_share": 0.6
+      },
+      "error": {
+        "mean_relative_error": 0.118782,
+        "rmse": 0.132471
+      }
+    }
+  ]
+}

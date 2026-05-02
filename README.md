@@ -61,6 +61,12 @@ Validate scenario structure before changing seed data:
 python3 scripts/validate_scenario.py
 ```
 
+Regenerate the synthetic baseline report:
+
+```bash
+python3 scripts/build_baseline_report.py
+```
+
 For terminology and implementation notes, open `web/wiki.html`. It includes a
 local search over model methods, metrics, calibration terms, policy levers, data
 structures, and generated project docs.
@@ -110,7 +116,10 @@ If the phone cannot connect:
 - `src/berlin_re_sim/methods/` contains selectable simulation methods.
 - `scripts/estimate_usage.py` estimates simulation work units and energy usage.
 - `scripts/validate_scenario.py` checks scenario IDs, references, ranges, and occupancy.
+- `scripts/build_baseline_report.py` writes baseline JSON and markdown reports.
 - `scripts/build_scenario_content.py` bundles the canonical scenario for the web app.
+- `data/baselines/latest_baseline.json` is the latest generated baseline data.
+- `docs/generated/baseline_report.md` is the latest generated baseline report.
 - `web/index.html` is a dependency-free visualization/game prototype.
 - `web/wiki.html` is the searchable terminology and implementation dictionary.
 - `web/notes.html` is the project implementation and version ledger.

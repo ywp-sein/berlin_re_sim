@@ -40,9 +40,12 @@ Use these units inside scenarios and targets:
 4. Convert raw units into canonical units.
 5. Map geography into Mitte area proxies.
 6. Write calibration targets first.
-7. Compare all simulation methods against the same targets.
+7. Run `python3 scripts/build_baseline_report.py` to compare all simulation
+   methods against the same targets.
 8. Only then replace scenario initialization values and run the scenario
    validator again.
+9. Regenerate the baseline report after import and compare it with the
+   pre-import report.
 
 This order keeps the synthetic scenario useful while real targets are being
 tested.
