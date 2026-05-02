@@ -17,9 +17,10 @@ async function initializeDocs() {
     documents = window.DOCS_CONTENT?.documents || [];
   }
   searchInput.addEventListener("input", renderNav);
-  activePath = documents[0]?.path || "";
+  window.addEventListener("hashchange", () => renderDocument(pathFromHash(), false));
+  activePath = pathFromHash() || documents[0]?.path || "";
   renderNav();
-  renderDocument(activePath);
+  renderDocument(activePath, false);
 }
 
 function renderNav() {
@@ -62,7 +63,7 @@ function renderNavButton(doc) {
   `;
 }
 
-function renderDocument(path) {
+function renderDocument(path, updateHash = true) {
   const doc = documents.find((item) => item.path === path) || documents[0];
   if (!doc) {
     titleHost.textContent = "No docs found";
@@ -71,6 +72,9 @@ function renderDocument(path) {
     return;
   }
   activePath = doc.path;
+  if (updateHash) {
+    history.replaceState(null, "", `#${encodeURIComponent(doc.path)}`);
+  }
   titleHost.textContent = doc.title;
   pathHost.textContent = doc.path;
   contentHost.innerHTML = renderMarkdown(doc.content);
@@ -166,6 +170,15 @@ function titleCase(value) {
   return value
     .replace(/[-_]/g, " ")
     .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function pathFromHash() {
+  if (!location.hash) return "";
+  try {
+    return decodeURIComponent(location.hash.slice(1));
+  } catch (error) {
+    return location.hash.slice(1);
+  }
 }
 
 function normalize(value) {

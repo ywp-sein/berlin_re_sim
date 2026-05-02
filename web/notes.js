@@ -1,6 +1,6 @@
 const currentVersion = {
-  label: "Prototype 0.5.14",
-  summary: "Categorized project docs and grouped web docs navigation.",
+  label: "Prototype 0.5.15",
+  summary: "Wiki search now includes generated project docs.",
 };
 
 const implementationNotes = [
@@ -77,6 +77,17 @@ const implementationNotes = [
 ];
 
 const versions = [
+  {
+    version: "0.5.15",
+    date: "2026-05-02",
+    title: "Docs integrated into wiki",
+    changes: [
+      "Loaded the generated docs bundle into the Dictionary Wiki.",
+      "Added searchable docs entries beside terminology entries, grouped by docs category.",
+      "Linked wiki doc results to the full rendered document in the Docs page.",
+      "Added hash-based document selection to docs.html and bumped the service-worker cache.",
+    ],
+  },
   {
     version: "0.5.14",
     date: "2026-05-02",

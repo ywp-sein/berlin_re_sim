@@ -52,8 +52,8 @@ calibration targets, a reproducible random seed, mean target error, error RMSE,
 and a button to save the current target vector as JSON.
 
 For terminology and implementation notes, open `web/wiki.html`. It includes a
-local search over model methods, metrics, calibration terms, policy levers, and
-data structures.
+local search over model methods, metrics, calibration terms, policy levers, data
+structures, and generated project docs.
 
 For project-wide implementation memory and version tracking, open
 `web/notes.html`. It records milestone versions, architecture notes, open gaps,

@@ -1,4 +1,4 @@
-const entries = [
+const dictionaryEntries = [
   {
     term: "Agent-based model",
     category: "Method",
@@ -365,6 +365,8 @@ const entries = [
   },
 ];
 
+const entries = [...dictionaryEntries, ...buildDocEntries()];
+
 const searchInput = document.querySelector("#wikiSearch");
 const categorySelect = document.querySelector("#wikiCategory");
 const resultsHost = document.querySelector("#wikiResults");
@@ -422,6 +424,7 @@ function buildFilterLabel(query, category) {
 }
 
 function renderEntry(entry) {
+  if (entry.kind === "doc") return renderDocEntry(entry);
   return `
     <article class="wiki-entry">
       <div class="wiki-entry-head">
@@ -440,6 +443,66 @@ function renderEntry(entry) {
       <div class="wiki-tags">${entry.tags.map((tag) => `<span>${tag}</span>`).join("")}</div>
     </article>
   `;
+}
+
+function renderDocEntry(entry) {
+  return `
+    <article class="wiki-entry wiki-doc-entry">
+      <div class="wiki-entry-head">
+        <div>
+          <span class="wiki-category">${escapeHtml(entry.category)}</span>
+          <h2>${escapeHtml(entry.term)}</h2>
+        </div>
+      </div>
+      <p>${escapeHtml(entry.summary)}</p>
+      <details>
+        <summary>Read documentation note</summary>
+        <p>${escapeHtml(entry.details)}</p>
+        <p><strong>Implementation:</strong> ${escapeHtml(entry.implementation)}</p>
+        <p><a href="${entry.href}">Open full document</a></p>
+      </details>
+      <div class="wiki-tags">${entry.tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("")}</div>
+    </article>
+  `;
+}
+
+function buildDocEntries() {
+  const docs = window.DOCS_CONTENT?.documents || [];
+  return docs.map((doc) => {
+    const headingSummary = firstContentLine(doc.content);
+    return {
+      kind: "doc",
+      term: doc.title,
+      category: `Docs: ${doc.category || categoryFromPath(doc.path)}`,
+      summary: headingSummary || `Project documentation from ${doc.path}.`,
+      details: `This documentation page is part of the generated docs bundle. Path: ${doc.path}`,
+      implementation: "Rendered in docs.html from web/docs-content.json and web/docs-content.js.",
+      tags: ["docs", doc.category || categoryFromPath(doc.path), doc.path],
+      href: `docs.html#${encodeURIComponent(doc.path)}`,
+    };
+  });
+}
+
+function firstContentLine(content = "") {
+  return (
+    content
+      .split("\n")
+      .map((line) => line.trim())
+      .find((line) => line && !line.startsWith("#") && !line.startsWith("```")) || ""
+  );
+}
+
+function categoryFromPath(path) {
+  if (path === "README.md") return "Project";
+  const parts = path.split("/");
+  if (parts[0] === "docs" && parts.length > 2) return titleCase(parts[1]);
+  return "Uncategorized";
+}
+
+function titleCase(value) {
+  return value
+    .replace(/[-_]/g, " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
 function renderMath(math) {
@@ -490,7 +553,18 @@ function typesetMath() {
 }
 
 function normalize(value) {
-  return value.toLowerCase().replace(/\s+/g, " ").trim();
+  return String(value || "")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
 }
 
 initializeWiki();

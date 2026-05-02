@@ -632,16 +632,27 @@ dd {
 .wiki-entry {
   display: grid;
   gap: 10px;
+  min-width: 0;
   padding: 14px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--panel);
 }
 
+.wiki-doc-entry {
+  border-left: 4px solid var(--blue);
+}
+
 .wiki-entry p {
   color: var(--muted);
   font-size: 14px;
   line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.wiki-entry a {
+  color: var(--blue);
+  font-weight: 740;
 }
 
 .wiki-entry details {
