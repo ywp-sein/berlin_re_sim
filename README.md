@@ -62,6 +62,12 @@ and the files connected to each area.
 For internet access through GitHub Pages, see `docs/deployment.md`. The included
 GitHub Actions workflow publishes the static `web/` folder.
 
+## Maintenance Convention
+
+When a change affects behavior, structure, data contracts, deployment, UI, or
+known gaps, update `web/notes.js` in the same change so the implementation notes
+and version history stay current.
+
 If the phone cannot connect:
 
 - confirm the phone is not on mobile data or a guest Wi-Fi network

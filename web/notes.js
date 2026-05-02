@@ -1,6 +1,6 @@
 const currentVersion = {
-  label: "Prototype 0.5.1",
-  summary: "GitHub Pages deployment workflow and deployment notes.",
+  label: "Prototype 0.5.2",
+  summary: "Maintenance rule: meaningful project updates should update this notes ledger too.",
 };
 
 const implementationNotes = [
@@ -67,9 +67,25 @@ const implementationNotes = [
       "The repository uses a GitHub Actions Pages workflow to deploy the web/ folder directly. This avoids moving the static app into the repository root or docs/ folder.",
     files: ".github/workflows/pages.yml, docs/deployment.md",
   },
+  {
+    area: "Maintenance",
+    title: "Update notes with meaningful changes",
+    body:
+      "Whenever the project changes in a way that affects behavior, structure, data contracts, deployment, UI, or known gaps, update this notes page in the same change.",
+    files: "web/notes.js, README.md",
+  },
 ];
 
 const versions = [
+  {
+    version: "0.5.2",
+    date: "2026-05-02",
+    title: "Notes maintenance convention",
+    changes: [
+      "Recorded the rule that meaningful project updates should also update the implementation notes.",
+      "Added Maintenance as an implementation area.",
+    ],
+  },
   {
     version: "0.5.1",
     date: "2026-05-02",
