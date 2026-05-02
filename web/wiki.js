@@ -5,6 +5,33 @@ const entries = [
     summary: "A simulation where individual units, owners, and households follow local rules.",
     details:
       "The agent-based method is useful when hidden dynamics come from many small decisions: owners raising rent, households becoming stressed, vacant units returning to supply, or areas influencing neighbors. In this prototype it is the most concrete method, but it needs Mesa on the Python side.",
+    math: {
+      intro: "For each area a and unit i at step t:",
+      equations: [
+        String.raw`D_a(t+1)=\operatorname{clamp}\left(D_a(t)+I-P+\Delta_a(t),0,1\right)`,
+        String.raw`\Delta_a(t)=\sum_b w_{b,a}D_b(t)`,
+        String.raw`r_i(t+1)=r_i(t)\left(1+g_i(t)\right)`,
+        String.raw`g_i(t)=D_{a(i)}(t)\rho_{o(i)}\beta_r\left(1-\lambda_i\right)`,
+        String.raw`b_i(t)=\frac{r_i(t)}{y_i}`,
+        String.raw`s_i(t+1)=\operatorname{clamp}\left(s_i(t)+\beta_s(b_i(t)-\tau_i),0,1\right)`,
+      ],
+      parameters: [
+        [String.raw`D_a(t)`, "demand pressure in area a at step t"],
+        [String.raw`I`, "investor pressure lever"],
+        [String.raw`P`, "public acquisition or public stabilization lever"],
+        [String.raw`\Delta_a(t)`, "spillover pressure arriving from other areas"],
+        [String.raw`w_{b,a}`, "influence weight from area b to area a"],
+        [String.raw`r_i(t)`, "monthly rent of unit i"],
+        [String.raw`g_i(t)`, "rent growth rate for unit i"],
+        [String.raw`\rho_{o(i)}`, "risk tolerance of the owner of unit i"],
+        [String.raw`\beta_r`, "rent-growth coefficient"],
+        [String.raw`\lambda_i`, "effective rent regulation on unit i"],
+        [String.raw`b_i(t)`, "rent burden of household i"],
+        [String.raw`y_i`, "monthly household income"],
+        [String.raw`s_i(t)`, "displacement stress"],
+        [String.raw`\tau_i`, "household rent-burden tolerance"],
+      ],
+    },
     implementation: "Python: methods/abm.py and model.py. Browser: the agent_based branch in game.js and compare.js.",
     tags: ["ABM", "Mesa", "households", "owners", "units"],
   },
@@ -14,6 +41,31 @@ const entries = [
     summary: "A deterministic aggregate model used as a simple reference curve.",
     details:
       "The analytical method compresses the market into aggregate equations for demand, rent, sale price, vacancy, and stress. It is less realistic than an agent-based model, but helpful because it is stable, explainable, and easy to compare against.",
+    math: {
+      intro: "The aggregate state vector is updated deterministically:",
+      equations: [
+        String.raw`x(t)=\left[D(t),R(t),P(t),V(t),S(t)\right]`,
+        String.raw`D(t+1)=\operatorname{clamp}\left(\alpha_DD(t)+(1-\alpha_D)D_{\mathrm{ext}},0,1\right)`,
+        String.raw`R(t+1)=R(t)\left(1+\beta_RD(t)(1-c_r)\right)`,
+        String.raw`P(t+1)=P(t)\left(1+\beta_PD(t)(1+I)\right)`,
+        String.raw`V(t+1)=\operatorname{clamp}\left(\alpha_VV(t)+\beta_VD(t)-E,V_{\min},V_{\max}\right)`,
+        String.raw`S(t+1)=\operatorname{clamp}\left(\alpha_SS(t)+(1-\alpha_S)D(t),0,1\right)`,
+      ],
+      parameters: [
+        [String.raw`D(t)`, "aggregate demand pressure"],
+        [String.raw`R(t)`, "aggregate rent multiplier or rent signal"],
+        [String.raw`P(t)`, "aggregate purchase-price multiplier or sale signal"],
+        [String.raw`V(t)`, "vacancy rate"],
+        [String.raw`S(t)`, "average displacement stress"],
+        [String.raw`D_{\mathrm{ext}}`, "external demand reference"],
+        [String.raw`\alpha_D,\alpha_V,\alpha_S`, "persistence or smoothing coefficients"],
+        [String.raw`\beta_R,\beta_P,\beta_V`, "response coefficients for rent, price, and vacancy"],
+        [String.raw`c_r`, "rent-control strength"],
+        [String.raw`I`, "investor pressure"],
+        [String.raw`E`, "vacancy enforcement strength"],
+        [String.raw`V_{\min},V_{\max}`, "minimum and maximum allowed vacancy bounds"],
+      ],
+    },
     implementation: "Python: methods/analytical.py. Browser: stepAnalytical in game.js and compare.js.",
     tags: ["deterministic", "aggregate", "baseline", "equation"],
   },
@@ -23,6 +75,26 @@ const entries = [
     summary: "A model that moves between named market states using transition probabilities.",
     details:
       "A Markov chain does not track every household. It asks which market regime comes next, given the current regime. For example, a stable market can transition into rent pressure, purchase pressure, or public stabilization.",
+    math: {
+      intro: "The market regime is sampled from a transition matrix:",
+      equations: [
+        String.raw`z_t\in\{\text{stable},\text{rent pressure},\text{purchase pressure},\ldots\}`,
+        String.raw`\Pr(z_{t+1}=j\mid z_t=i)=T_{i,j}`,
+        String.raw`\sum_j T_{i,j}=1`,
+        String.raw`u\sim\operatorname{Uniform}(0,1)`,
+        String.raw`z_{t+1}=\min\left\{j:\sum_{k\le j}T_{i,k}\ge u\right\}`,
+        String.raw`y(t)=\operatorname{profile}(z_t)`,
+      ],
+      parameters: [
+        [String.raw`z_t`, "market regime at step t"],
+        [String.raw`i,j`, "current and next regime indexes"],
+        [String.raw`T_{i,j}`, "transition probability from regime i to regime j"],
+        [String.raw`\sum_j T_{i,j}=1`, "each transition row must sum to one"],
+        [String.raw`u`, "random draw used to choose the next state"],
+        [String.raw`y(t)`, "observable output vector for rent, sale, vacancy, stress, and other signals"],
+        [String.raw`\operatorname{profile}(z_t)`, "fixed metric profile attached to the chosen regime"],
+      ],
+    },
     implementation: "Python: methods/markov.py. Browser: sampleMarkov and stepStateModel in game.js and compare.js.",
     tags: ["state machine", "transition", "regime", "probability"],
   },
@@ -32,6 +104,27 @@ const entries = [
     summary: "A sampler for exploring likely market states rather than a literal month-by-month process.",
     details:
       "MCMC means Markov chain Monte Carlo. In this prototype it proposes a nearby market state and accepts it using target-state weights. It is useful for investigating which scenario states are likely under assumptions, even if the samples are not literal calendar months.",
+    math: {
+      intro: "A proposed regime is accepted with a Metropolis-style rule:",
+      equations: [
+        String.raw`z'\sim q(z'\mid z_k)`,
+        String.raw`\pi(z)=\text{target weight of regime }z`,
+        String.raw`A(z_k,z')=\min\left(1,\frac{\pi(z')}{\max(\pi(z_k),\epsilon)}\right)`,
+        String.raw`u\sim\operatorname{Uniform}(0,1)`,
+        String.raw`z_{k+1}=\begin{cases}z' & u\le A(z_k,z')\\ z_k & u>A(z_k,z')\end{cases}`,
+        String.raw`\{z_k\}_{k=1}^{N}\approx \pi(z)\text{ after enough samples}`,
+      ],
+      parameters: [
+        [String.raw`z_k`, "current sampled market regime"],
+        [String.raw`z'`, "proposed next regime"],
+        [String.raw`q(z'\mid z_k)`, "proposal distribution for candidate regimes"],
+        [String.raw`\pi(z)`, "target weight or target likelihood of regime z"],
+        [String.raw`\epsilon`, "small stabilizer to avoid division by zero"],
+        [String.raw`A(z_k,z')`, "acceptance probability"],
+        [String.raw`u`, "random draw used for accept or reject"],
+        [String.raw`N`, "number of samples collected"],
+      ],
+    },
     implementation: "Python: methods/mcmc.py. Browser: sampleMCMC and stepStateModel in game.js and compare.js.",
     tags: ["MCMC", "sampling", "state likelihood", "Metropolis"],
   },
@@ -233,6 +326,7 @@ function renderEntries() {
   resultsHost.innerHTML = filtered.length
     ? filtered.map((entry) => renderEntry(entry)).join("")
     : `<article class="wiki-entry empty-state"><h2>No entries found</h2><p>Try a broader word like rent, target, state, or pressure.</p></article>`;
+  typesetMath();
 }
 
 function matchesEntry(entry, query, category) {
@@ -243,7 +337,15 @@ function matchesEntry(entry, query, category) {
 
 function searchableText(entry) {
   return normalize(
-    [entry.term, entry.category, entry.summary, entry.details, entry.implementation, entry.tags.join(" ")].join(" "),
+    [
+      entry.term,
+      entry.category,
+      entry.summary,
+      entry.details,
+      entry.implementation,
+      mathText(entry.math),
+      entry.tags.join(" "),
+    ].join(" "),
   );
 }
 
@@ -268,11 +370,59 @@ function renderEntry(entry) {
       <details>
         <summary>Read implementation note</summary>
         <p>${entry.details}</p>
+        ${entry.math ? renderMath(entry.math) : ""}
         <p><strong>Implementation:</strong> ${entry.implementation}</p>
       </details>
       <div class="wiki-tags">${entry.tags.map((tag) => `<span>${tag}</span>`).join("")}</div>
     </article>
   `;
+}
+
+function renderMath(math) {
+  return `
+    <div class="wiki-math" aria-label="mathematical model">
+      <strong>Mathematical form</strong>
+      <p>${math.intro}</p>
+      <div class="wiki-equations">
+        ${math.equations.map((equation) => `<div class="wiki-equation">\\[${equation}\\]</div>`).join("")}
+      </div>
+      ${renderParameters(math.parameters)}
+    </div>
+  `;
+}
+
+function mathText(math) {
+  return math
+    ? [
+        math.intro,
+        ...math.equations,
+        ...(math.parameters || []).flatMap(([symbol, explanation]) => [symbol, explanation]),
+      ].join(" ")
+    : "";
+}
+
+function renderParameters(parameters = []) {
+  if (!parameters.length) return "";
+  return `
+    <div class="wiki-parameters">
+      <strong>Parameters</strong>
+      <dl>
+        ${parameters
+          .map(
+            ([symbol, explanation]) => `
+              <dt>\\(${symbol}\\)</dt>
+              <dd>${explanation}</dd>
+            `,
+          )
+          .join("")}
+      </dl>
+    </div>
+  `;
+}
+
+function typesetMath() {
+  if (!window.MathJax?.typesetPromise) return;
+  window.MathJax.typesetPromise([resultsHost]).catch(() => {});
 }
 
 function normalize(value) {

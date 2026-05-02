@@ -659,6 +659,80 @@ dd {
   margin-top: 10px;
 }
 
+.wiki-math {
+  margin: 10px 0 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--blue);
+  border-radius: 8px;
+  background: #fffefa;
+  color: var(--dark);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.wiki-math strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--ink);
+  font-size: 13px;
+}
+
+.wiki-math p {
+  margin: 0 0 8px;
+}
+
+.wiki-equations {
+  display: grid;
+  gap: 8px;
+}
+
+.wiki-equation {
+  min-width: 0;
+  overflow-x: auto;
+  padding: 8px;
+  border-radius: 6px;
+  background: #f3f0e6;
+  -webkit-overflow-scrolling: touch;
+}
+
+.wiki-equation mjx-container {
+  margin: 0 !important;
+  min-width: max-content;
+  font-size: 112%;
+}
+
+.wiki-parameters {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.wiki-parameters dl {
+  display: grid;
+  grid-template-columns: minmax(92px, auto) minmax(0, 1fr);
+  gap: 6px 12px;
+  margin: 0;
+}
+
+.wiki-parameters dt {
+  min-width: 0;
+  overflow-x: auto;
+  color: var(--ink);
+  font-weight: 720;
+  -webkit-overflow-scrolling: touch;
+}
+
+.wiki-parameters dt mjx-container {
+  margin: 0 !important;
+}
+
+.wiki-parameters dd {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
 .wiki-category {
   color: var(--green);
   font-size: 12px;

@@ -1,6 +1,6 @@
 const currentVersion = {
-  label: "Prototype 0.5.2",
-  summary: "Maintenance rule: meaningful project updates should update this notes ledger too.",
+  label: "Prototype 0.5.5",
+  summary: "Wiki method math now includes parameter legends for each model.",
 };
 
 const implementationNotes = [
@@ -50,7 +50,7 @@ const implementationNotes = [
     area: "Documentation UI",
     title: "Tooltips, dictionary, and project notes",
     body:
-      "Short labels stay compact in the interface, while hover/focus tooltips and the dictionary wiki provide deeper explanations when needed.",
+      "Short labels stay compact in the interface, while hover/focus tooltips and the dictionary wiki provide deeper explanations, including mathematical notes for simulation methods.",
     files: "web/wiki.html, web/wiki.js, web/notes.html, web/notes.js",
   },
   {
@@ -77,6 +77,36 @@ const implementationNotes = [
 ];
 
 const versions = [
+  {
+    version: "0.5.5",
+    date: "2026-05-02",
+    title: "Wiki math parameter legends",
+    changes: [
+      "Added parameter explanations below each method's LaTeX equations.",
+      "Included parameter symbols and descriptions in wiki search.",
+      "Styled parameter legends as compact two-column reference tables.",
+    ],
+  },
+  {
+    version: "0.5.4",
+    date: "2026-05-02",
+    title: "LaTeX wiki math display",
+    changes: [
+      "Converted method math notes from plain code blocks to structured LaTeX equations.",
+      "Added MathJax rendering on the wiki page with readable LaTeX fallback.",
+      "Improved equation panel styling and mobile horizontal scrolling.",
+    ],
+  },
+  {
+    version: "0.5.3",
+    date: "2026-05-02",
+    title: "Wiki method mathematics",
+    changes: [
+      "Added formula blocks for agent-based, analytical, Markov chain, and MCMC method entries.",
+      "Styled wiki math notes as horizontally scrollable code blocks for mobile readability.",
+      "Bumped service-worker cache so deployed clients receive the updated wiki.",
+    ],
+  },
   {
     version: "0.5.2",
     date: "2026-05-02",
