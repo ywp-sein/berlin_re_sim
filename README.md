@@ -46,8 +46,10 @@ python3 -m http.server 8000 --bind 0.0.0.0
 Then open `http://YOUR_COMPUTER_IP:8000` from a phone on the same Wi-Fi.
 
 The browser prototype also includes `web/compare.html`, which runs the
-agent-based, Markov chain, and MCMC state methods under the same external policy
-and influence settings.
+agent-based, analytical, Markov chain, and MCMC state methods under the same
+external policy and influence settings. The compare page has editable
+calibration targets, a reproducible random seed, mean target error, error RMSE,
+and a button to save the current target vector as JSON.
 
 If the phone cannot connect:
 
@@ -62,9 +64,12 @@ If the phone cannot connect:
 ## Project Map
 
 - `docs/model_design.md` explains the data structure and simulation loop.
+- `docs/scenario_schema.md` describes the canonical scenario contract.
 - `docs/visualization_values.md` lists the signals worth showing in the game.
 - `docs/data_sources.md` maps future real datasets to model variables.
 - `data/scenarios/mitte_seed.json` is the first small scenario.
+- `data/parameters/default_parameters.json` keeps model coefficients separate.
+- `data/targets/mitte_targets.json` stores calibration reference outputs.
 - `src/berlin_re_sim/schemas.py` defines the durable domain objects.
 - `src/berlin_re_sim/model.py` contains the Mesa-compatible model skeleton.
 - `src/berlin_re_sim/methods/` contains selectable simulation methods.

@@ -1,0 +1,29 @@
+{
+  "name": "Default prototype parameters",
+  "schema_version": "0.1",
+  "metadata": {
+    "source": "synthetic",
+    "source_url": null,
+    "source_date": null,
+    "license": null,
+    "confidence": "low"
+  },
+  "agent_based": {
+    "rent_growth_coefficient": 0.012,
+    "sale_growth_coefficient": 0.011,
+    "stress_coefficient": 0.22,
+    "spillover_coefficient": 0.0038,
+    "regulated_rent_control_effect": 0.78
+  },
+  "analytical": {
+    "demand_inertia": 0.992,
+    "demand_pull": 0.82,
+    "rent_growth_coefficient": 0.0045,
+    "sale_growth_coefficient": 0.0065,
+    "stress_inertia": 0.92
+  },
+  "state_models": {
+    "initial_state": "stable_affordable",
+    "random_seed": 19
+  }
+}

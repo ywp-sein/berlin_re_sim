@@ -79,11 +79,21 @@ const targetWeights = {
 
 const controls = {
   steps: document.querySelector("#compareStepsControl"),
+  seed: document.querySelector("#compareSeedControl"),
   rent: document.querySelector("#compareRentControl"),
   vacancy: document.querySelector("#compareVacancyControl"),
   public: document.querySelector("#comparePublicControl"),
   investor: document.querySelector("#compareInvestorControl"),
   influence: document.querySelector("#compareInfluenceControl"),
+};
+
+const targetControls = {
+  rent: document.querySelector("#targetRentControl"),
+  sale: document.querySelector("#targetSaleControl"),
+  vacancy: document.querySelector("#targetVacancyControl"),
+  stress: document.querySelector("#targetStressControl"),
+  burden: document.querySelector("#targetBurdenControl"),
+  buyYears: document.querySelector("#targetBuyYearsControl"),
 };
 
 function unit(neighborhoodId, ownerId, sqm, rent, salePrice, regulated, vacant, income, size, tolerance) {
@@ -114,7 +124,7 @@ function runMethod(method, settings) {
   const sim = {
     method,
     regime: "stable_affordable",
-    random: seededRandom(19),
+    random: seededRandom(settings.seed),
     neighborhoods: structuredClone(comparisonSeed.neighborhoods),
     owners: structuredClone(comparisonSeed.owners),
     units: structuredClone(comparisonSeed.units),
@@ -260,8 +270,10 @@ function collectAreaMetrics(sim) {
 function renderCards(results) {
   const host = document.querySelector("#comparisonCards");
   host.innerHTML = "";
+  const targets = currentTargets();
   for (const result of results) {
     const latest = result.history.at(-1);
+    const error = calculateError(latest, targets);
     const card = document.createElement("article");
     card.className = "comparison-card";
     card.innerHTML = `
@@ -273,10 +285,27 @@ function renderCards(results) {
         <dt>Vacancy</dt><dd>${percent(latest.vacancy)}</dd>
         <dt>Stress</dt><dd>${percent(latest.stress)}</dd>
         <dt>Buy years</dt><dd>${latest.buyYears.toFixed(1)}y</dd>
+        <dt>Mean error</dt><dd>${percent(error.meanRelativeError)}</dd>
+        <dt>Error RMSE</dt><dd>${percent(error.rmse)}</dd>
       </dl>
     `;
     host.append(card);
   }
+}
+
+function calculateError(point, targets) {
+  const relativeErrors = [
+    Math.abs(point.rent - targets.median_rent_per_sqm) / Math.max(targets.median_rent_per_sqm, 0.0001),
+    Math.abs(point.sale - targets.median_sale_price_per_sqm) / Math.max(targets.median_sale_price_per_sqm, 0.0001),
+    Math.abs(point.vacancy - targets.vacancy_rate) / Math.max(targets.vacancy_rate, 0.0001),
+    Math.abs(point.stress - targets.average_displacement_stress) / Math.max(targets.average_displacement_stress, 0.0001),
+    Math.abs(point.burden - targets.average_rent_burden) / Math.max(targets.average_rent_burden, 0.0001),
+    Math.abs(point.buyYears - targets.purchase_price_to_income_years) / Math.max(targets.purchase_price_to_income_years, 0.0001),
+  ];
+  return {
+    meanRelativeError: average(relativeErrors),
+    rmse: Math.sqrt(average(relativeErrors.map((value) => value * value))),
+  };
 }
 
 function drawComparisonChart(selector, results, accessor, normalized, secondAccessor) {
@@ -355,12 +384,69 @@ function sampleMCMC(regime, random) {
 function currentSettings() {
   return {
     steps: Number(controls.steps.value),
+    seed: Number(controls.seed.value),
     rentControl: Number(controls.rent.value) / 100,
     vacancy: Number(controls.vacancy.value) / 100,
     public: Number(controls.public.value) / 100,
     investor: Number(controls.investor.value) / 100,
     influence: controls.influence.checked,
   };
+}
+
+function currentTargets() {
+  return {
+    median_rent_per_sqm: Number(targetControls.rent.value),
+    median_sale_price_per_sqm: Number(targetControls.sale.value),
+    vacancy_rate: Number(targetControls.vacancy.value) / 100,
+    average_displacement_stress: Number(targetControls.stress.value) / 100,
+    average_rent_burden: Number(targetControls.burden.value) / 100,
+    purchase_price_to_income_years: Number(targetControls.buyYears.value),
+  };
+}
+
+function buildTargetDocument() {
+  return {
+    name: "Mitte calibration targets",
+    schema_version: "0.1",
+    metadata: {
+      source: "user_adjusted",
+      source_url: null,
+      source_date: new Date().toISOString().slice(0, 10),
+      license: null,
+      confidence: "prototype",
+      notes: "Saved from web/compare.html target editor.",
+    },
+    targets: currentTargets(),
+  };
+}
+
+async function saveTargets() {
+  const json = `${JSON.stringify(buildTargetDocument(), null, 2)}\n`;
+  try {
+    if ("showSaveFilePicker" in window) {
+      const handle = await window.showSaveFilePicker({
+        suggestedName: "mitte_targets.json",
+        types: [
+          {
+            description: "JSON",
+            accept: { "application/json": [".json"] },
+          },
+        ],
+      });
+      const writable = await handle.createWritable();
+      await writable.write(json);
+      await writable.close();
+      return;
+    }
+  } catch (error) {
+    if (error.name === "AbortError") return;
+  }
+  const blob = new Blob([json], { type: "application/json" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "mitte_targets.json";
+  link.click();
+  URL.revokeObjectURL(link.href);
 }
 
 function renderControlValues() {
@@ -423,14 +509,26 @@ function percent(value) {
 document.querySelector("#compareRunBtn").addEventListener("click", runComparison);
 document.querySelector("#compareResetBtn").addEventListener("click", () => {
   controls.steps.value = 24;
+  controls.seed.value = 19;
   controls.rent.value = 55;
   controls.vacancy.value = 40;
   controls.public.value = 20;
   controls.investor.value = 68;
   controls.influence.checked = true;
+  targetControls.rent.value = 18.5;
+  targetControls.sale.value = 7600;
+  targetControls.vacancy.value = 6;
+  targetControls.stress.value = 28;
+  targetControls.burden.value = 32;
+  targetControls.buyYears.value = 18;
   runComparison();
 });
+document.querySelector("#saveTargetsBtn").addEventListener("click", saveTargets);
 for (const control of Object.values(controls)) {
+  control.addEventListener("input", runComparison);
+  control.addEventListener("change", runComparison);
+}
+for (const control of Object.values(targetControls)) {
   control.addEventListener("input", runComparison);
   control.addEventListener("change", runComparison);
 }

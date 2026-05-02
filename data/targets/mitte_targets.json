@@ -1,0 +1,20 @@
+{
+  "name": "Mitte prototype calibration targets",
+  "schema_version": "0.1",
+  "metadata": {
+    "source": "synthetic",
+    "source_url": null,
+    "source_date": null,
+    "license": null,
+    "confidence": "low",
+    "notes": "Editable placeholder targets for comparing methods before real data import."
+  },
+  "targets": {
+    "median_rent_per_sqm": 18.5,
+    "median_sale_price_per_sqm": 7600,
+    "vacancy_rate": 0.06,
+    "average_displacement_stress": 0.28,
+    "average_rent_burden": 0.32,
+    "purchase_price_to_income_years": 18
+  }
+}

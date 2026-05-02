@@ -1,0 +1,57 @@
+# Scenario Schema
+
+The canonical scenario data contract is `data/schema/scenario.schema.json`.
+Scenario files should live in `data/scenarios/`.
+Calibration targets use `data/schema/targets.schema.json` and should live in
+`data/targets/`.
+
+Current canonical prototype scenario:
+
+- `data/scenarios/mitte_seed.json`
+
+The web prototype still has a lightweight in-browser seed for fast static use,
+but real-data import should target the canonical JSON scenario first. Once data
+stabilizes, the web layer should load generated scenario JSON rather than keeping
+hand-written browser seed values.
+
+## Required Provenance
+
+Every scenario should include:
+
+- `source`
+- `source_url`
+- `source_date`
+- `license`
+- `confidence`
+- `notes`
+
+This lets synthetic values, official values, estimates, and manual assumptions
+coexist without becoming indistinguishable.
+
+## Separation Of Concerns
+
+Use:
+
+- `data/scenarios/` for initial state
+- `data/parameters/` for model behavior coefficients
+- `data/targets/` for calibration and validation targets
+
+Do not put model coefficients directly into scenario files unless they describe
+observed real-world attributes.
+
+## Calibration Targets
+
+Targets are not the scenario itself. They are reference outputs used to compare
+whether a method is close to an expected market state. The current target vector
+contains:
+
+- median rent per square meter
+- median sale price per square meter
+- vacancy rate
+- average displacement stress
+- average rent burden
+- purchase-price-to-income years
+
+The comparison page reports mean relative error and relative RMSE against this
+target vector. Mean error is easier to read; RMSE punishes one very bad mismatch
+more strongly.

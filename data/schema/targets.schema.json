@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/berlin-re-sim/targets.schema.json",
+  "title": "Berlin Real Estate Simulation Calibration Targets",
+  "type": "object",
+  "required": ["name", "schema_version", "metadata", "targets"],
+  "properties": {
+    "name": { "type": "string" },
+    "schema_version": { "type": "string" },
+    "metadata": {
+      "type": "object",
+      "required": ["source", "confidence", "notes"],
+      "properties": {
+        "source": { "type": "string" },
+        "source_url": { "type": ["string", "null"] },
+        "source_date": { "type": ["string", "null"] },
+        "license": { "type": ["string", "null"] },
+        "confidence": { "type": "string" },
+        "notes": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "targets": {
+      "type": "object",
+      "required": [
+        "median_rent_per_sqm",
+        "median_sale_price_per_sqm",
+        "vacancy_rate",
+        "average_displacement_stress",
+        "average_rent_burden",
+        "purchase_price_to_income_years"
+      ],
+      "properties": {
+        "median_rent_per_sqm": { "type": "number", "minimum": 0 },
+        "median_sale_price_per_sqm": { "type": "number", "minimum": 0 },
+        "vacancy_rate": { "type": "number", "minimum": 0, "maximum": 1 },
+        "average_displacement_stress": { "type": "number", "minimum": 0, "maximum": 1 },
+        "average_rent_burden": { "type": "number", "minimum": 0 },
+        "purchase_price_to_income_years": { "type": "number", "minimum": 0 }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

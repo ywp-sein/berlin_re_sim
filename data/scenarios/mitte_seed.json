@@ -1,6 +1,15 @@
 {
   "name": "Mitte seed",
+  "schema_version": "0.2",
   "tick_length": "month",
+  "metadata": {
+    "source": "synthetic",
+    "source_url": null,
+    "source_date": null,
+    "license": null,
+    "confidence": "low",
+    "notes": "Prototype seed data for model development before real-data import."
+  },
   "districts": [
     {
       "id": "mitte",

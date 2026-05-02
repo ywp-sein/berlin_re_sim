@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/berlin-re-sim/scenario.schema.json",
+  "title": "Berlin real estate simulation scenario",
+  "type": "object",
+  "required": [
+    "name",
+    "schema_version",
+    "metadata",
+    "tick_length",
+    "districts",
+    "neighborhoods",
+    "parcels",
+    "buildings",
+    "units",
+    "owners",
+    "households"
+  ],
+  "properties": {
+    "name": { "type": "string" },
+    "schema_version": { "type": "string" },
+    "tick_length": { "type": "string" },
+    "metadata": {
+      "type": "object",
+      "required": ["source", "confidence"],
+      "properties": {
+        "source": { "type": "string" },
+        "source_url": { "type": ["string", "null"] },
+        "source_date": { "type": ["string", "null"] },
+        "license": { "type": ["string", "null"] },
+        "confidence": { "type": "string" },
+        "notes": { "type": ["string", "null"] }
+      }
+    },
+    "districts": { "type": "array" },
+    "neighborhoods": { "type": "array" },
+    "parcels": { "type": "array" },
+    "buildings": { "type": "array" },
+    "units": { "type": "array" },
+    "owners": { "type": "array" },
+    "households": { "type": "array" }
+  }
+}
