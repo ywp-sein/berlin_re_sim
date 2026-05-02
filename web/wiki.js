@@ -251,7 +251,7 @@ const entries = [
     summary: "A checklist that blocks real data from entering the model until provenance, units, geography, and quality are clear.",
     details:
       "The readiness gate is the step between finding a promising dataset and using it in a scenario or target. It protects the model from silent assumptions: unknown licenses, mixed units, unclear geography, or values that look precise but cannot be traced.",
-    implementation: "Documented in docs/real_data_readiness.md and enforced by filling data/source_registry.json before import.",
+    implementation: "Documented in docs/data/real_data_readiness.md and enforced by filling data/source_registry.json before import.",
     tags: ["real data", "quality", "import", "provenance", "gate"],
   },
   {
@@ -279,7 +279,7 @@ const entries = [
     details:
       "Real sources may use monthly rent, yearly rent, warm rent, cold rent, price per apartment, price per square meter, household income, or individual income. The model needs consistent canonical units before values can be compared or calibrated.",
     implementation:
-      "Examples: rent is EUR per square meter per month; sale price is EUR per square meter; rates are decimals from 0 to 1. See docs/real_data_readiness.md.",
+      "Examples: rent is EUR per square meter per month; sale price is EUR per square meter; rates are decimals from 0 to 1. See docs/data/real_data_readiness.md.",
     tags: ["unit", "conversion", "rent", "sale", "income"],
   },
   {
@@ -306,7 +306,7 @@ const entries = [
     summary: "A reason to pause import instead of forcing uncertain real data into the model.",
     details:
       "Stop conditions include unknown license, impossible unit conversion, unclear geography, incompatible market mixing, or any value that would overwrite a synthetic assumption without provenance. A stopped source can remain useful as a research lead.",
-    implementation: "Listed in docs/real_data_readiness.md and reflected by keeping registry status as candidate or rejected.",
+    implementation: "Listed in docs/data/real_data_readiness.md and reflected by keeping registry status as candidate or rejected.",
     tags: ["stop", "license", "unit", "quality", "import"],
   },
   {

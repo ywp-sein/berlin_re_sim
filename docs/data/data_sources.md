@@ -125,7 +125,7 @@ Use first as:
 
 ## Import Strategy
 
-Use `docs/real_data_readiness.md` as the gate before import, and record every
+Use `docs/data/real_data_readiness.md` as the gate before import, and record every
 candidate source in `data/source_registry.json`.
 
 1. Start with manually curated CSV/JSON for Mitte only.

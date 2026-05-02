@@ -918,8 +918,23 @@ dd {
 
 .docs-nav {
   display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+.docs-nav-group {
+  display: grid;
   gap: 8px;
   min-width: 0;
+}
+
+.docs-nav-group h3 {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .docs-nav-item {

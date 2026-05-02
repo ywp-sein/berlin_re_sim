@@ -26,8 +26,31 @@ function renderNav() {
   const query = normalize(searchInput.value);
   const filtered = documents.filter((doc) => searchable(doc).includes(query));
   navHost.innerHTML = filtered.length
-    ? filtered.map(renderNavButton).join("")
+    ? renderNavGroups(filtered)
     : `<p class="docs-empty">No documents found.</p>`;
+}
+
+function renderNavGroups(items) {
+  return groupDocuments(items)
+    .map(
+      ([category, docs]) => `
+        <section class="docs-nav-group" aria-label="${escapeHtml(category)} documents">
+          <h3>${escapeHtml(category)}</h3>
+          ${docs.map(renderNavButton).join("")}
+        </section>
+      `,
+    )
+    .join("");
+}
+
+function groupDocuments(items) {
+  const groups = new Map();
+  for (const doc of items) {
+    const category = doc.category || categoryFromPath(doc.path);
+    if (!groups.has(category)) groups.set(category, []);
+    groups.get(category).push(doc);
+  }
+  return [...groups.entries()];
 }
 
 function renderNavButton(doc) {
@@ -129,11 +152,27 @@ function inlineMarkdown(value) {
 }
 
 function searchable(doc) {
-  return normalize([doc.title, doc.path, doc.content].join(" "));
+  return normalize([doc.category, doc.title, doc.path, doc.content].join(" "));
+}
+
+function categoryFromPath(path) {
+  if (path === "README.md") return "Project";
+  const parts = path.split("/");
+  if (parts[0] === "docs" && parts.length > 2) return titleCase(parts[1]);
+  return "Uncategorized";
+}
+
+function titleCase(value) {
+  return value
+    .replace(/[-_]/g, " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
 function normalize(value) {
-  return value.toLowerCase().replace(/\s+/g, " ").trim();
+  return String(value || "")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function escapeHtml(value) {

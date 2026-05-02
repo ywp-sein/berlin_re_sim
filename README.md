@@ -60,10 +60,10 @@ For project-wide implementation memory and version tracking, open
 and the files connected to each area.
 
 For rendered project documentation, open `web/docs.html`. It loads a generated
-bundle of `README.md` and all markdown files in `docs/`.
+bundle of `README.md` and categorized markdown files under `docs/`.
 
-For internet access through GitHub Pages, see `docs/deployment.md`. The included
-GitHub Actions workflow publishes the static `web/` folder.
+For internet access through GitHub Pages, see `docs/operations/deployment.md`.
+The included GitHub Actions workflow publishes the static `web/` folder.
 
 ## Maintenance Convention
 
@@ -83,13 +83,13 @@ If the phone cannot connect:
 
 ## Project Map
 
-- `docs/model_design.md` explains the data structure and simulation loop.
-- `docs/compute_usage.md` explains runtime and power-use estimates.
-- `docs/deployment.md` explains GitHub Pages and custom-domain setup.
-- `docs/scenario_schema.md` describes the canonical scenario contract.
-- `docs/visualization_values.md` lists the signals worth showing in the game.
-- `docs/data_sources.md` maps future real datasets to model variables.
-- `docs/real_data_readiness.md` is the checklist before importing real data.
+- `docs/modeling/model_design.md` explains the data structure and simulation loop.
+- `docs/modeling/scenario_schema.md` describes the canonical scenario contract.
+- `docs/modeling/visualization_values.md` lists the signals worth showing in the game.
+- `docs/data/data_sources.md` maps future real datasets to model variables.
+- `docs/data/real_data_readiness.md` is the checklist before importing real data.
+- `docs/operations/deployment.md` explains GitHub Pages and custom-domain setup.
+- `docs/operations/compute_usage.md` explains runtime and power-use estimates.
 - `data/source_registry.json` tracks candidate real-data sources and provenance.
 - `data/scenarios/mitte_seed.json` is the first small scenario.
 - `data/parameters/default_parameters.json` keeps model coefficients separate.

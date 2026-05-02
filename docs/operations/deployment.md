@@ -19,7 +19,8 @@ written. The checked-in `web/version-commits.json` is only an empty local
 placeholder; the deployed artifact contains the generated links.
 
 The workflow also runs `scripts/build_docs_content.py`, which bundles
-`README.md` and `docs/*.md` into `web/docs-content.json` for the Docs page.
+`README.md` and categorized markdown files under `docs/` into
+`web/docs-content.json` for the Docs page.
 
 To enable it on GitHub:
 

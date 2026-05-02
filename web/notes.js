@@ -1,6 +1,6 @@
 const currentVersion = {
-  label: "Prototype 0.5.13",
-  summary: "Docs page width and overflow polish.",
+  label: "Prototype 0.5.14",
+  summary: "Categorized project docs and grouped web docs navigation.",
 };
 
 const implementationNotes = [
@@ -16,7 +16,7 @@ const implementationNotes = [
     title: "Selectable method layer",
     body:
       "Methods are separated behind a factory so agent-based, analytical, Markov chain, and MCMC state simulations can be compared without changing the scenario contract. Usage estimates track how each method scales with units, households, areas, edges, states, and steps.",
-    files: "src/berlin_re_sim/methods/, scripts/estimate_usage.py, docs/compute_usage.md",
+    files: "src/berlin_re_sim/methods/, scripts/estimate_usage.py, docs/operations/compute_usage.md",
   },
   {
     area: "Data",
@@ -65,7 +65,7 @@ const implementationNotes = [
     title: "GitHub Pages publishes the static web folder",
     body:
       "The repository uses a GitHub Actions Pages workflow to deploy the web/ folder directly. A .nojekyll marker keeps GitHub Pages serving static files directly, and the deploy build generates commit links for the version history.",
-    files: ".github/workflows/pages.yml, scripts/build_version_commits.py, web/version-commits.json, web/.nojekyll, docs/deployment.md",
+    files: ".github/workflows/pages.yml, scripts/build_version_commits.py, web/version-commits.json, web/.nojekyll, docs/operations/deployment.md",
   },
   {
     area: "Maintenance",
@@ -77,6 +77,17 @@ const implementationNotes = [
 ];
 
 const versions = [
+  {
+    version: "0.5.14",
+    date: "2026-05-02",
+    title: "Categorized project docs",
+    changes: [
+      "Moved markdown docs into modeling, data, and operations folders.",
+      "Updated the docs bundler to read nested docs directories and attach category metadata.",
+      "Grouped the web Docs navigation by category and included categories in search.",
+      "Updated references, generated docs content, wiki paths, and service-worker cache for the new structure.",
+    ],
+  },
   {
     version: "0.5.13",
     date: "2026-05-02",
@@ -94,7 +105,7 @@ const versions = [
     title: "Compute and power usage estimator",
     changes: [
       "Added scripts/estimate_usage.py for work-unit, runtime, compute Wh, and session Wh estimates.",
-      "Added docs/compute_usage.md with scaling assumptions and interpretation guidance.",
+      "Added docs/operations/compute_usage.md with scaling assumptions and interpretation guidance.",
       "Linked the compute usage doc and estimator from README.",
     ],
   },
@@ -115,7 +126,7 @@ const versions = [
     title: "Rendered docs page",
     changes: [
       "Added a Docs subpage for README and markdown docs.",
-      "Added a build script that bundles README.md and docs/*.md into web/docs-content.json.",
+      "Added a build script that bundles README.md and markdown docs into web/docs-content.json.",
       "Updated GitHub Pages deployment, navigation, service-worker cache, and README for the docs page.",
     ],
   },
@@ -257,7 +268,7 @@ const versions = [
     changes: [
       "Created Mesa-style domain model and synthetic Mitte seed scenario.",
       "Added basic agents, scenario loading, CLI entry point, and smoke tests.",
-      "Recorded initial mathematical model notes in docs/model_design.md.",
+      "Recorded initial mathematical model notes in docs/modeling/model_design.md.",
     ],
   },
 ];
