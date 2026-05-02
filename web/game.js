@@ -97,6 +97,11 @@ const simulationMethods = {
     stepMeaning: "Month",
     description: "Heterogeneous units, owners, and households update every month from local rules.",
   },
+  analytical: {
+    label: "Analytical baseline",
+    stepMeaning: "Iteration",
+    description: "A deterministic aggregate model updates demand, rent, sale price, vacancy, and stress from recurrence equations.",
+  },
   markov_chain: {
     label: "Markov chain",
     stepMeaning: "Transition",
@@ -227,6 +232,7 @@ const state = {
   month: 0,
   method: "agent_based",
   marketRegime: "stable_affordable",
+  analyticalState: null,
   chartMode: "overall",
   showInfluences: true,
   selectedNeighborhood: "alexanderplatz",
@@ -275,6 +281,7 @@ function unit(id, neighborhoodId, ownerId, sqm, rent, salePrice, regulated, vaca
 function resetGame() {
   state.month = 0;
   state.marketRegime = "stable_affordable";
+  state.analyticalState = null;
   state.events = [];
   state.history = [];
   state.neighborhoods = structuredClone(scenarioSeed.neighborhoods);
@@ -290,11 +297,58 @@ function stepGame() {
     updateDemand();
     updateOwnersAndUnits();
     updateHouseholds();
+  } else if (state.method === "analytical") {
+    updateAnalytical();
   } else {
     updateStateMachine();
   }
   collectMetrics();
   render();
+}
+
+function updateAnalytical() {
+  if (!state.analyticalState) {
+    state.analyticalState = {
+      demand: average(state.neighborhoods.map((area) => area.demandPressure)),
+      rentMultiplier: 1,
+      saleMultiplier: 1,
+      vacancy: state.units.filter((item) => item.vacant).length / state.units.length,
+      stress: 0,
+    };
+  }
+  const influenceBoost = state.showInfluences ? 1 + state.policy.investorPressure * 0.08 : 1;
+  state.analyticalState.demand = clamp(
+    state.analyticalState.demand * 0.992 +
+      0.008 * 0.82 * influenceBoost -
+      state.policy.publicAcquisition * 0.002,
+    0,
+    1,
+  );
+  state.analyticalState.rentMultiplier *=
+    1 + 0.0045 * state.analyticalState.demand * (1 - state.policy.rentControl * 0.12);
+  state.analyticalState.saleMultiplier *=
+    1 + 0.0065 * state.analyticalState.demand * (1 + state.policy.investorPressure * 0.15);
+  state.analyticalState.vacancy = clamp(
+    state.analyticalState.vacancy * 0.985 +
+      0.015 * (0.12 * state.analyticalState.demand) -
+      state.policy.vacancyEnforcement * 0.002,
+    0.02,
+    0.22,
+  );
+  state.analyticalState.stress = clamp(
+    state.analyticalState.stress * 0.92 + 0.08 * state.analyticalState.demand,
+    0,
+    1,
+  );
+  for (const area of state.neighborhoods) {
+    area.demandPressure = clamp(area.demandPressure * 0.8 + state.analyticalState.demand * 0.2, 0.25, 1);
+  }
+  for (const currentUnit of state.units) {
+    currentUnit.rent = currentUnit.baseRent * state.analyticalState.rentMultiplier;
+    currentUnit.salePrice = currentUnit.baseSalePrice * state.analyticalState.saleMultiplier;
+    currentUnit.vacant = stableHash(`analytical-${currentUnit.neighborhoodId}-${currentUnit.sqm}`) < state.analyticalState.vacancy;
+    if (currentUnit.household) currentUnit.household.stress = state.analyticalState.stress;
+  }
 }
 
 function updateStateMachine() {
@@ -436,20 +490,46 @@ function collectMetrics() {
     state.method === "markov_chain" || state.method === "mcmc_state"
       ? marketRegimeEffects[state.marketRegime]
       : null;
+  const analyticalEffect = state.method === "analytical" ? state.analyticalState : null;
   state.history.push({
     month: state.month,
     rent: median(rents),
     sale: median(sales),
-    vacancy: regimeEffect
+    vacancy: analyticalEffect
+      ? analyticalEffect.vacancy
+      : regimeEffect
       ? regimeEffect.vacancy
       : state.units.filter((item) => item.vacant).length / state.units.length,
-    stress: regimeEffect ? regimeEffect.stress : stresses.length ? average(stresses) : 0,
+    stress: analyticalEffect
+      ? analyticalEffect.stress
+      : regimeEffect
+      ? regimeEffect.stress
+      : stresses.length
+      ? average(stresses)
+      : 0,
     averageIndividualIncome,
     rentBurden: rentBurdens.length ? average(rentBurdens) : 0,
     buyYears: median(state.units.map((item) => item.salePrice)) / Math.max(averageIndividualIncome * 12, 1),
     regulatedShare: state.units.filter((item) => item.regulated).length / state.units.length,
+    areaMetrics: collectAreaMetrics(),
     method: state.method,
     regime: state.marketRegime,
+  });
+}
+
+function collectAreaMetrics() {
+  return state.neighborhoods.map((area) => {
+    const units = state.units.filter((item) => item.neighborhoodId === area.id);
+    const occupiedUnits = units.filter((item) => item.household && !item.vacant);
+    const burdens = occupiedUnits.map((item) => item.rent / Math.max(item.household.income, 1));
+    return {
+      id: area.id,
+      demand: area.demandPressure,
+      rent: median(units.map((item) => item.rent / item.sqm)),
+      sale: median(units.map((item) => item.salePrice / item.sqm)),
+      vacancy: units.filter((item) => item.vacant).length / Math.max(units.length, 1),
+      burden: burdens.length ? average(burdens) : 0,
+    };
   });
 }
 
@@ -468,6 +548,8 @@ function render() {
   document.querySelector("#selectedName").textContent =
     state.method === "markov_chain" || state.method === "mcmc_state"
       ? `${getNeighborhood(state.selectedNeighborhood).name} · ${marketRegimeEffects[state.marketRegime].label}`
+      : state.method === "analytical"
+      ? `${getNeighborhood(state.selectedNeighborhood).name} · aggregate baseline`
       : getNeighborhood(state.selectedNeighborhood).name;
 
   renderControls();
@@ -484,6 +566,8 @@ function renderControls() {
   document.querySelector("#methodDescription").textContent =
     state.method === "markov_chain" || state.method === "mcmc_state"
       ? `${simulationMethods[state.method].description} Current regime: ${marketRegimeEffects[state.marketRegime].label}.`
+      : state.method === "analytical"
+      ? `${simulationMethods[state.method].description} Current aggregate demand: ${percent(state.analyticalState?.demand ?? average(state.neighborhoods.map((area) => area.demandPressure)))}.`
       : simulationMethods[state.method].description;
   const pairs = [
     ["rentControl", "rentControlValue"],
@@ -635,7 +719,7 @@ function renderDetails() {
   const details = document.querySelector("#areaDetails");
   details.innerHTML = `
     <dt>Method</dt><dd>${simulationMethods[state.method].label}</dd>
-    <dt>Regime</dt><dd>${state.method === "agent_based" ? "monthly rules" : marketRegimeEffects[state.marketRegime].label}</dd>
+    <dt>Regime</dt><dd>${state.method === "agent_based" ? "monthly rules" : state.method === "analytical" ? "aggregate recurrence" : marketRegimeEffects[state.marketRegime].label}</dd>
     <dt>Demand pressure</dt><dd>${percent(area.demandPressure)}</dd>
     <dt>Income mix</dt><dd>${area.incomeMix}</dd>
     <dt>Avg income/person</dt><dd>${euro(individualIncomes.length ? average(individualIncomes) : 0)}</dd>

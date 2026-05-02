@@ -561,6 +561,7 @@ Current code structure:
 
 - `src/berlin_re_sim/methods/base.py`: method enum and common protocol
 - `src/berlin_re_sim/methods/abm.py`: Mesa-backed agent-based method
+- `src/berlin_re_sim/methods/analytical.py`: deterministic aggregate baseline
 - `src/berlin_re_sim/methods/markov.py`: time-independent Markov state method
 - `src/berlin_re_sim/methods/mcmc.py`: Metropolis-Hastings state sampler
 - `src/berlin_re_sim/methods/factory.py`: method selection entry point

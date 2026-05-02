@@ -18,6 +18,10 @@ def create_simulation(
         from berlin_re_sim.methods.abm import AgentBasedSimulation
 
         return AgentBasedSimulation.from_scenario(loaded_scenario, seed=seed)
+    if method_name == SimulationMethod.ANALYTICAL:
+        from berlin_re_sim.methods.analytical import AnalyticalSimulation
+
+        return AnalyticalSimulation.from_scenario(loaded_scenario, seed=seed)
     if method_name == SimulationMethod.MARKOV_CHAIN:
         from berlin_re_sim.methods.markov import MarkovChainSimulation
 

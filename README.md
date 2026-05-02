@@ -30,6 +30,7 @@ Choose a simulation method:
 
 ```bash
 python3 -m berlin_re_sim --method agent_based
+python3 -m berlin_re_sim --method analytical
 python3 -m berlin_re_sim --method markov_chain
 python3 -m berlin_re_sim --method mcmc_state
 ```
@@ -62,6 +63,7 @@ If the phone cannot connect:
 
 - `docs/model_design.md` explains the data structure and simulation loop.
 - `docs/visualization_values.md` lists the signals worth showing in the game.
+- `docs/data_sources.md` maps future real datasets to model variables.
 - `data/scenarios/mitte_seed.json` is the first small scenario.
 - `src/berlin_re_sim/schemas.py` defines the durable domain objects.
 - `src/berlin_re_sim/model.py` contains the Mesa-compatible model skeleton.

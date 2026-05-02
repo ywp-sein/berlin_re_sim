@@ -1,5 +1,6 @@
 const methods = {
   agent_based: { label: "Agent-based", color: "#2f7d5b", step: "month" },
+  analytical: { label: "Analytical", color: "#7b5aa6", step: "iteration" },
   markov_chain: { label: "Markov chain", color: "#386d9f", step: "transition" },
   mcmc_state: { label: "MCMC state", color: "#b44435", step: "sample" },
 };
@@ -117,15 +118,54 @@ function runMethod(method, settings) {
     neighborhoods: structuredClone(comparisonSeed.neighborhoods),
     owners: structuredClone(comparisonSeed.owners),
     units: structuredClone(comparisonSeed.units),
+    analytical: null,
     history: [],
   };
   collect(sim, 0);
   for (let step = 1; step <= settings.steps; step += 1) {
     if (method === "agent_based") stepAgentBased(sim, settings);
+    else if (method === "analytical") stepAnalytical(sim, settings);
     else stepStateModel(sim, settings);
     collect(sim, step);
   }
   return sim;
+}
+
+function stepAnalytical(sim, settings) {
+  if (!sim.analytical) {
+    sim.analytical = {
+      demand: average(sim.neighborhoods.map((area) => area.demandPressure)),
+      rentMultiplier: 1,
+      saleMultiplier: 1,
+      vacancy: sim.units.filter((item) => item.vacant).length / sim.units.length,
+      stress: 0,
+    };
+  }
+  const influenceBoost = settings.influence ? 1 + settings.investor * 0.08 : 1;
+  sim.analytical.demand = clamp(
+    sim.analytical.demand * 0.992 + 0.008 * 0.82 * influenceBoost - settings.public * 0.002,
+    0,
+    1,
+  );
+  sim.analytical.rentMultiplier *=
+    1 + 0.0045 * sim.analytical.demand * (1 - settings.rentControl * 0.12);
+  sim.analytical.saleMultiplier *=
+    1 + 0.0065 * sim.analytical.demand * (1 + settings.investor * 0.15);
+  sim.analytical.vacancy = clamp(
+    sim.analytical.vacancy * 0.985 + 0.015 * (0.12 * sim.analytical.demand) - settings.vacancy * 0.002,
+    0.02,
+    0.22,
+  );
+  sim.analytical.stress = clamp(sim.analytical.stress * 0.92 + 0.08 * sim.analytical.demand, 0, 1);
+  for (const area of sim.neighborhoods) {
+    area.demandPressure = clamp(area.demandPressure * 0.8 + sim.analytical.demand * 0.2, 0.25, 1);
+  }
+  for (const currentUnit of sim.units) {
+    currentUnit.rent = currentUnit.baseRent * sim.analytical.rentMultiplier;
+    currentUnit.salePrice = currentUnit.baseSalePrice * sim.analytical.saleMultiplier;
+    currentUnit.vacant = stableHash(`analytical-${currentUnit.neighborhoodId}-${currentUnit.sqm}`) < sim.analytical.vacancy;
+    if (currentUnit.household) currentUnit.household.stress = sim.analytical.stress;
+  }
 }
 
 function stepAgentBased(sim, settings) {
@@ -183,15 +223,37 @@ function collect(sim, step) {
   const incomes = occupied.map((item) => item.household.income / Math.max(item.household.size, 1));
   const averageIncome = incomes.length ? average(incomes) : 0;
   const burden = occupied.map((item) => item.rent / Math.max(item.household.income, 1));
-  const regime = sim.method === "agent_based" ? null : regimes[sim.regime];
+  const regime = sim.method === "markov_chain" || sim.method === "mcmc_state" ? regimes[sim.regime] : null;
+  const analytical = sim.method === "analytical" ? sim.analytical : null;
   sim.history.push({
     step,
     rent: median(sim.units.map((item) => item.rent / item.sqm)),
     sale: median(sim.units.map((item) => item.salePrice / item.sqm)),
-    vacancy: regime ? regime.vacancy : sim.units.filter((item) => item.vacant).length / sim.units.length,
-    stress: regime ? regime.stress : average(occupied.map((item) => item.household.stress)),
+    vacancy: analytical
+      ? analytical.vacancy
+      : regime
+      ? regime.vacancy
+      : sim.units.filter((item) => item.vacant).length / sim.units.length,
+    stress: analytical
+      ? analytical.stress
+      : regime
+      ? regime.stress
+      : average(occupied.map((item) => item.household.stress)),
     burden: burden.length ? average(burden) : 0,
     buyYears: median(sim.units.map((item) => item.salePrice)) / Math.max(averageIncome * 12, 1),
+    areaMetrics: collectAreaMetrics(sim),
+  });
+}
+
+function collectAreaMetrics(sim) {
+  return sim.neighborhoods.map((area) => {
+    const units = sim.units.filter((item) => item.neighborhoodId === area.id);
+    return {
+      id: area.id,
+      demand: area.demandPressure,
+      rent: median(units.map((item) => item.rent / item.sqm)),
+      vacancy: units.filter((item) => item.vacant).length / Math.max(units.length, 1),
+    };
   });
 }
 
@@ -315,6 +377,14 @@ function seededRandom(seed) {
     value = (value * 16807) % 2147483647;
     return (value - 1) / 2147483646;
   };
+}
+
+function stableHash(value) {
+  let hash = 0;
+  for (let index = 0; index < value.length; index += 1) {
+    hash = (hash * 31 + value.charCodeAt(index)) % 1000;
+  }
+  return hash / 1000;
 }
 
 function average(values) {

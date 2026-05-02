@@ -10,6 +10,7 @@ from berlin_re_sim.schemas import MarketMetrics
 
 class SimulationMethod(StrEnum):
     AGENT_BASED = "agent_based"
+    ANALYTICAL = "analytical"
     MARKOV_CHAIN = "markov_chain"
     MCMC_STATE = "mcmc_state"
 
