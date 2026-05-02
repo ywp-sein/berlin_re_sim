@@ -85,6 +85,8 @@ If the phone cannot connect:
 - `docs/scenario_schema.md` describes the canonical scenario contract.
 - `docs/visualization_values.md` lists the signals worth showing in the game.
 - `docs/data_sources.md` maps future real datasets to model variables.
+- `docs/real_data_readiness.md` is the checklist before importing real data.
+- `data/source_registry.json` tracks candidate real-data sources and provenance.
 - `data/scenarios/mitte_seed.json` is the first small scenario.
 - `data/parameters/default_parameters.json` keeps model coefficients separate.
 - `data/targets/mitte_targets.json` stores calibration reference outputs.

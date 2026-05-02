@@ -246,6 +246,70 @@ const entries = [
     tags: ["parameters", "coefficients", "model assumptions"],
   },
   {
+    term: "Readiness gate",
+    category: "Implementation",
+    summary: "A checklist that blocks real data from entering the model until provenance, units, geography, and quality are clear.",
+    details:
+      "The readiness gate is the step between finding a promising dataset and using it in a scenario or target. It protects the model from silent assumptions: unknown licenses, mixed units, unclear geography, or values that look precise but cannot be traced.",
+    implementation: "Documented in docs/real_data_readiness.md and enforced by filling data/source_registry.json before import.",
+    tags: ["real data", "quality", "import", "provenance", "gate"],
+  },
+  {
+    term: "Source registry",
+    category: "Implementation",
+    summary: "A structured list of candidate, approved, imported, and rejected data sources.",
+    details:
+      "The source registry records what a dataset is, where it came from, what license or access constraints apply, what units it uses, what model fields it may update, and what quality checks are required. It lets several imperfect sources coexist without becoming confused with model truth.",
+    implementation: "Stored in data/source_registry.json and described by data/schema/source_registry.schema.json.",
+    tags: ["registry", "source", "JSON", "schema", "provenance"],
+  },
+  {
+    term: "Provenance",
+    category: "Implementation",
+    summary: "The record of where a value came from and whether it can be reused.",
+    details:
+      "For this project, provenance means source URL or access note, publisher, source date or period, license, and transformation notes. Without provenance, a number should stay synthetic or candidate-only.",
+    implementation: "Stored in source registry provenance fields and scenario/target metadata.",
+    tags: ["source", "license", "publisher", "metadata"],
+  },
+  {
+    term: "Canonical unit",
+    category: "Implementation",
+    summary: "The internal unit the simulation expects after raw source values are converted.",
+    details:
+      "Real sources may use monthly rent, yearly rent, warm rent, cold rent, price per apartment, price per square meter, household income, or individual income. The model needs consistent canonical units before values can be compared or calibrated.",
+    implementation:
+      "Examples: rent is EUR per square meter per month; sale price is EUR per square meter; rates are decimals from 0 to 1. See docs/real_data_readiness.md.",
+    tags: ["unit", "conversion", "rent", "sale", "income"],
+  },
+  {
+    term: "Geography mapping",
+    category: "Implementation",
+    summary: "The translation from a source's spatial level into the simulated Mitte areas.",
+    details:
+      "A source might describe all of Berlin, all of Mitte, a postal code, a block, a listing point, or a transit zone. Geography mapping records how that raw level is assigned to the prototype's area labels and how much uncertainty remains.",
+    implementation: "Stored in source registry geography fields before writing scenario or target values.",
+    tags: ["geography", "Mitte", "area", "mapping", "uncertainty"],
+  },
+  {
+    term: "Quality checks",
+    category: "Implementation",
+    summary: "Source-specific checks that must pass before a candidate source can become approved or imported.",
+    details:
+      "Quality checks ask whether a value is observed or modeled, whether it is mean or median, whether the period matches other sources, whether markets are mixed, and whether outliers or missing values change the result.",
+    implementation: "Stored as quality_checks in data/source_registry.json.",
+    tags: ["quality", "validation", "source", "import"],
+  },
+  {
+    term: "Stop condition",
+    category: "Implementation",
+    summary: "A reason to pause import instead of forcing uncertain real data into the model.",
+    details:
+      "Stop conditions include unknown license, impossible unit conversion, unclear geography, incompatible market mixing, or any value that would overwrite a synthetic assumption without provenance. A stopped source can remain useful as a research lead.",
+    implementation: "Listed in docs/real_data_readiness.md and reflected by keeping registry status as candidate or rejected.",
+    tags: ["stop", "license", "unit", "quality", "import"],
+  },
+  {
     term: "Area influence",
     category: "Mechanism",
     summary: "A directed spillover from one area to another.",

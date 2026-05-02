@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/berlin-re-sim/source_registry.schema.json",
+  "title": "Berlin Real Estate Simulation Source Registry",
+  "type": "object",
+  "required": ["schema_version", "metadata", "sources"],
+  "properties": {
+    "schema_version": { "type": "string" },
+    "metadata": {
+      "type": "object",
+      "required": ["purpose", "last_reviewed"],
+      "properties": {
+        "purpose": { "type": "string" },
+        "last_reviewed": { "type": "string" },
+        "notes": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "domain",
+          "status",
+          "provenance",
+          "unit_policy",
+          "model_fields",
+          "quality_checks"
+        ],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "domain": {
+            "type": "string",
+            "enum": ["rent", "purchase", "income", "housing_stock", "vacancy", "spatial_influence", "policy", "other"]
+          },
+          "status": {
+            "type": "string",
+            "enum": ["candidate", "approved", "imported", "rejected"]
+          },
+          "provenance": {
+            "type": "object",
+            "required": ["source_url", "publisher", "source_date", "license", "access_notes"],
+            "properties": {
+              "source_url": { "type": ["string", "null"] },
+              "publisher": { "type": ["string", "null"] },
+              "source_date": { "type": ["string", "null"] },
+              "license": { "type": ["string", "null"] },
+              "access_notes": { "type": "string" }
+            },
+            "additionalProperties": true
+          },
+          "unit_policy": {
+            "type": "object",
+            "required": ["raw_unit", "canonical_unit", "conversion_notes"],
+            "properties": {
+              "raw_unit": { "type": "string" },
+              "canonical_unit": { "type": "string" },
+              "conversion_notes": { "type": "string" }
+            },
+            "additionalProperties": true
+          },
+          "model_fields": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "geography": {
+            "type": "object",
+            "properties": {
+              "raw_level": { "type": ["string", "null"] },
+              "target_level": { "type": ["string", "null"] },
+              "mapping_notes": { "type": "string" }
+            },
+            "additionalProperties": true
+          },
+          "quality_checks": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "import_notes": { "type": "string" }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,6 +1,6 @@
 const currentVersion = {
-  label: "Prototype 0.5.7",
-  summary: "Notes version history can show generated GitHub commit links after deployment.",
+  label: "Prototype 0.5.9",
+  summary: "Wiki now explains real-data readiness and implementation terminology.",
 };
 
 const implementationNotes = [
@@ -22,8 +22,8 @@ const implementationNotes = [
     area: "Data",
     title: "Scenario, parameters, and targets are separate",
     body:
-      "Scenarios store initial state. Parameters store behavioral assumptions. Targets store calibration reference outputs. This separation prepares the project for real-data import and model convergence checks.",
-    files: "data/scenarios/, data/parameters/, data/targets/, data/schema/",
+      "Scenarios store initial state. Parameters store behavioral assumptions. Targets store calibration reference outputs. The source registry tracks real-data provenance before values enter any of those files.",
+    files: "data/source_registry.json, data/scenarios/, data/parameters/, data/targets/, data/schema/",
   },
   {
     area: "Calibration",
@@ -50,7 +50,7 @@ const implementationNotes = [
     area: "Documentation UI",
     title: "Tooltips, dictionary, and project notes",
     body:
-      "Short labels stay compact in the interface, while hover/focus tooltips and the dictionary wiki provide deeper explanations, including mathematical notes for simulation methods.",
+      "Short labels stay compact in the interface, while hover/focus tooltips and the dictionary wiki provide deeper explanations, including mathematical notes and real-data implementation terminology.",
     files: "web/wiki.html, web/wiki.js, web/notes.html, web/notes.js",
   },
   {
@@ -77,6 +77,26 @@ const implementationNotes = [
 ];
 
 const versions = [
+  {
+    version: "0.5.9",
+    date: "2026-05-02",
+    title: "Readiness terminology in wiki",
+    changes: [
+      "Added wiki entries for readiness gate, source registry, provenance, canonical units, geography mapping, quality checks, and stop conditions.",
+      "Updated documentation notes to include real-data implementation terminology.",
+      "Bumped service-worker cache for the updated wiki.",
+    ],
+  },
+  {
+    version: "0.5.8",
+    date: "2026-05-02",
+    title: "Real-data readiness gate",
+    changes: [
+      "Added a source registry schema and starter source registry.",
+      "Added a real-data readiness checklist with units, import order, quality questions, and stop conditions.",
+      "Linked the readiness gate from data source docs and README.",
+    ],
+  },
   {
     version: "0.5.7",
     date: "2026-05-02",

@@ -1,0 +1,130 @@
+{
+  "schema_version": "0.1",
+  "metadata": {
+    "purpose": "Track candidate real-world datasets before they are imported into scenarios, parameters, or calibration targets.",
+    "last_reviewed": "2026-05-02",
+    "notes": "Keep raw files and licenses separate. This registry records what each source is allowed to influence."
+  },
+  "sources": [
+    {
+      "id": "rent_reference_mitte_candidate",
+      "name": "Mitte rent reference candidate",
+      "domain": "rent",
+      "status": "candidate",
+      "provenance": {
+        "source_url": null,
+        "publisher": null,
+        "source_date": null,
+        "license": null,
+        "access_notes": "Fill before import. Prefer official or legally reusable sources."
+      },
+      "unit_policy": {
+        "raw_unit": "unknown",
+        "canonical_unit": "EUR per square meter per month",
+        "conversion_notes": "Convert warm/cold rent consistently before writing median_rent_per_sqm."
+      },
+      "model_fields": ["monthly_rent", "rent_per_sqm", "median_rent_per_sqm"],
+      "geography": {
+        "raw_level": null,
+        "target_level": "Mitte area or neighborhood proxy",
+        "mapping_notes": "Record whether values are district-wide, postal-code-level, block-level, or listing-level."
+      },
+      "quality_checks": [
+        "Confirm rent definition and whether utilities are included.",
+        "Check sample period and remove stale listing snapshots.",
+        "Compare median and percentile spread before replacing synthetic values."
+      ],
+      "import_notes": "Use first as calibration target, then scenario initialization if geography is detailed enough."
+    },
+    {
+      "id": "purchase_price_mitte_candidate",
+      "name": "Mitte purchase price candidate",
+      "domain": "purchase",
+      "status": "candidate",
+      "provenance": {
+        "source_url": null,
+        "publisher": null,
+        "source_date": null,
+        "license": null,
+        "access_notes": "Fill before import. Prefer transaction summaries or official market reports where available."
+      },
+      "unit_policy": {
+        "raw_unit": "unknown",
+        "canonical_unit": "EUR per square meter",
+        "conversion_notes": "Keep apartment, building, and land values separated if source permits."
+      },
+      "model_fields": ["estimated_sale_price", "sale_price_per_sqm", "median_sale_price_per_sqm"],
+      "geography": {
+        "raw_level": null,
+        "target_level": "Mitte area or neighborhood proxy",
+        "mapping_notes": "Do not mix district-level purchase prices with block-level rent values without recording aggregation."
+      },
+      "quality_checks": [
+        "Check whether values are asking prices, appraisals, or transactions.",
+        "Separate residential apartments from commercial or land-only records.",
+        "Record outlier policy before calculating medians."
+      ],
+      "import_notes": "Use for sale-price calibration and purchase affordability indicators."
+    },
+    {
+      "id": "income_affordability_candidate",
+      "name": "Household income and affordability candidate",
+      "domain": "income",
+      "status": "candidate",
+      "provenance": {
+        "source_url": null,
+        "publisher": null,
+        "source_date": null,
+        "license": null,
+        "access_notes": "Fill before import. Prefer sources with household size or person-level distribution."
+      },
+      "unit_policy": {
+        "raw_unit": "unknown",
+        "canonical_unit": "EUR per person per month",
+        "conversion_notes": "Record whether gross or net income is used and whether household size adjustment is applied."
+      },
+      "model_fields": ["income_monthly", "average_individual_income_monthly", "average_rent_burden"],
+      "geography": {
+        "raw_level": null,
+        "target_level": "Mitte area or district proxy",
+        "mapping_notes": "If only district-level values are available, mark uncertainty before assigning to households."
+      },
+      "quality_checks": [
+        "Check gross versus net definition.",
+        "Check household versus individual income.",
+        "Avoid using mean income alone if distribution data is available."
+      ],
+      "import_notes": "Use to calibrate household income distributions and rent-burden targets."
+    },
+    {
+      "id": "spatial_influence_candidate",
+      "name": "Spatial influence candidate",
+      "domain": "spatial_influence",
+      "status": "candidate",
+      "provenance": {
+        "source_url": null,
+        "publisher": null,
+        "source_date": null,
+        "license": null,
+        "access_notes": "Fill before import. Can combine distance, transit, workplace density, tourism, and public anchors."
+      },
+      "unit_policy": {
+        "raw_unit": "mixed",
+        "canonical_unit": "normalized influence weight from 0 to 1",
+        "conversion_notes": "Normalize each input layer before combining into directed influence weights."
+      },
+      "model_fields": ["area_influence_weight", "demand_pressure"],
+      "geography": {
+        "raw_level": null,
+        "target_level": "directed area-to-area edge",
+        "mapping_notes": "Record whether influence is symmetric or directed."
+      },
+      "quality_checks": [
+        "Keep positive pressure and stabilizing influence separate.",
+        "Run sensitivity tests before treating weights as calibrated.",
+        "Document all normalization choices."
+      ],
+      "import_notes": "Use to replace hand-written influence arrows after sensitivity tests."
+    }
+  ]
+}
