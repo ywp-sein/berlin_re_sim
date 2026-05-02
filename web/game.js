@@ -80,6 +80,17 @@ const mapShapes = {
   },
 };
 
+const areaInfluences = [
+  { from: "alexanderplatz", to: "museum_quarter", weight: 0.62, kind: "rent spillover" },
+  { from: "alexanderplatz", to: "rosenthaler", weight: 0.58, kind: "purchase pressure" },
+  { from: "rosenthaler", to: "north_mitte", weight: 0.46, kind: "displacement pressure" },
+  { from: "museum_quarter", to: "tiergarten_edge", weight: 0.4, kind: "tourism spillover" },
+  { from: "spree_office", to: "alexanderplatz", weight: 0.54, kind: "office demand" },
+  { from: "spree_office", to: "public_anchor", weight: 0.35, kind: "land pressure" },
+  { from: "public_anchor", to: "tiergarten_edge", weight: 0.32, kind: "stabilizing pressure" },
+  { from: "wedding_edge", to: "north_mitte", weight: 0.36, kind: "affordability pull" },
+];
+
 const simulationMethods = {
   agent_based: {
     label: "Agent-based",
@@ -214,6 +225,7 @@ const state = {
   method: "agent_based",
   marketRegime: "stable_affordable",
   chartMode: "overall",
+  showInfluences: true,
   selectedNeighborhood: "alexanderplatz",
   playing: false,
   timer: null,
@@ -233,6 +245,7 @@ const state = {
 const controls = {
   methodControl: document.querySelector("#methodControl"),
   chartModeControl: document.querySelector("#chartModeControl"),
+  influenceControl: document.querySelector("#influenceControl"),
   rentControl: document.querySelector("#rentControl"),
   vacancyControl: document.querySelector("#vacancyControl"),
   publicControl: document.querySelector("#publicControl"),
@@ -324,10 +337,36 @@ function sampleMCMCRegime(currentRegime) {
 }
 
 function updateDemand() {
+  const pressureByArea = Object.fromEntries(
+    state.neighborhoods.map((area) => [area.id, area.demandPressure]),
+  );
+  const spilloverByArea = Object.fromEntries(state.neighborhoods.map((area) => [area.id, 0]));
+  for (const edge of areaInfluences) {
+    const direction = edge.kind.includes("stabilizing") ? -1 : 1;
+    spilloverByArea[edge.to] +=
+      direction * pressureByArea[edge.from] * edge.weight * state.policy.investorPressure * 0.0038;
+  }
+
   for (const area of state.neighborhoods) {
     const investorPull = state.policy.investorPressure * 0.006;
     const protection = state.policy.publicAcquisition * 0.003;
-    area.demandPressure = clamp(area.demandPressure + investorPull - protection, 0.25, 1);
+    area.demandPressure = clamp(
+      area.demandPressure + investorPull - protection + spilloverByArea[area.id],
+      0.25,
+      1,
+    );
+  }
+
+  const strongest = areaInfluences
+    .map((edge) => ({
+      edge,
+      value: Math.abs(pressureByArea[edge.from] * edge.weight),
+    }))
+    .sort((a, b) => b.value - a.value)[0];
+  if (state.showInfluences && state.month % 6 === 0 && strongest) {
+    pushEvent(
+      `${mapShapes[strongest.edge.from].label} influenced ${mapShapes[strongest.edge.to].label} through ${strongest.edge.kind}.`,
+    );
   }
 }
 
@@ -437,6 +476,7 @@ function render() {
 function renderControls() {
   controls.methodControl.value = state.method;
   controls.chartModeControl.value = state.chartMode;
+  controls.influenceControl.checked = state.showInfluences;
   document.querySelector("#methodDescription").textContent =
     state.method === "markov_chain" || state.method === "mcmc_state"
       ? `${simulationMethods[state.method].description} Current regime: ${marketRegimeEffects[state.marketRegime].label}.`
@@ -471,6 +511,15 @@ function renderMap() {
         >
           <title>${shape.label}: ${percent(area.demandPressure)} demand pressure. Click to inspect local units.</title>
           <path d="${shape.path}" fill="${fill}"></path>
+        </g>
+      `;
+    })
+    .join("");
+  const labels = state.neighborhoods
+    .map((area) => {
+      const shape = mapShapes[area.id];
+      return `
+        <g class="map-label" aria-hidden="true">
           <text x="${shape.labelX}" y="${shape.labelY}" text-anchor="middle">
             <tspan x="${shape.labelX}" dy="0">${shape.label}</tspan>
             <tspan x="${shape.labelX}" dy="18">${percent(area.demandPressure)} demand</tspan>
@@ -479,13 +528,57 @@ function renderMap() {
       `;
     })
     .join("");
+  const influenceLayer = state.showInfluences
+    ? areaInfluences
+        .map((edge) => {
+          const source = mapShapes[edge.from];
+          const target = mapShapes[edge.to];
+          const strength = edge.weight * getNeighborhood(edge.from).demandPressure;
+          const strokeWidth = 5 + strength * 10;
+          const opacity = 0.58 + strength * 0.36;
+          const midX = source.labelX * 0.58 + target.labelX * 0.42;
+          const midY = source.labelY * 0.58 + target.labelY * 0.42;
+          const curveOffset = edge.kind.includes("stabilizing") ? -36 : 36;
+          const controlX = (source.labelX + target.labelX) / 2 + curveOffset;
+          const controlY = (source.labelY + target.labelY) / 2 - curveOffset * 0.45;
+          const path = `M${source.labelX} ${source.labelY} Q${controlX} ${controlY} ${target.labelX} ${target.labelY}`;
+          const selected =
+            edge.from === state.selectedNeighborhood || edge.to === state.selectedNeighborhood;
+          return `
+            <g class="influence-edge ${selected ? "selected" : ""}">
+              <title>${source.label} -> ${target.label}: ${edge.kind}, ${percent(edge.weight)} base influence</title>
+              <path class="influence-halo" d="${path}"></path>
+              <path
+                class="influence-line"
+                d="${path}"
+                stroke-width="${strokeWidth.toFixed(2)}"
+                opacity="${opacity.toFixed(2)}"
+              ></path>
+              <circle cx="${source.labelX}" cy="${source.labelY}" r="${(4 + strength * 8).toFixed(1)}"></circle>
+              <text x="${midX}" y="${midY}">${Math.round(edge.weight * 100)}</text>
+            </g>
+          `;
+        })
+        .join("")
+    : "";
 
   mapGrid.innerHTML = `
     <svg class="mitte-map" viewBox="0 0 690 620" role="img" aria-label="Stylized Mitte real estate simulation map">
+      <defs>
+        <marker id="influenceArrow" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto" markerUnits="strokeWidth">
+          <path d="M0 0 L9 4.5 L0 9 Z"></path>
+        </marker>
+      </defs>
       <rect class="map-water" x="30" y="476" width="640" height="42" rx="21"></rect>
       <path class="map-river" d="M42 500 C154 452 238 520 342 482 C446 444 520 464 652 522"></path>
       <path class="map-ring" d="M72 112 L210 38 L350 54 L506 104 L610 346 L648 508 L586 580 L430 572 L218 474 L92 430 L36 340 L38 182 Z"></path>
       ${areas}
+      <g class="influence-layer" aria-hidden="${state.showInfluences ? "false" : "true"}">
+        ${influenceLayer}
+      </g>
+      <g class="label-layer">
+        ${labels}
+      </g>
       <g class="map-place-labels" aria-hidden="true">
         <text x="84" y="92">north-west edge</text>
         <text x="594" y="132">east edge</text>
@@ -496,6 +589,7 @@ function renderMap() {
       <span><i class="low"></i>Lower demand</span>
       <span><i class="high"></i>Higher demand</span>
       <span><i class="line"></i>Spree corridor</span>
+      <span><i class="arrow"></i>Influence</span>
     </div>
   `;
 
@@ -752,6 +846,11 @@ controls.methodControl.addEventListener("change", (event) => {
 
 controls.chartModeControl.addEventListener("change", (event) => {
   state.chartMode = event.target.value;
+  render();
+});
+
+controls.influenceControl.addEventListener("change", (event) => {
+  state.showInfluences = event.target.checked;
   render();
 });
 

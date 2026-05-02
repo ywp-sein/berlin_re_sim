@@ -246,6 +246,17 @@ button:hover {
   font-size: 14px;
 }
 
+.controls-panel .toggle-row {
+  align-items: center;
+}
+
+.controls-panel .toggle-row input {
+  grid-column: auto;
+  justify-self: end;
+  width: 20px;
+  min-height: 20px;
+}
+
 .controls-panel input {
   grid-column: 1 / -1;
   width: 100%;
@@ -327,6 +338,56 @@ button:hover {
   outline: none;
 }
 
+.influence-layer {
+  pointer-events: auto;
+}
+
+.influence-edge {
+  filter: drop-shadow(0 3px 5px rgba(34, 40, 38, 0.16));
+}
+
+.influence-edge .influence-halo {
+  fill: none;
+  stroke: #fffdf7;
+  stroke-linecap: round;
+  stroke-width: 12;
+  opacity: 0.76;
+}
+
+.influence-edge .influence-line {
+  fill: none;
+  stroke: #8d2f87;
+  stroke-linecap: round;
+  marker-end: url(#influenceArrow);
+  mix-blend-mode: multiply;
+}
+
+.influence-edge.selected .influence-line {
+  stroke: #c43e7f;
+}
+
+.influence-edge circle {
+  fill: #8d2f87;
+  opacity: 0.48;
+  stroke: #fffdf7;
+  stroke-width: 3;
+}
+
+.influence-edge text {
+  fill: #4a2454;
+  font-size: 14px;
+  font-weight: 800;
+  opacity: 0.72;
+  paint-order: stroke;
+  pointer-events: none;
+  stroke: #fffdf7;
+  stroke-width: 5px;
+}
+
+#influenceArrow path {
+  fill: #8d2f87;
+}
+
 .map-area path {
   stroke: #fffdf7;
   stroke-width: 5;
@@ -344,15 +405,18 @@ button:hover {
   stroke-width: 6;
 }
 
-.map-area text {
+.map-label text {
   fill: var(--ink);
   font-size: 15px;
   font-weight: 760;
   letter-spacing: 0;
+  paint-order: stroke;
   pointer-events: none;
+  stroke: rgba(255, 253, 247, 0.92);
+  stroke-width: 5px;
 }
 
-.map-area tspan + tspan {
+.map-label tspan + tspan {
   fill: var(--muted);
   font-size: 13px;
   font-weight: 650;
@@ -398,6 +462,11 @@ button:hover {
 .map-legend .line {
   height: 4px;
   background: rgba(56, 109, 159, 0.55);
+}
+
+.map-legend .arrow {
+  height: 5px;
+  background: #8d2f87;
 }
 
 dl {
@@ -593,11 +662,11 @@ canvas {
     aspect-ratio: 690 / 700;
   }
 
-  .map-area text {
+  .map-label text {
     font-size: 17px;
   }
 
-  .map-area tspan + tspan {
+  .map-label tspan + tspan {
     font-size: 15px;
   }
 
@@ -652,11 +721,11 @@ canvas {
     justify-self: start;
   }
 
-  .map-area text {
+  .map-label text {
     font-size: 15px;
   }
 
-  .map-area tspan + tspan {
+  .map-label tspan + tspan {
     font-size: 13px;
   }
 }

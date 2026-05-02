@@ -233,6 +233,46 @@ Interpretation:
 - public acquisition/protection reduces demand pressure
 - $\operatorname{clamp}$ keeps the value inside a realistic gameplay range
 
+### Area-To-Area Influence
+
+It makes sense to model each area as influencing nearby or connected areas. In
+the UI this appears as directed weighted edges on the map. Each edge means that
+pressure in one area can spill into another area.
+
+Let $W_{ij}$ be the influence weight from area $i$ to area $j$. A future demand
+pressure update can include neighborhood spillover:
+
+$$
+\operatorname{spillover}_j(t)
+=
+\sum_{i \in N}
+W_{ij}D_i(t)
+$$
+
+$$
+D_j(t+1)
+=
+\operatorname{clamp}
+\left(
+  \lambda D_j(t)
+  + (1-\lambda)\operatorname{pull}_j(t)
+  + \beta \operatorname{spillover}_j(t),
+  0,
+  1
+\right)
+$$
+
+where:
+
+- $W_{ij}$ is higher when areas are close, transit-connected, or economically
+  linked
+- $\lambda$ controls inertia
+- $\beta$ controls how strongly spillovers affect demand
+- positive edges can represent rent, purchase, office, tourism, or displacement
+  pressure
+- negative or dampening edges can represent public ownership or cooperative
+  stabilization
+
 ### Rent Update
 
 In the Python Mesa prototype, owners increase rent according to local demand and
