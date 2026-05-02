@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#303734" />
+    <title>Implementation Notes · Berlin Real Estate Sim</title>
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app notes-app">
+      <header class="topbar">
+        <div>
+          <h1>
+            <span
+              class="info"
+              tabindex="0"
+              data-tooltip="A project ledger for implementation decisions, version history, current gaps, and next work."
+            >Implementation Notes</span>
+          </h1>
+          <p
+            class="info"
+            tabindex="0"
+            data-tooltip="This page tracks the whole prototype, including Python methods, data files, web UI, calibration, and documentation."
+          >version tracking and project memory</p>
+        </div>
+        <div class="run-controls" aria-label="notes navigation">
+          <a class="nav-link" href="index.html">Game</a>
+          <a class="nav-link" href="compare.html">Compare</a>
+          <a class="nav-link" href="wiki.html">Wiki</a>
+        </div>
+      </header>
+
+      <section class="notes-layout">
+        <aside class="panel notes-sidebar" aria-label="project status">
+          <h2>
+            <span
+              class="info"
+              tabindex="0"
+              data-tooltip="Prototype version is separate from the service-worker cache version. It tracks product and modeling progress."
+            >Current Version</span>
+          </h2>
+          <strong id="currentVersion">Prototype 0.5.0</strong>
+          <p id="currentVersionSummary">Documentation UI and version ledger.</p>
+          <label>
+            <span>Filter notes</span>
+            <select id="notesFilter">
+              <option value="all">All areas</option>
+            </select>
+          </label>
+        </aside>
+
+        <section class="notes-content">
+          <section class="notes-section">
+            <div class="section-heading">
+              <h2>
+                <span
+                  class="info"
+                  tabindex="0"
+                  data-tooltip="Major implementation areas and why they are structured this way."
+                >Implementation Ledger</span>
+              </h2>
+              <span id="notesActiveFilter">all areas</span>
+            </div>
+            <div id="implementationNotes" class="notes-grid"></div>
+          </section>
+
+          <section class="notes-section">
+            <div class="section-heading">
+              <h2>
+                <span
+                  class="info"
+                  tabindex="0"
+                  data-tooltip="Chronological project milestones. Use this when you want to remember what was added in each stage."
+                >Version History</span>
+              </h2>
+              <span>prototype milestones</span>
+            </div>
+            <div id="versionHistory" class="version-list"></div>
+          </section>
+
+          <section class="notes-section">
+            <div class="section-heading">
+              <h2>
+                <span
+                  class="info"
+                  tabindex="0"
+                  data-tooltip="Known constraints that should be handled before trusting the simulation as evidence."
+                >Open Gaps</span>
+              </h2>
+              <span>things to keep visible</span>
+            </div>
+            <div id="openGaps" class="notes-grid"></div>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <script src="notes.js"></script>
+    <script>
+      if ("serviceWorker" in navigator && location.protocol !== "file:") {
+        navigator.serviceWorker.register("service-worker.js");
+      }
+    </script>
+  </body>
+</html>

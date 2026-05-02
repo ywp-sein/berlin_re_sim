@@ -55,6 +55,10 @@ For terminology and implementation notes, open `web/wiki.html`. It includes a
 local search over model methods, metrics, calibration terms, policy levers, and
 data structures.
 
+For project-wide implementation memory and version tracking, open
+`web/notes.html`. It records milestone versions, architecture notes, open gaps,
+and the files connected to each area.
+
 If the phone cannot connect:
 
 - confirm the phone is not on mobile data or a guest Wi-Fi network
@@ -79,3 +83,4 @@ If the phone cannot connect:
 - `src/berlin_re_sim/methods/` contains selectable simulation methods.
 - `web/index.html` is a dependency-free visualization/game prototype.
 - `web/wiki.html` is the searchable terminology and implementation dictionary.
+- `web/notes.html` is the project implementation and version ledger.
