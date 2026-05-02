@@ -23,9 +23,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
+
+      - name: Build version commit links
+        run: python3 scripts/build_version_commits.py
 
       - name: Upload static web folder
         uses: actions/upload-pages-artifact@v3

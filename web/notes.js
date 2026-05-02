@@ -1,6 +1,6 @@
 const currentVersion = {
-  label: "Prototype 0.5.5",
-  summary: "Wiki method math now includes parameter legends for each model.",
+  label: "Prototype 0.5.7",
+  summary: "Notes version history can show generated GitHub commit links after deployment.",
 };
 
 const implementationNotes = [
@@ -57,15 +57,15 @@ const implementationNotes = [
     area: "Mobile/PWA",
     title: "Offline cache and phone access",
     body:
-      "The app can be served over the local network and cached by the service worker. Cache versions are bumped when web assets change so phones do not hold stale pages.",
+      "The app can be served over the local network and cached by the service worker. Cache versions are bumped when web assets change, and navigation requests are network-first so deployed pages can refresh while still working offline.",
     files: "web/service-worker.js, web/manifest.webmanifest",
   },
   {
     area: "Deployment",
     title: "GitHub Pages publishes the static web folder",
     body:
-      "The repository uses a GitHub Actions Pages workflow to deploy the web/ folder directly. This avoids moving the static app into the repository root or docs/ folder.",
-    files: ".github/workflows/pages.yml, docs/deployment.md",
+      "The repository uses a GitHub Actions Pages workflow to deploy the web/ folder directly. A .nojekyll marker keeps GitHub Pages serving static files directly, and the deploy build generates commit links for the version history.",
+    files: ".github/workflows/pages.yml, scripts/build_version_commits.py, web/version-commits.json, web/.nojekyll, docs/deployment.md",
   },
   {
     area: "Maintenance",
@@ -77,6 +77,28 @@ const implementationNotes = [
 ];
 
 const versions = [
+  {
+    version: "0.5.7",
+    date: "2026-05-02",
+    title: "Automated version commit links",
+    changes: [
+      "Added a build script that maps each Notes version to the commit that introduced it.",
+      "Updated the GitHub Pages workflow to generate version-commits.json during deployment.",
+      "Updated the Notes page to show commit links beside version entries when the generated map is available.",
+      "Made the service worker fetch the generated commit map network-first.",
+    ],
+  },
+  {
+    version: "0.5.6",
+    date: "2026-05-02",
+    title: "Deployment and offline-cache polish",
+    changes: [
+      "Added web/.nojekyll for direct GitHub Pages static serving.",
+      "Changed service-worker navigation requests to network-first with cached fallback.",
+      "Added skipWaiting and clients.claim so service-worker updates take effect sooner.",
+      "Documented Pages and offline-cache behavior in deployment notes.",
+    ],
+  },
   {
     version: "0.5.5",
     date: "2026-05-02",
@@ -214,6 +236,7 @@ const implementationHost = document.querySelector("#implementationNotes");
 const versionHost = document.querySelector("#versionHistory");
 const gapsHost = document.querySelector("#openGaps");
 const activeFilter = document.querySelector("#notesActiveFilter");
+let versionCommits = {};
 
 function initializeNotes() {
   document.querySelector("#currentVersion").textContent = currentVersion.label;
@@ -225,6 +248,18 @@ function initializeNotes() {
   filterSelect.addEventListener("change", renderNotes);
   renderVersions();
   renderNotes();
+  loadVersionCommits();
+}
+
+async function loadVersionCommits() {
+  try {
+    const response = await fetch("version-commits.json", { cache: "no-store" });
+    if (!response.ok) return;
+    versionCommits = await response.json();
+    renderVersions();
+  } catch (error) {
+    versionCommits = {};
+  }
 }
 
 function renderNotes() {
@@ -247,12 +282,19 @@ function renderVersions() {
             <strong>${item.version}</strong>
             <span>${item.date}</span>
           </div>
+          ${renderCommitLink(item.version)}
           <h2>${item.title}</h2>
           <ul>${item.changes.map((change) => `<li>${change}</li>`).join("")}</ul>
         </article>
       `,
     )
     .join("");
+}
+
+function renderCommitLink(version) {
+  const commit = versionCommits[version];
+  if (!commit?.url || !commit?.short) return "";
+  return `<a class="version-commit" href="${commit.url}" target="_blank" rel="noopener">commit ${commit.short}</a>`;
 }
 
 function renderNoteCard(note) {

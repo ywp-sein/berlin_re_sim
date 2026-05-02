@@ -863,6 +863,18 @@ dd {
   color: var(--green);
 }
 
+.version-commit {
+  width: fit-content;
+  color: var(--blue);
+  font-size: 13px;
+  font-weight: 720;
+  text-decoration: none;
+}
+
+.version-commit:hover {
+  text-decoration: underline;
+}
+
 .version-card ul {
   display: grid;
   gap: 6px;
