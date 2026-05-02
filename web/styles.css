@@ -888,7 +888,7 @@ dd {
 
 .docs-layout {
   display: grid;
-  grid-template-columns: 300px minmax(0, 1fr);
+  grid-template-columns: minmax(240px, 300px) minmax(0, 1fr);
   gap: 16px;
   align-items: start;
 }
@@ -896,6 +896,7 @@ dd {
 .docs-sidebar {
   display: grid;
   gap: 14px;
+  min-width: 0;
 }
 
 .docs-sidebar label {
@@ -918,12 +919,15 @@ dd {
 .docs-nav {
   display: grid;
   gap: 8px;
+  min-width: 0;
 }
 
 .docs-nav-item {
   display: grid;
   gap: 3px;
   min-height: 0;
+  min-width: 0;
+  width: 100%;
   padding: 10px;
   border-color: var(--line);
   background: #fbfaf4;
@@ -943,8 +947,16 @@ dd {
   font-size: 12px;
 }
 
+.docs-nav-item strong,
+.docs-nav-item span,
+.docs-empty {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 .docs-reader {
   min-width: 0;
+  overflow: hidden;
   padding: 16px;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -954,8 +966,20 @@ dd {
 .markdown-body {
   display: grid;
   gap: 10px;
+  min-width: 0;
+  max-width: 100%;
   color: var(--ink);
   line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.docs-reader .section-heading span {
+  overflow-wrap: anywhere;
+}
+
+.markdown-body > * {
+  min-width: 0;
+  max-width: 100%;
 }
 
 .markdown-body h1,
@@ -968,6 +992,7 @@ dd {
 .markdown-body p,
 .markdown-body li {
   color: var(--muted);
+  overflow-wrap: anywhere;
 }
 
 .markdown-body ul {
@@ -993,6 +1018,7 @@ dd {
   margin: 0;
   max-width: 100%;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   padding: 10px;
   border-radius: 7px;
   background: #202623;
@@ -1003,6 +1029,19 @@ dd {
   padding: 0;
   background: transparent;
   color: inherit;
+}
+
+.markdown-body mjx-container {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.markdown-body svg,
+.markdown-body img {
+  max-width: 100%;
+  height: auto;
 }
 
 .chart-tools {
@@ -1066,6 +1105,12 @@ canvas {
 
 .event-log li {
   font-size: 13px;
+}
+
+@media (max-width: 1120px) {
+  .docs-layout {
+    grid-template-columns: 260px minmax(0, 1fr);
+  }
 }
 
 @media (max-width: 980px) {

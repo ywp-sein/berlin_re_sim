@@ -1,6 +1,6 @@
 const currentVersion = {
-  label: "Prototype 0.5.12",
-  summary: "Compute and power usage estimator for scenario-size planning.",
+  label: "Prototype 0.5.13",
+  summary: "Docs page width and overflow polish.",
 };
 
 const implementationNotes = [
@@ -77,6 +77,17 @@ const implementationNotes = [
 ];
 
 const versions = [
+  {
+    version: "0.5.13",
+    date: "2026-05-02",
+    title: "Docs layout width polish",
+    changes: [
+      "Adjusted the docs grid so the sidebar narrows more smoothly before the mobile breakpoint.",
+      "Added wrapping for long doc paths, navigation labels, paragraphs, and list content.",
+      "Kept code blocks, MathJax, images, and SVGs inside the docs reader instead of widening the page.",
+      "Bumped service-worker cache for the updated docs styles.",
+    ],
+  },
   {
     version: "0.5.12",
     date: "2026-05-02",
