@@ -34,12 +34,15 @@ Use these units inside scenarios and targets:
 ## Import Order
 
 1. Fill `data/source_registry.json`.
-2. Store raw files outside scenario files.
-3. Convert raw units into canonical units.
-4. Map geography into Mitte area proxies.
-5. Write calibration targets first.
-6. Compare all simulation methods against the same targets.
-7. Only then replace scenario initialization values.
+2. Run `python3 scripts/validate_scenario.py` on the current synthetic scenario
+   so the pre-import baseline is structurally clean.
+3. Store raw files outside scenario files.
+4. Convert raw units into canonical units.
+5. Map geography into Mitte area proxies.
+6. Write calibration targets first.
+7. Compare all simulation methods against the same targets.
+8. Only then replace scenario initialization values and run the scenario
+   validator again.
 
 This order keeps the synthetic scenario useful while real targets are being
 tested.

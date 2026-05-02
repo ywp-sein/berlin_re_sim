@@ -134,19 +134,58 @@ testing, but not for real-world conclusions.
 
 Before pulling real data, the most useful next implementation steps are:
 
-1. Add scenario validation beyond the permissive JSON schema.
-2. Add consistency checks for IDs: unit -> building -> parcel -> neighborhood,
-   unit -> household, and parcel -> owner.
-3. Move method coefficients and state-machine probabilities into parameter files
+1. Keep running `scripts/validate_scenario.py` after any scenario edit.
+2. Move method coefficients and state-machine probabilities into parameter files
    instead of keeping them in code.
-4. Add a baseline report script that writes the current method outputs to a JSON
+3. Add a baseline report script that writes the current method outputs to a JSON
    or markdown file.
-5. Add target provenance fields to every calibration target value, not only to
+4. Add target provenance fields to every calibration target value, not only to
    the target document as a whole.
-6. Add a real-data import staging folder for raw and normalized files, even
+5. Add a real-data import staging folder for raw and normalized files, even
    before downloading real datasets.
-7. Define how real geography will map into the current eight Mitte proxy areas.
-8. Add an explicit synthetic-vs-observed badge in the web UI, so prototype
+6. Define how real geography will map into the current eight Mitte proxy areas.
+7. Add an explicit synthetic-vs-observed badge in the web UI, so prototype
+   values are never mistaken for real data.
+
+## Scenario Validation
+
+Run:
+
+```bash
+python3 scripts/validate_scenario.py
+```
+
+The validator checks:
+
+- required top-level scenario sections
+- duplicate IDs
+- required fields for districts, neighborhoods, parcels, buildings, units,
+  owners, and households
+- rates bounded between `0` and `1`
+- non-negative numeric quantities
+- neighborhood -> district references
+- parcel -> neighborhood and parcel -> owner references
+- building -> parcel references
+- unit -> building and unit -> household references
+- household neighborhood preferences
+- influence-edge endpoints and weights
+- household occupancy consistency, including vacant units not having households
+
+This is intentionally dependency-free so it can run before extra validation
+libraries are installed.
+
+Remaining hardening:
+
+1. Move method coefficients and state-machine probabilities into parameter files
+   instead of keeping them in code.
+2. Add a baseline report script that writes the current method outputs to a JSON
+   or markdown file.
+3. Add target provenance fields to every calibration target value, not only to
+   the target document as a whole.
+4. Add a real-data import staging folder for raw and normalized files, even
+   before downloading real datasets.
+5. Define how real geography will map into the current eight Mitte proxy areas.
+6. Add an explicit synthetic-vs-observed badge in the web UI, so prototype
    values are never mistaken for real data.
 
 The best immediate next step is scenario validation and baseline report

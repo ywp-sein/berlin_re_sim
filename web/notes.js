@@ -1,6 +1,6 @@
 const currentVersion = {
-  label: "Prototype 0.5.17",
-  summary: "Recorded current synthetic observations and pre-data next steps.",
+  label: "Prototype 0.5.18",
+  summary: "Real-data preflight milestone with scenario validation.",
 };
 
 const implementationNotes = [
@@ -22,8 +22,8 @@ const implementationNotes = [
     area: "Data",
     title: "Scenario, parameters, and targets are separate",
     body:
-      "Scenarios store initial state. Parameters store behavioral assumptions. Targets store calibration reference outputs. The web app consumes a generated scenario bundle from the canonical scenario, and the source registry tracks real-data provenance before values enter any of those files.",
-    files: "data/source_registry.json, data/scenarios/, data/parameters/, data/targets/, data/schema/, scripts/build_scenario_content.py, web/scenario.js",
+      "Scenarios store initial state. Parameters store behavioral assumptions. Targets store calibration reference outputs. The web app consumes a generated scenario bundle from the canonical scenario, the scenario validator checks structure before import, and the source registry tracks real-data provenance before values enter any of those files.",
+    files: "data/source_registry.json, data/scenarios/, data/parameters/, data/targets/, data/schema/, scripts/build_scenario_content.py, scripts/validate_scenario.py, web/scenario.js",
   },
   {
     area: "Calibration",
@@ -77,6 +77,17 @@ const implementationNotes = [
 ];
 
 const versions = [
+  {
+    version: "0.5.18",
+    date: "2026-05-02",
+    title: "Real-data preflight milestone",
+    changes: [
+      "Recorded the project state as a pre-real-data milestone.",
+      "Added scripts/validate_scenario.py for dependency-free scenario structure and ID consistency checks.",
+      "Documented the validator in README, current observations, and real-data readiness docs.",
+      "Regenerated docs content and bumped the service-worker cache.",
+    ],
+  },
   {
     version: "0.5.17",
     date: "2026-05-02",
