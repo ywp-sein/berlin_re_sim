@@ -88,6 +88,7 @@ If the phone cannot connect:
 ## Project Map
 
 - `docs/modeling/model_design.md` explains the data structure and simulation loop.
+- `docs/modeling/current_observations.md` records what the synthetic prototype can currently show.
 - `docs/modeling/scenario_schema.md` describes the canonical scenario contract.
 - `docs/modeling/visualization_values.md` lists the signals worth showing in the game.
 - `docs/data/data_sources.md` maps future real datasets to model variables.

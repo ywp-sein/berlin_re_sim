@@ -1,6 +1,6 @@
 const currentVersion = {
-  label: "Prototype 0.5.16",
-  summary: "Canonical scenario now feeds the browser game and comparison page.",
+  label: "Prototype 0.5.17",
+  summary: "Recorded current synthetic observations and pre-data next steps.",
 };
 
 const implementationNotes = [
@@ -36,8 +36,8 @@ const implementationNotes = [
     area: "Visualization",
     title: "Game-first static web prototype",
     body:
-      "The web app is dependency-free and mobile-friendly. It shows policy levers, market metrics, a stylized Mitte map, area influences, time-series signals, and event logs.",
-    files: "web/index.html, web/game.js, web/styles.css",
+      "The web app is dependency-free and mobile-friendly. It shows policy levers, market metrics, a stylized Mitte map, area influences, time-series signals, event logs, and synthetic baseline observables.",
+    files: "web/index.html, web/game.js, web/styles.css, docs/modeling/current_observations.md",
   },
   {
     area: "Comparison UI",
@@ -77,6 +77,17 @@ const implementationNotes = [
 ];
 
 const versions = [
+  {
+    version: "0.5.17",
+    date: "2026-05-02",
+    title: "Current observations baseline",
+    changes: [
+      "Added docs/modeling/current_observations.md to record what the synthetic simulation can currently show.",
+      "Recorded example 12-step outputs for analytical, Markov chain, and MCMC state methods.",
+      "Listed the remaining implementation steps that should be tightened before real-data import.",
+      "Regenerated docs content so the Docs page and wiki include the new observations page.",
+    ],
+  },
   {
     version: "0.5.16",
     date: "2026-05-02",
