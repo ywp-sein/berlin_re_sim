@@ -59,6 +59,9 @@ For project-wide implementation memory and version tracking, open
 `web/notes.html`. It records milestone versions, architecture notes, open gaps,
 and the files connected to each area.
 
+For rendered project documentation, open `web/docs.html`. It loads a generated
+bundle of `README.md` and all markdown files in `docs/`.
+
 For internet access through GitHub Pages, see `docs/deployment.md`. The included
 GitHub Actions workflow publishes the static `web/` folder.
 
@@ -96,3 +99,4 @@ If the phone cannot connect:
 - `web/index.html` is a dependency-free visualization/game prototype.
 - `web/wiki.html` is the searchable terminology and implementation dictionary.
 - `web/notes.html` is the project implementation and version ledger.
+- `web/docs.html` renders README and docs markdown inside the app.

@@ -18,6 +18,9 @@ build time because the commit hash does not exist when the notes entry is being
 written. The checked-in `web/version-commits.json` is only an empty local
 placeholder; the deployed artifact contains the generated links.
 
+The workflow also runs `scripts/build_docs_content.py`, which bundles
+`README.md` and `docs/*.md` into `web/docs-content.json` for the Docs page.
+
 To enable it on GitHub:
 
 1. Push the workflow to GitHub.

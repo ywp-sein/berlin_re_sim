@@ -1,6 +1,6 @@
 const currentVersion = {
-  label: "Prototype 0.5.9",
-  summary: "Wiki now explains real-data readiness and implementation terminology.",
+  label: "Prototype 0.5.11",
+  summary: "Docs page has a generated JS fallback bundle for local and cached use.",
 };
 
 const implementationNotes = [
@@ -50,8 +50,8 @@ const implementationNotes = [
     area: "Documentation UI",
     title: "Tooltips, dictionary, and project notes",
     body:
-      "Short labels stay compact in the interface, while hover/focus tooltips and the dictionary wiki provide deeper explanations, including mathematical notes and real-data implementation terminology.",
-    files: "web/wiki.html, web/wiki.js, web/notes.html, web/notes.js",
+      "Short labels stay compact in the interface, while hover/focus tooltips, dictionary wiki, project notes, and generated docs page provide deeper explanations.",
+    files: "web/wiki.html, web/wiki.js, web/notes.html, web/notes.js, web/docs.html, web/docs.js",
   },
   {
     area: "Mobile/PWA",
@@ -77,6 +77,27 @@ const implementationNotes = [
 ];
 
 const versions = [
+  {
+    version: "0.5.11",
+    date: "2026-05-02",
+    title: "Docs bundle fallback",
+    changes: [
+      "Generated docs-content.js alongside docs-content.json.",
+      "Loaded docs-content.js before docs.js so direct file access can still render docs.",
+      "Updated docs.js to fall back to the embedded bundle when JSON fetch fails or is empty.",
+      "Bumped service-worker cache for the docs fix.",
+    ],
+  },
+  {
+    version: "0.5.10",
+    date: "2026-05-02",
+    title: "Rendered docs page",
+    changes: [
+      "Added a Docs subpage for README and markdown docs.",
+      "Added a build script that bundles README.md and docs/*.md into web/docs-content.json.",
+      "Updated GitHub Pages deployment, navigation, service-worker cache, and README for the docs page.",
+    ],
+  },
   {
     version: "0.5.9",
     date: "2026-05-02",

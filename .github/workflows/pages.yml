@@ -32,6 +32,9 @@ jobs:
       - name: Build version commit links
         run: python3 scripts/build_version_commits.py
 
+      - name: Build markdown docs bundle
+        run: python3 scripts/build_docs_content.py
+
       - name: Upload static web folder
         uses: actions/upload-pages-artifact@v3
         with:

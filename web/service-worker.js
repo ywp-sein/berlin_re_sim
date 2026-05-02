@@ -1,4 +1,4 @@
-const CACHE_NAME = "berlin-re-sim-v24";
+const CACHE_NAME = "berlin-re-sim-v26";
 const ASSETS = [
   "./",
   "./index.html",
@@ -10,6 +10,10 @@ const ASSETS = [
   "./wiki.js",
   "./notes.html",
   "./notes.js",
+  "./docs.html",
+  "./docs.js",
+  "./docs-content.json",
+  "./docs-content.js",
   "./version-commits.json",
   "./.nojekyll",
   "./manifest.webmanifest",
@@ -38,6 +42,14 @@ self.addEventListener("fetch", (event) => {
     return;
   }
   if (new URL(event.request.url).pathname.endsWith("/version-commits.json")) {
+    event.respondWith(fetch(event.request).catch(() => caches.match(event.request)));
+    return;
+  }
+  if (new URL(event.request.url).pathname.endsWith("/docs-content.json")) {
+    event.respondWith(fetch(event.request).catch(() => caches.match(event.request)));
+    return;
+  }
+  if (new URL(event.request.url).pathname.endsWith("/docs-content.js")) {
     event.respondWith(fetch(event.request).catch(() => caches.match(event.request)));
     return;
   }

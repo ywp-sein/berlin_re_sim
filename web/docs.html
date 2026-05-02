@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#303734" />
+    <title>Docs · Berlin Real Estate Sim</title>
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app docs-app">
+      <header class="topbar">
+        <div>
+          <h1>
+            <span
+              class="info"
+              tabindex="0"
+              data-tooltip="README and markdown docs rendered inside the web app from a generated docs-content bundle."
+            >Project Docs</span>
+          </h1>
+          <p
+            class="info"
+            tabindex="0"
+            data-tooltip="This page is generated from README.md and every markdown file in docs/."
+          >README and documentation</p>
+        </div>
+        <div class="run-controls" aria-label="docs navigation">
+          <a class="nav-link" href="index.html">Game</a>
+          <a class="nav-link" href="compare.html">Compare</a>
+          <a class="nav-link" href="wiki.html">Wiki</a>
+          <a class="nav-link" href="notes.html">Notes</a>
+        </div>
+      </header>
+
+      <section class="docs-layout">
+        <aside class="panel docs-sidebar" aria-label="document navigation">
+          <h2>
+            <span
+              class="info"
+              tabindex="0"
+              data-tooltip="Filter the generated markdown bundle by title, path, or content."
+            >Documents</span>
+          </h2>
+          <label>
+            <span>Search docs</span>
+            <input id="docsSearch" type="search" autocomplete="off" placeholder="Try deployment, source, Markov..." />
+          </label>
+          <nav id="docsNav" class="docs-nav" aria-label="documents"></nav>
+        </aside>
+
+        <article class="docs-reader" aria-label="selected markdown document">
+          <div class="section-heading">
+            <h2 id="docsTitle">Loading docs</h2>
+            <span id="docsPath">docs-content.json</span>
+          </div>
+          <div id="docsContent" class="markdown-body"></div>
+        </article>
+      </section>
+    </main>
+
+    <script src="docs-content.js"></script>
+    <script src="docs.js"></script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [["\\(", "\\)"], ["$", "$"]],
+          displayMath: [["\\[", "\\]"], ["$$", "$$"]],
+        },
+        svg: {
+          fontCache: "global",
+        },
+      };
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <script>
+      if ("serviceWorker" in navigator && location.protocol !== "file:") {
+        navigator.serviceWorker.register("service-worker.js");
+      }
+    </script>
+  </body>
+</html>
