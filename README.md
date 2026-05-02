@@ -44,6 +44,10 @@ python3 -m http.server 8000 --bind 0.0.0.0
 
 Then open `http://YOUR_COMPUTER_IP:8000` from a phone on the same Wi-Fi.
 
+The browser prototype also includes `web/compare.html`, which runs the
+agent-based, Markov chain, and MCMC state methods under the same external policy
+and influence settings.
+
 If the phone cannot connect:
 
 - confirm the phone is not on mobile data or a guest Wi-Fi network

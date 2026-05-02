@@ -1,0 +1,368 @@
+const methods = {
+  agent_based: { label: "Agent-based", color: "#2f7d5b", step: "month" },
+  markov_chain: { label: "Markov chain", color: "#386d9f", step: "transition" },
+  mcmc_state: { label: "MCMC state", color: "#b44435", step: "sample" },
+};
+
+const comparisonSeed = {
+  neighborhoods: [
+    { id: "alexanderplatz", demandPressure: 0.9 },
+    { id: "wedding_edge", demandPressure: 0.68 },
+    { id: "spree_office", demandPressure: 0.82 },
+    { id: "museum_quarter", demandPressure: 0.76 },
+    { id: "north_mitte", demandPressure: 0.61 },
+    { id: "rosenthaler", demandPressure: 0.86 },
+    { id: "tiergarten_edge", demandPressure: 0.7 },
+    { id: "public_anchor", demandPressure: 0.58 },
+  ],
+  owners: [
+    { id: "owner_private_001", riskTolerance: 0.62, socialMission: 0.1 },
+    { id: "owner_coop_001", riskTolerance: 0.28, socialMission: 0.86 },
+    { id: "owner_company_001", riskTolerance: 0.78, socialMission: 0.05 },
+    { id: "owner_public_001", riskTolerance: 0.12, socialMission: 0.95 },
+  ],
+  units: [
+    unit("alexanderplatz", "owner_private_001", 62, 1050, 455000, true, false, 4200, 2, 0.34),
+    unit("alexanderplatz", "owner_private_001", 88, 1680, 690000, false, true, 0, 1, 0.34),
+    unit("wedding_edge", "owner_coop_001", 54, 690, 310000, true, false, 2350, 1, 0.36),
+    unit("spree_office", "owner_company_001", 74, 1420, 590000, false, false, 3900, 2, 0.33),
+    unit("museum_quarter", "owner_company_001", 44, 980, 405000, false, true, 0, 1, 0.35),
+    unit("north_mitte", "owner_private_001", 71, 1010, 430000, true, false, 2950, 2, 0.35),
+    unit("rosenthaler", "owner_company_001", 93, 2140, 820000, false, false, 6200, 2, 0.32),
+    unit("tiergarten_edge", "owner_private_001", 58, 890, 380000, true, false, 2700, 1, 0.35),
+    unit("public_anchor", "owner_public_001", 67, 620, 300000, true, false, 2100, 1, 0.38),
+    unit("public_anchor", "owner_public_001", 49, 510, 245000, true, false, 1850, 1, 0.38),
+  ],
+};
+
+const influences = [
+  ["alexanderplatz", "museum_quarter", 0.62, 1],
+  ["alexanderplatz", "rosenthaler", 0.58, 1],
+  ["rosenthaler", "north_mitte", 0.46, 1],
+  ["museum_quarter", "tiergarten_edge", 0.4, 1],
+  ["spree_office", "alexanderplatz", 0.54, 1],
+  ["spree_office", "public_anchor", 0.35, 1],
+  ["public_anchor", "tiergarten_edge", 0.32, -1],
+  ["wedding_edge", "north_mitte", 0.36, 1],
+];
+
+const regimes = {
+  stable_affordable: { rent: 1, sale: 1, vacancy: 0.06, stress: 0.12, demand: 0.52 },
+  rent_pressure: { rent: 1.18, sale: 1.08, vacancy: 0.04, stress: 0.35, demand: 0.78 },
+  purchase_pressure: { rent: 1.08, sale: 1.24, vacancy: 0.05, stress: 0.22, demand: 0.82 },
+  vacancy_pressure: { rent: 1.1, sale: 1.16, vacancy: 0.18, stress: 0.26, demand: 0.7 },
+  displacement_pressure: { rent: 1.28, sale: 1.18, vacancy: 0.09, stress: 0.68, demand: 0.9 },
+  speculative_conversion: { rent: 1.14, sale: 1.38, vacancy: 0.14, stress: 0.48, demand: 0.86 },
+  public_stabilized: { rent: 0.92, sale: 0.88, vacancy: 0.03, stress: 0.08, demand: 0.42 },
+};
+
+const transitions = {
+  stable_affordable: [["stable_affordable", 0.46], ["rent_pressure", 0.18], ["purchase_pressure", 0.16], ["public_stabilized", 0.2]],
+  rent_pressure: [["rent_pressure", 0.38], ["displacement_pressure", 0.24], ["speculative_conversion", 0.18], ["public_stabilized", 0.2]],
+  purchase_pressure: [["purchase_pressure", 0.4], ["speculative_conversion", 0.28], ["rent_pressure", 0.16], ["stable_affordable", 0.16]],
+  vacancy_pressure: [["vacancy_pressure", 0.36], ["rent_pressure", 0.2], ["speculative_conversion", 0.22], ["public_stabilized", 0.22]],
+  displacement_pressure: [["displacement_pressure", 0.42], ["vacancy_pressure", 0.18], ["public_stabilized", 0.24], ["rent_pressure", 0.16]],
+  speculative_conversion: [["speculative_conversion", 0.44], ["purchase_pressure", 0.22], ["displacement_pressure", 0.18], ["public_stabilized", 0.16]],
+  public_stabilized: [["public_stabilized", 0.5], ["stable_affordable", 0.24], ["rent_pressure", 0.14], ["purchase_pressure", 0.12]],
+};
+
+const targetWeights = {
+  stable_affordable: 0.16,
+  rent_pressure: 0.18,
+  purchase_pressure: 0.16,
+  vacancy_pressure: 0.1,
+  displacement_pressure: 0.14,
+  speculative_conversion: 0.14,
+  public_stabilized: 0.12,
+};
+
+const controls = {
+  steps: document.querySelector("#compareStepsControl"),
+  rent: document.querySelector("#compareRentControl"),
+  vacancy: document.querySelector("#compareVacancyControl"),
+  public: document.querySelector("#comparePublicControl"),
+  investor: document.querySelector("#compareInvestorControl"),
+  influence: document.querySelector("#compareInfluenceControl"),
+};
+
+function unit(neighborhoodId, ownerId, sqm, rent, salePrice, regulated, vacant, income, size, tolerance) {
+  return {
+    neighborhoodId,
+    ownerId,
+    sqm,
+    rent,
+    baseRent: rent,
+    salePrice,
+    baseSalePrice: salePrice,
+    regulated,
+    vacant,
+    household: income > 0 ? { income, size, tolerance, stress: 0 } : null,
+  };
+}
+
+function runComparison() {
+  renderControlValues();
+  const settings = currentSettings();
+  const results = Object.keys(methods).map((method) => runMethod(method, settings));
+  renderCards(results);
+  drawComparisonChart("#compareRentChart", results, (point) => point.rent, true);
+  drawComparisonChart("#compareRiskChart", results, (point) => point.stress, false, (point) => point.vacancy);
+}
+
+function runMethod(method, settings) {
+  const sim = {
+    method,
+    regime: "stable_affordable",
+    random: seededRandom(19),
+    neighborhoods: structuredClone(comparisonSeed.neighborhoods),
+    owners: structuredClone(comparisonSeed.owners),
+    units: structuredClone(comparisonSeed.units),
+    history: [],
+  };
+  collect(sim, 0);
+  for (let step = 1; step <= settings.steps; step += 1) {
+    if (method === "agent_based") stepAgentBased(sim, settings);
+    else stepStateModel(sim, settings);
+    collect(sim, step);
+  }
+  return sim;
+}
+
+function stepAgentBased(sim, settings) {
+  const pressures = Object.fromEntries(sim.neighborhoods.map((area) => [area.id, area.demandPressure]));
+  const spillovers = Object.fromEntries(sim.neighborhoods.map((area) => [area.id, 0]));
+  if (settings.influence) {
+    for (const [from, to, weight, direction] of influences) {
+      spillovers[to] += direction * pressures[from] * weight * settings.investor * 0.0038;
+    }
+  }
+  for (const area of sim.neighborhoods) {
+    area.demandPressure = clamp(
+      area.demandPressure + settings.investor * 0.006 - settings.public * 0.003 + spillovers[area.id],
+      0.25,
+      1,
+    );
+  }
+  for (const currentUnit of sim.units) {
+    const owner = sim.owners.find((item) => item.id === currentUnit.ownerId);
+    const area = sim.neighborhoods.find((item) => item.id === currentUnit.neighborhoodId);
+    const regulation = currentUnit.regulated ? settings.rentControl : settings.rentControl * 0.25;
+    const rentGrowth = area.demandPressure * owner.riskTolerance * 0.012 * (1 - regulation * 0.78);
+    currentUnit.rent *= 1 + Math.max(0.001, rentGrowth);
+    currentUnit.salePrice *= 1 + area.demandPressure * (1 - owner.socialMission) * settings.investor * 0.011;
+    if (currentUnit.household) {
+      const burden = currentUnit.rent / Math.max(currentUnit.household.income, 1);
+      currentUnit.household.stress = clamp(
+        currentUnit.household.stress + (burden - currentUnit.household.tolerance) * 0.22,
+        0,
+        1,
+      );
+    }
+  }
+}
+
+function stepStateModel(sim, settings) {
+  sim.regime = sim.method === "mcmc_state" ? sampleMCMC(sim.regime, sim.random) : sampleMarkov(sim.regime, sim.random);
+  const effect = regimes[sim.regime];
+  const influenceBoost = settings.influence ? 1 + settings.investor * 0.08 : 1;
+  for (const area of sim.neighborhoods) {
+    area.demandPressure = clamp(area.demandPressure * 0.65 + effect.demand * 0.35 * influenceBoost, 0.25, 1);
+  }
+  for (const currentUnit of sim.units) {
+    const owner = sim.owners.find((item) => item.id === currentUnit.ownerId);
+    const missionModifier = 1 - owner.socialMission * 0.12;
+    const publicModifier = 1 - settings.public * 0.08;
+    currentUnit.rent = currentUnit.baseRent * effect.rent * missionModifier * (1 - settings.rentControl * 0.08);
+    currentUnit.salePrice = currentUnit.baseSalePrice * effect.sale * missionModifier * publicModifier;
+    if (currentUnit.household) currentUnit.household.stress = effect.stress;
+  }
+}
+
+function collect(sim, step) {
+  const occupied = sim.units.filter((item) => item.household && !item.vacant);
+  const incomes = occupied.map((item) => item.household.income / Math.max(item.household.size, 1));
+  const averageIncome = incomes.length ? average(incomes) : 0;
+  const burden = occupied.map((item) => item.rent / Math.max(item.household.income, 1));
+  const regime = sim.method === "agent_based" ? null : regimes[sim.regime];
+  sim.history.push({
+    step,
+    rent: median(sim.units.map((item) => item.rent / item.sqm)),
+    sale: median(sim.units.map((item) => item.salePrice / item.sqm)),
+    vacancy: regime ? regime.vacancy : sim.units.filter((item) => item.vacant).length / sim.units.length,
+    stress: regime ? regime.stress : average(occupied.map((item) => item.household.stress)),
+    burden: burden.length ? average(burden) : 0,
+    buyYears: median(sim.units.map((item) => item.salePrice)) / Math.max(averageIncome * 12, 1),
+  });
+}
+
+function renderCards(results) {
+  const host = document.querySelector("#comparisonCards");
+  host.innerHTML = "";
+  for (const result of results) {
+    const latest = result.history.at(-1);
+    const card = document.createElement("article");
+    card.className = "comparison-card";
+    card.innerHTML = `
+      <h2>${methods[result.method].label}</h2>
+      <span>${methods[result.method].step} steps</span>
+      <dl>
+        <dt>Rent</dt><dd>${euro(latest.rent)}/sqm</dd>
+        <dt>Sale</dt><dd>${euro(latest.sale)}/sqm</dd>
+        <dt>Vacancy</dt><dd>${percent(latest.vacancy)}</dd>
+        <dt>Stress</dt><dd>${percent(latest.stress)}</dd>
+        <dt>Buy years</dt><dd>${latest.buyYears.toFixed(1)}y</dd>
+      </dl>
+    `;
+    host.append(card);
+  }
+}
+
+function drawComparisonChart(selector, results, accessor, normalized, secondAccessor) {
+  const canvas = document.querySelector(selector);
+  const ctx = canvas.getContext("2d");
+  const width = canvas.width;
+  const height = canvas.height;
+  ctx.clearRect(0, 0, width, height);
+  ctx.fillStyle = "#fffefa";
+  ctx.fillRect(0, 0, width, height);
+  ctx.strokeStyle = "#d9d7ca";
+  for (let i = 1; i < 5; i += 1) {
+    const y = (height / 5) * i;
+    ctx.beginPath();
+    ctx.moveTo(36, y);
+    ctx.lineTo(width - 12, y);
+    ctx.stroke();
+  }
+  for (const result of results) {
+    const values = result.history.map(accessor);
+    drawLine(ctx, normalized ? scale(values) : values, methods[result.method].color, width, height);
+    if (secondAccessor) {
+      drawLine(ctx, result.history.map(secondAccessor), methods[result.method].color, width, height, true);
+    }
+  }
+  drawCompareLegend(ctx, results);
+}
+
+function drawLine(ctx, values, color, width, height, dashed = false) {
+  const left = 36;
+  const right = width - 16;
+  const top = 18;
+  const bottom = height - 28;
+  ctx.strokeStyle = color;
+  ctx.lineWidth = dashed ? 2 : 3;
+  ctx.setLineDash(dashed ? [6, 5] : []);
+  ctx.beginPath();
+  values.forEach((value, index) => {
+    const x = left + ((right - left) * index) / Math.max(values.length - 1, 1);
+    const y = bottom - clamp(value, 0, 1) * (bottom - top);
+    if (index === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+function drawCompareLegend(ctx, results) {
+  ctx.font = "13px sans-serif";
+  results.forEach((result, index) => {
+    const x = 42 + index * 138;
+    ctx.fillStyle = methods[result.method].color;
+    ctx.fillRect(x, 12, 12, 12);
+    ctx.fillStyle = "#222826";
+    ctx.fillText(methods[result.method].label, x + 18, 23);
+  });
+}
+
+function sampleMarkov(regime, random) {
+  const draw = random();
+  let cumulative = 0;
+  for (const [next, probability] of transitions[regime]) {
+    cumulative += probability;
+    if (draw <= cumulative) return next;
+  }
+  return transitions[regime].at(-1)[0];
+}
+
+function sampleMCMC(regime, random) {
+  const proposals = transitions[regime].map(([next]) => next);
+  const proposal = proposals[Math.floor(random() * proposals.length)];
+  const acceptance = Math.min(1, targetWeights[proposal] / Math.max(targetWeights[regime], 0.0001));
+  return random() <= acceptance ? proposal : regime;
+}
+
+function currentSettings() {
+  return {
+    steps: Number(controls.steps.value),
+    rentControl: Number(controls.rent.value) / 100,
+    vacancy: Number(controls.vacancy.value) / 100,
+    public: Number(controls.public.value) / 100,
+    investor: Number(controls.investor.value) / 100,
+    influence: controls.influence.checked,
+  };
+}
+
+function renderControlValues() {
+  document.querySelector("#compareStepsValue").textContent = controls.steps.value;
+  document.querySelector("#compareRentValue").textContent = `${controls.rent.value}%`;
+  document.querySelector("#compareVacancyValue").textContent = `${controls.vacancy.value}%`;
+  document.querySelector("#comparePublicValue").textContent = `${controls.public.value}%`;
+  document.querySelector("#compareInvestorValue").textContent = `${controls.investor.value}%`;
+}
+
+function seededRandom(seed) {
+  let value = seed % 2147483647;
+  return () => {
+    value = (value * 16807) % 2147483647;
+    return (value - 1) / 2147483646;
+  };
+}
+
+function average(values) {
+  return values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : 0;
+}
+
+function median(values) {
+  const sorted = [...values].sort((a, b) => a - b);
+  const middle = Math.floor(sorted.length / 2);
+  return sorted.length % 2 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) / 2;
+}
+
+function scale(values) {
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  if (min === max) return values.map(() => 0.5);
+  return values.map((value) => (value - min) / (max - min));
+}
+
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function euro(value) {
+  return new Intl.NumberFormat("de-DE", {
+    style: "currency",
+    currency: "EUR",
+    maximumFractionDigits: value > 100 ? 0 : 2,
+  }).format(value);
+}
+
+function percent(value) {
+  return `${Math.round(value * 100)}%`;
+}
+
+document.querySelector("#compareRunBtn").addEventListener("click", runComparison);
+document.querySelector("#compareResetBtn").addEventListener("click", () => {
+  controls.steps.value = 24;
+  controls.rent.value = 55;
+  controls.vacancy.value = 40;
+  controls.public.value = 20;
+  controls.investor.value = 68;
+  controls.influence.checked = true;
+  runComparison();
+});
+for (const control of Object.values(controls)) {
+  control.addEventListener("input", runComparison);
+  control.addEventListener("change", runComparison);
+}
+
+runComparison();

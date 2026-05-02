@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#303734" />
+    <title>Compare Methods · Berlin Real Estate Sim</title>
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app compare-app">
+      <header class="topbar">
+        <div>
+          <h1>
+            <span
+              class="info"
+              tabindex="0"
+              data-tooltip="Compare different simulation methods under the same external policy and influence settings."
+            >Method Comparison</span>
+          </h1>
+          <p
+            class="info"
+            tabindex="0"
+            data-tooltip="Every method receives the same initial scenario, same policy levers, same step count, and same influence toggle."
+          >Shared external influences</p>
+        </div>
+        <div class="run-controls" aria-label="comparison controls">
+          <a class="nav-link" href="index.html">Game</a>
+          <button id="compareRunBtn" type="button">Run</button>
+          <button id="compareResetBtn" type="button">Reset</button>
+        </div>
+      </header>
+
+      <section class="compare-layout">
+        <aside class="panel controls-panel" aria-label="shared external controls">
+          <h2>
+            <span
+              class="info"
+              tabindex="0"
+              data-tooltip="These settings are applied to every method, so differences come from the method logic rather than different inputs."
+            >Shared Inputs</span>
+          </h2>
+          <label>
+            <span>Steps</span>
+            <input id="compareStepsControl" type="range" min="4" max="60" value="24" />
+            <output id="compareStepsValue">24</output>
+          </label>
+          <label>
+            <span>Rent regulation</span>
+            <input id="compareRentControl" type="range" min="0" max="100" value="55" />
+            <output id="compareRentValue">55%</output>
+          </label>
+          <label>
+            <span>Vacancy enforcement</span>
+            <input id="compareVacancyControl" type="range" min="0" max="100" value="40" />
+            <output id="compareVacancyValue">40%</output>
+          </label>
+          <label>
+            <span>Public acquisition</span>
+            <input id="comparePublicControl" type="range" min="0" max="100" value="20" />
+            <output id="comparePublicValue">20%</output>
+          </label>
+          <label>
+            <span>Investor pressure</span>
+            <input id="compareInvestorControl" type="range" min="0" max="100" value="68" />
+            <output id="compareInvestorValue">68%</output>
+          </label>
+          <label class="toggle-row">
+            <span>Area influences</span>
+            <input id="compareInfluenceControl" type="checkbox" checked />
+          </label>
+        </aside>
+
+        <section class="comparison-surface">
+          <section id="comparisonCards" class="comparison-cards" aria-label="method comparison summary"></section>
+          <section class="chart-panel compare-chart-panel" aria-label="comparison charts">
+            <div>
+              <div class="section-heading">
+                <h2>Rent Signal</h2>
+                <span>normalized median rent per sqm</span>
+              </div>
+              <canvas id="compareRentChart" width="900" height="240"></canvas>
+            </div>
+            <div>
+              <div class="section-heading">
+                <h2>Risk Signal</h2>
+                <span>vacancy and stress</span>
+              </div>
+              <canvas id="compareRiskChart" width="900" height="240"></canvas>
+            </div>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <script src="compare.js"></script>
+  </body>
+</html>

@@ -94,14 +94,17 @@ const areaInfluences = [
 const simulationMethods = {
   agent_based: {
     label: "Agent-based",
+    stepMeaning: "Month",
     description: "Heterogeneous units, owners, and households update every month from local rules.",
   },
   markov_chain: {
     label: "Markov chain",
+    stepMeaning: "Transition",
     description: "A time-independent state machine samples market regimes from transition probabilities.",
   },
   mcmc_state: {
     label: "MCMC state sampler",
+    stepMeaning: "Sample",
     description: "A Metropolis-Hastings sampler explores plausible market regimes from target weights.",
   },
 };
@@ -453,6 +456,7 @@ function collectMetrics() {
 function render() {
   const latest = state.history[state.history.length - 1];
   document.querySelector("#monthMetric").textContent = latest.month;
+  document.querySelector("#stepMeaningMetric").textContent = simulationMethods[state.method].stepMeaning;
   document.querySelector("#rentMetric").textContent = euro(latest.rent) + "/sqm";
   document.querySelector("#saleMetric").textContent = euro(latest.sale) + "/sqm";
   document.querySelector("#vacancyMetric").textContent = percent(latest.vacancy);
@@ -748,7 +752,7 @@ function drawTimeAxis(ctx, width, height) {
     ctx.moveTo(x, bottom + 4);
     ctx.lineTo(x, bottom + 10);
     ctx.stroke();
-    ctx.fillText(`M${point.month}`, x - 10, bottom + 24);
+    ctx.fillText(`S${point.month}`, x - 10, bottom + 24);
   });
 }
 
@@ -782,7 +786,7 @@ function getNeighborhood(id) {
 }
 
 function pushEvent(text) {
-  state.events.push(`Month ${state.month}: ${text}`);
+  state.events.push(`Step ${state.month}: ${text}`);
 }
 
 function stableHash(value) {

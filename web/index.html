@@ -31,7 +31,8 @@
           >Mitte prototype</p>
         </div>
         <div class="run-controls" aria-label="simulation controls">
-          <button id="stepBtn" type="button" title="Advance one month">Step</button>
+          <a class="nav-link" href="compare.html">Compare</a>
+          <button id="stepBtn" type="button" title="Advance one simulation step">Step</button>
           <button id="playBtn" type="button" title="Run or pause the simulation">Play</button>
           <button id="resetBtn" type="button" title="Reset scenario">Reset</button>
         </div>
@@ -39,8 +40,20 @@
 
       <section class="metrics" aria-label="market metrics">
         <article>
-          <span class="info" tabindex="0" data-tooltip="Each step advances the simulation by one month.">Month</span>
+          <span
+            class="info"
+            tabindex="0"
+            data-tooltip="Shared comparison axis. In ABM it means a simulated month; in Markov it means a state transition; in MCMC it means a sample iteration."
+          >Step</span>
           <strong id="monthMetric">0</strong>
+        </article>
+        <article>
+          <span
+            class="info"
+            tabindex="0"
+            data-tooltip="What one step means for the selected simulation method."
+          >Step meaning</span>
+          <strong id="stepMeaningMetric">Month</strong>
         </article>
         <article>
           <span
@@ -216,7 +229,7 @@
               <span
                 class="info"
                 tabindex="0"
-                data-tooltip="Overall compresses the full timeline into the visible chart. Time-series scroll gives each month fixed horizontal space and scrolls to the latest step."
+                data-tooltip="Overall compresses the full timeline into the visible chart. Time-series scroll gives each step fixed horizontal space and scrolls to the latest step."
               >Display</span>
               <select id="chartModeControl">
                 <option value="overall">Overall</option>
