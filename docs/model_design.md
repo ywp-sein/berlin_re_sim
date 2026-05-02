@@ -93,6 +93,25 @@ The first prototype should make these visible:
 - public/cooperative ownership dampening price feedback
 - policy lag: interventions can help slowly while market pressure moves quickly
 
+## Indicator Examples
+
+Indicators should sit between raw simulation state and the UI. They are useful
+because they turn many agent-level values into readable signals.
+
+Good first indicators:
+
+- average household income: mean monthly income across households
+- average individual income: household monthly income divided by household size
+- average rent burden: rent divided by monthly household income
+- purchase affordability years: median unit sale price divided by annual average
+  individual income
+- regulated unit share: regulated units divided by all units
+- vacancy rate: vacant units divided by all units
+- displacement stress: average stress across households
+
+Average individual income is a useful reference value because affordability
+changes when the same household income supports one person versus several people.
+
 ## Minimal Tick Loop
 
 One tick can represent one month.

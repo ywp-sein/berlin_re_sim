@@ -110,3 +110,8 @@ class MarketMetrics:
     median_sale_price_per_sqm: float
     vacancy_rate: float
     average_displacement_stress: float
+    average_household_income_monthly: float
+    average_individual_income_monthly: float
+    average_rent_burden: float
+    purchase_price_to_income_years: float
+    regulated_unit_share: float

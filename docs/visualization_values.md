@@ -9,6 +9,9 @@ the simulation from becoming only a price chart.
 - median purchase price per sqm
 - vacancy rate
 - average displacement stress
+- average individual income
+- average rent burden
+- purchase affordability years
 - share of regulated units
 - share of units shifted toward sale
 

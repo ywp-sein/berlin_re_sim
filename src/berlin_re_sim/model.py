@@ -7,7 +7,7 @@ from mesa import Model
 
 from berlin_re_sim.agents import HouseholdAgent, OwnerAgent
 from berlin_re_sim.scenario import Scenario
-from berlin_re_sim.schemas import Building, MarketMetrics, Neighborhood, Parcel, Unit
+from berlin_re_sim.schemas import MarketMetrics, Neighborhood, Unit
 
 
 class BerlinRealEstateModel(Model):
@@ -63,6 +63,24 @@ class BerlinRealEstateModel(Model):
         occupied_or_listed_units = [unit for unit in self.units.values() if unit.sqm > 0]
         vacant_units = [unit for unit in occupied_or_listed_units if unit.vacant]
         household_stress = [agent.profile.displacement_stress for agent in self.household_agents]
+        households = [agent.profile for agent in self.household_agents]
+        occupied_units = [
+            unit
+            for unit in occupied_or_listed_units
+            if unit.household_id is not None
+            and any(household.id == unit.household_id for household in households)
+        ]
+        household_by_id = {household.id: household for household in households}
+        rent_burdens = [
+            unit.monthly_rent / max(household_by_id[unit.household_id].income_monthly, 1)
+            for unit in occupied_units
+            if unit.household_id in household_by_id
+        ]
+        average_household_income = mean(household.income_monthly for household in households)
+        average_individual_income = mean(
+            household.income_monthly / max(household.size, 1) for household in households
+        )
+        median_sale_price = median(unit.estimated_sale_price for unit in occupied_or_listed_units)
 
         self.metrics.append(
             MarketMetrics(
@@ -73,6 +91,15 @@ class BerlinRealEstateModel(Model):
                 ),
                 vacancy_rate=len(vacant_units) / len(occupied_or_listed_units),
                 average_displacement_stress=mean(household_stress) if household_stress else 0.0,
+                average_household_income_monthly=average_household_income,
+                average_individual_income_monthly=average_individual_income,
+                average_rent_burden=mean(rent_burdens) if rent_burdens else 0.0,
+                purchase_price_to_income_years=median_sale_price
+                / max(average_individual_income * 12, 1),
+                regulated_unit_share=len(
+                    [unit for unit in occupied_or_listed_units if unit.regulated]
+                )
+                / len(occupied_or_listed_units),
             )
         )
 

@@ -10,3 +10,6 @@ def test_mitte_seed_runs_for_one_year() -> None:
     assert len(model.metrics) == 13
     assert model.metrics[-1].median_rent_per_sqm > model.metrics[0].median_rent_per_sqm
     assert 0 <= model.metrics[-1].vacancy_rate <= 1
+    assert model.metrics[-1].average_individual_income_monthly > 0
+    assert 0 <= model.metrics[-1].average_rent_burden <= 1
+    assert model.metrics[-1].purchase_price_to_income_years > 0

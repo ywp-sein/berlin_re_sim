@@ -16,16 +16,16 @@ const scenarioSeed = {
     { id: "owner_public_001", kind: "public", riskTolerance: 0.12, socialMission: 0.95 },
   ],
   units: [
-    unit("unit_001", "alexanderplatz", "owner_private_001", 62, 1050, 455000, true, false, 4200, 0.34),
-    unit("unit_002", "alexanderplatz", "owner_private_001", 88, 1680, 690000, false, true, 0, 0.34),
-    unit("unit_003", "wedding_edge", "owner_coop_001", 54, 690, 310000, true, false, 2350, 0.36),
-    unit("unit_004", "spree_office", "owner_company_001", 74, 1420, 590000, false, false, 3900, 0.33),
-    unit("unit_005", "museum_quarter", "owner_company_001", 44, 980, 405000, false, true, 0, 0.35),
-    unit("unit_006", "north_mitte", "owner_private_001", 71, 1010, 430000, true, false, 2950, 0.35),
-    unit("unit_007", "rosenthaler", "owner_company_001", 93, 2140, 820000, false, false, 6200, 0.32),
-    unit("unit_008", "tiergarten_edge", "owner_private_001", 58, 890, 380000, true, false, 2700, 0.35),
-    unit("unit_009", "public_anchor", "owner_public_001", 67, 620, 300000, true, false, 2100, 0.38),
-    unit("unit_010", "public_anchor", "owner_public_001", 49, 510, 245000, true, false, 1850, 0.38),
+    unit("unit_001", "alexanderplatz", "owner_private_001", 62, 1050, 455000, true, false, 4200, 2, 0.34),
+    unit("unit_002", "alexanderplatz", "owner_private_001", 88, 1680, 690000, false, true, 0, 1, 0.34),
+    unit("unit_003", "wedding_edge", "owner_coop_001", 54, 690, 310000, true, false, 2350, 1, 0.36),
+    unit("unit_004", "spree_office", "owner_company_001", 74, 1420, 590000, false, false, 3900, 2, 0.33),
+    unit("unit_005", "museum_quarter", "owner_company_001", 44, 980, 405000, false, true, 0, 1, 0.35),
+    unit("unit_006", "north_mitte", "owner_private_001", 71, 1010, 430000, true, false, 2950, 2, 0.35),
+    unit("unit_007", "rosenthaler", "owner_company_001", 93, 2140, 820000, false, false, 6200, 2, 0.32),
+    unit("unit_008", "tiergarten_edge", "owner_private_001", 58, 890, 380000, true, false, 2700, 1, 0.35),
+    unit("unit_009", "public_anchor", "owner_public_001", 67, 620, 300000, true, false, 2100, 1, 0.38),
+    unit("unit_010", "public_anchor", "owner_public_001", 49, 510, 245000, true, false, 1850, 1, 0.38),
   ],
 };
 
@@ -105,7 +105,7 @@ const controls = {
   investorControl: document.querySelector("#investorControl"),
 };
 
-function unit(id, neighborhoodId, ownerId, sqm, rent, salePrice, regulated, vacant, income, tolerance) {
+function unit(id, neighborhoodId, ownerId, sqm, rent, salePrice, regulated, vacant, income, size, tolerance) {
   return {
     id,
     neighborhoodId,
@@ -115,7 +115,7 @@ function unit(id, neighborhoodId, ownerId, sqm, rent, salePrice, regulated, vaca
     salePrice,
     regulated,
     vacant,
-    household: income > 0 ? { income, tolerance, stress: 0 } : null,
+    household: income > 0 ? { income, size, tolerance, stress: 0 } : null,
     convertedToSale: false,
   };
 }
@@ -164,6 +164,7 @@ function updateOwnersAndUnits() {
       currentUnit.vacant = false;
       currentUnit.household = {
         income: currentUnit.rent / 0.34,
+        size: 1,
         tolerance: 0.34,
         stress: 0.08,
       };
@@ -200,13 +201,22 @@ function updateHouseholds() {
 function collectMetrics() {
   const rents = state.units.map((item) => item.rent / item.sqm);
   const sales = state.units.map((item) => item.salePrice / item.sqm);
-  const stresses = state.units.filter((item) => item.household).map((item) => item.household.stress);
+  const occupiedUnits = state.units.filter((item) => item.household);
+  const households = occupiedUnits.map((item) => item.household);
+  const stresses = households.map((item) => item.stress);
+  const individualIncomes = households.map((item) => item.income / Math.max(item.size, 1));
+  const rentBurdens = occupiedUnits.map((item) => item.rent / Math.max(item.household.income, 1));
+  const averageIndividualIncome = individualIncomes.length ? average(individualIncomes) : 0;
   state.history.push({
     month: state.month,
     rent: median(rents),
     sale: median(sales),
     vacancy: state.units.filter((item) => item.vacant).length / state.units.length,
     stress: stresses.length ? average(stresses) : 0,
+    averageIndividualIncome,
+    rentBurden: rentBurdens.length ? average(rentBurdens) : 0,
+    buyYears: median(state.units.map((item) => item.salePrice)) / Math.max(averageIndividualIncome * 12, 1),
+    regulatedShare: state.units.filter((item) => item.regulated).length / state.units.length,
   });
 }
 
@@ -217,6 +227,9 @@ function render() {
   document.querySelector("#saleMetric").textContent = euro(latest.sale) + "/sqm";
   document.querySelector("#vacancyMetric").textContent = percent(latest.vacancy);
   document.querySelector("#stressMetric").textContent = percent(latest.stress);
+  document.querySelector("#incomeMetric").textContent = euro(latest.averageIndividualIncome);
+  document.querySelector("#burdenMetric").textContent = percent(latest.rentBurden);
+  document.querySelector("#buyYearsMetric").textContent = `${latest.buyYears.toFixed(1)}y`;
   document.querySelector("#eventCount").textContent = state.events.length;
   document.querySelector("#selectedName").textContent = getNeighborhood(state.selectedNeighborhood).name;
 
@@ -314,10 +327,18 @@ function renderDetails() {
   const rents = units.map((item) => item.rent / item.sqm);
   const sales = units.map((item) => item.salePrice / item.sqm);
   const stress = units.filter((item) => item.household).map((item) => item.household.stress);
+  const individualIncomes = units
+    .filter((item) => item.household)
+    .map((item) => item.household.income / Math.max(item.household.size, 1));
+  const rentBurdens = units
+    .filter((item) => item.household)
+    .map((item) => item.rent / Math.max(item.household.income, 1));
   const details = document.querySelector("#areaDetails");
   details.innerHTML = `
     <dt>Demand pressure</dt><dd>${percent(area.demandPressure)}</dd>
     <dt>Income mix</dt><dd>${area.incomeMix}</dd>
+    <dt>Avg income/person</dt><dd>${euro(individualIncomes.length ? average(individualIncomes) : 0)}</dd>
+    <dt>Avg rent burden</dt><dd>${percent(rentBurdens.length ? average(rentBurdens) : 0)}</dd>
     <dt>Median rent</dt><dd>${euro(median(rents))}/sqm</dd>
     <dt>Median sale</dt><dd>${euro(median(sales))}/sqm</dd>
     <dt>Vacant units</dt><dd>${units.filter((item) => item.vacant).length}/${units.length}</dd>
@@ -334,6 +355,7 @@ function renderDetails() {
       <span class="tag">${currentUnit.vacant ? "vacant" : currentUnit.regulated ? "regulated" : "market"}</span>
       <span>${euro(currentUnit.rent)} rent</span>
       <span>${euro(currentUnit.salePrice / currentUnit.sqm)}/sqm sale</span>
+      <span>${currentUnit.household ? euro(currentUnit.household.income / Math.max(currentUnit.household.size, 1)) : "-"} income/person</span>
     `;
     list.append(row);
   }
@@ -371,6 +393,7 @@ function drawChart() {
   drawSeries(ctx, "sale", "#386d9f", scaleValues(state.history.map((item) => item.sale)), width, height);
   drawSeries(ctx, "vacancy", "#b98321", state.history.map((item) => item.vacancy), width, height);
   drawSeries(ctx, "stress", "#b44435", state.history.map((item) => item.stress), width, height);
+  drawSeries(ctx, "burden", "#7b5aa6", state.history.map((item) => item.rentBurden), width, height);
   drawLegend(ctx);
 }
 
@@ -398,10 +421,11 @@ function drawLegend(ctx) {
     ["sale", "#386d9f"],
     ["vacancy", "#b98321"],
     ["stress", "#b44435"],
+    ["burden", "#7b5aa6"],
   ];
   ctx.font = "13px sans-serif";
   items.forEach(([label, color], index) => {
-    const x = 42 + index * 92;
+    const x = 42 + index * 82;
     ctx.fillStyle = color;
     ctx.fillRect(x, 12, 12, 12);
     ctx.fillStyle = "#222826";
