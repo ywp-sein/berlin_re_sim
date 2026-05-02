@@ -44,6 +44,7 @@ class Scenario:
             for item in data["owners"]
         ]
         self.households = [HouseholdProfile(**item) for item in data["households"]]
+        self.influence_edges = data.get("influence_edges", [])
 
     @classmethod
     def from_file(cls, path: str | Path) -> Scenario:

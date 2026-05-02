@@ -22,6 +22,10 @@ The workflow also runs `scripts/build_docs_content.py`, which bundles
 `README.md` and categorized markdown files under `docs/` into
 `web/docs-content.json` for the Docs page.
 
+It also runs `scripts/build_scenario_content.py`, which bundles the canonical
+`data/scenarios/mitte_seed.json` file into `web/scenario-content.json` and
+`web/scenario-content.js` for the static game and comparison page.
+
 To enable it on GitHub:
 
 1. Push the workflow to GitHub.

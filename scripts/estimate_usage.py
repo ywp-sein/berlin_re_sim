@@ -44,7 +44,7 @@ def load_size(path: Path) -> ScenarioSize:
         units=len(data.get("units", [])),
         owners=len(data.get("owners", [])),
         households=len(data.get("households", [])),
-        influence_edges=len(data.get("area_influences", [])),
+        influence_edges=len(data.get("influence_edges", data.get("area_influences", []))),
         states=len(data.get("market_states", [])) or 7,
     )
 

@@ -9,10 +9,12 @@ Current canonical prototype scenario:
 
 - `data/scenarios/mitte_seed.json`
 
-The web prototype still has a lightweight in-browser seed for fast static use,
-but real-data import should target the canonical JSON scenario first. Once data
-stabilizes, the web layer should load generated scenario JSON rather than keeping
-hand-written browser seed values.
+The web prototype uses the same canonical scenario. During local builds and
+GitHub Pages deployment, `scripts/build_scenario_content.py` bundles
+`data/scenarios/mitte_seed.json` into `web/scenario-content.json` and
+`web/scenario-content.js`. The browser adapter in `web/scenario.js` translates
+the canonical snake_case scenario fields into the camelCase structures expected
+by the game and comparison page.
 
 ## Required Provenance
 
@@ -35,6 +37,10 @@ Use:
 - `data/scenarios/` for initial state
 - `data/parameters/` for model behavior coefficients
 - `data/targets/` for calibration and validation targets
+
+Influence edges may live in the scenario when they are part of the simulation
+state. UI-only geometry, such as SVG map paths and label positions, should stay
+in the web layer.
 
 Do not put model coefficients directly into scenario files unless they describe
 observed real-world attributes.

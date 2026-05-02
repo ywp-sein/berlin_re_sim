@@ -35,47 +35,14 @@ const metricTooltips = {
   rmse: "Root mean square relative error. It punishes one very wrong metric more strongly than the mean error.",
 };
 
-const comparisonSeed = {
-  neighborhoods: [
-    { id: "alexanderplatz", demandPressure: 0.9 },
-    { id: "wedding_edge", demandPressure: 0.68 },
-    { id: "spree_office", demandPressure: 0.82 },
-    { id: "museum_quarter", demandPressure: 0.76 },
-    { id: "north_mitte", demandPressure: 0.61 },
-    { id: "rosenthaler", demandPressure: 0.86 },
-    { id: "tiergarten_edge", demandPressure: 0.7 },
-    { id: "public_anchor", demandPressure: 0.58 },
-  ],
-  owners: [
-    { id: "owner_private_001", riskTolerance: 0.62, socialMission: 0.1 },
-    { id: "owner_coop_001", riskTolerance: 0.28, socialMission: 0.86 },
-    { id: "owner_company_001", riskTolerance: 0.78, socialMission: 0.05 },
-    { id: "owner_public_001", riskTolerance: 0.12, socialMission: 0.95 },
-  ],
-  units: [
-    unit("alexanderplatz", "owner_private_001", 62, 1050, 455000, true, false, 4200, 2, 0.34),
-    unit("alexanderplatz", "owner_private_001", 88, 1680, 690000, false, true, 0, 1, 0.34),
-    unit("wedding_edge", "owner_coop_001", 54, 690, 310000, true, false, 2350, 1, 0.36),
-    unit("spree_office", "owner_company_001", 74, 1420, 590000, false, false, 3900, 2, 0.33),
-    unit("museum_quarter", "owner_company_001", 44, 980, 405000, false, true, 0, 1, 0.35),
-    unit("north_mitte", "owner_private_001", 71, 1010, 430000, true, false, 2950, 2, 0.35),
-    unit("rosenthaler", "owner_company_001", 93, 2140, 820000, false, false, 6200, 2, 0.32),
-    unit("tiergarten_edge", "owner_private_001", 58, 890, 380000, true, false, 2700, 1, 0.35),
-    unit("public_anchor", "owner_public_001", 67, 620, 300000, true, false, 2100, 1, 0.38),
-    unit("public_anchor", "owner_public_001", 49, 510, 245000, true, false, 1850, 1, 0.38),
-  ],
-};
+const comparisonSeed = window.BerlinScenario.seed;
 
-const influences = [
-  ["alexanderplatz", "museum_quarter", 0.62, 1],
-  ["alexanderplatz", "rosenthaler", 0.58, 1],
-  ["rosenthaler", "north_mitte", 0.46, 1],
-  ["museum_quarter", "tiergarten_edge", 0.4, 1],
-  ["spree_office", "alexanderplatz", 0.54, 1],
-  ["spree_office", "public_anchor", 0.35, 1],
-  ["public_anchor", "tiergarten_edge", 0.32, -1],
-  ["wedding_edge", "north_mitte", 0.36, 1],
-];
+const influences = window.BerlinScenario.influences.map((edge) => [
+  edge.from,
+  edge.to,
+  edge.weight,
+  edge.kind.includes("stabilizing") ? -1 : 1,
+]);
 
 const regimes = {
   stable_affordable: { rent: 1, sale: 1, vacancy: 0.06, stress: 0.12, demand: 0.52 },
@@ -125,21 +92,6 @@ const targetControls = {
   burden: document.querySelector("#targetBurdenControl"),
   buyYears: document.querySelector("#targetBuyYearsControl"),
 };
-
-function unit(neighborhoodId, ownerId, sqm, rent, salePrice, regulated, vacant, income, size, tolerance) {
-  return {
-    neighborhoodId,
-    ownerId,
-    sqm,
-    rent,
-    baseRent: rent,
-    salePrice,
-    baseSalePrice: salePrice,
-    regulated,
-    vacant,
-    household: income > 0 ? { income, size, tolerance, stress: 0 } : null,
-  };
-}
 
 function runComparison() {
   renderControlValues();

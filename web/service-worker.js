@@ -1,8 +1,11 @@
-const CACHE_NAME = "berlin-re-sim-v30";
+const CACHE_NAME = "berlin-re-sim-v31";
 const ASSETS = [
   "./",
   "./index.html",
   "./styles.css",
+  "./scenario-content.json",
+  "./scenario-content.js",
+  "./scenario.js",
   "./game.js",
   "./compare.html",
   "./compare.js",
@@ -50,6 +53,14 @@ self.addEventListener("fetch", (event) => {
     return;
   }
   if (new URL(event.request.url).pathname.endsWith("/docs-content.js")) {
+    event.respondWith(fetch(event.request).catch(() => caches.match(event.request)));
+    return;
+  }
+  if (new URL(event.request.url).pathname.endsWith("/scenario-content.json")) {
+    event.respondWith(fetch(event.request).catch(() => caches.match(event.request)));
+    return;
+  }
+  if (new URL(event.request.url).pathname.endsWith("/scenario-content.js")) {
     event.respondWith(fetch(event.request).catch(() => caches.match(event.request)));
     return;
   }

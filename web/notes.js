@@ -1,6 +1,6 @@
 const currentVersion = {
-  label: "Prototype 0.5.15",
-  summary: "Wiki search now includes generated project docs.",
+  label: "Prototype 0.5.16",
+  summary: "Canonical scenario now feeds the browser game and comparison page.",
 };
 
 const implementationNotes = [
@@ -22,8 +22,8 @@ const implementationNotes = [
     area: "Data",
     title: "Scenario, parameters, and targets are separate",
     body:
-      "Scenarios store initial state. Parameters store behavioral assumptions. Targets store calibration reference outputs. The source registry tracks real-data provenance before values enter any of those files.",
-    files: "data/source_registry.json, data/scenarios/, data/parameters/, data/targets/, data/schema/",
+      "Scenarios store initial state. Parameters store behavioral assumptions. Targets store calibration reference outputs. The web app consumes a generated scenario bundle from the canonical scenario, and the source registry tracks real-data provenance before values enter any of those files.",
+    files: "data/source_registry.json, data/scenarios/, data/parameters/, data/targets/, data/schema/, scripts/build_scenario_content.py, web/scenario.js",
   },
   {
     area: "Calibration",
@@ -77,6 +77,18 @@ const implementationNotes = [
 ];
 
 const versions = [
+  {
+    version: "0.5.16",
+    date: "2026-05-02",
+    title: "Canonical scenario web bundle",
+    changes: [
+      "Expanded data/scenarios/mitte_seed.json to contain the full playable browser seed.",
+      "Added a scenario-content build script and static browser bundle.",
+      "Added a browser scenario adapter so game.js and compare.js use the canonical scenario instead of hand-written seeds.",
+      "Moved simulation influence edges into the scenario while keeping SVG map geometry in the web layer.",
+      "Updated deployment, docs, README, notes, and service-worker cache for the generated scenario bundle.",
+    ],
+  },
   {
     version: "0.5.15",
     date: "2026-05-02",
@@ -298,13 +310,6 @@ const openGaps = [
     body:
       "The Mitte seed and targets are useful for structure and UI testing, but should not be interpreted as empirical results until real sources are imported and provenance is recorded.",
     files: "data/scenarios/mitte_seed.json, data/targets/mitte_targets.json",
-  },
-  {
-    area: "Web data",
-    title: "Browser seed is still hand-written",
-    body:
-      "The web app currently keeps a lightweight in-browser seed for static use. A later step should load generated scenario JSON so Python and browser runs use the same source of truth.",
-    files: "web/game.js, web/compare.js",
   },
   {
     area: "Calibration",

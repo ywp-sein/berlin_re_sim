@@ -51,6 +51,10 @@ external policy and influence settings. The compare page has editable
 calibration targets, a reproducible random seed, mean target error, error RMSE,
 and a button to save the current target vector as JSON.
 
+The static browser app uses a generated scenario bundle from
+`data/scenarios/mitte_seed.json`, so the game, comparison page, and Python model
+share the same canonical seed.
+
 For terminology and implementation notes, open `web/wiki.html`. It includes a
 local search over model methods, metrics, calibration terms, policy levers, data
 structures, and generated project docs.
@@ -98,6 +102,7 @@ If the phone cannot connect:
 - `src/berlin_re_sim/model.py` contains the Mesa-compatible model skeleton.
 - `src/berlin_re_sim/methods/` contains selectable simulation methods.
 - `scripts/estimate_usage.py` estimates simulation work units and energy usage.
+- `scripts/build_scenario_content.py` bundles the canonical scenario for the web app.
 - `web/index.html` is a dependency-free visualization/game prototype.
 - `web/wiki.html` is the searchable terminology and implementation dictionary.
 - `web/notes.html` is the project implementation and version ledger.

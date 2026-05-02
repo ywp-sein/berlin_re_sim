@@ -1,33 +1,4 @@
-const scenarioSeed = {
-  neighborhoods: [
-    { id: "alexanderplatz", name: "Alexanderplatz", demandPressure: 0.9, incomeMix: "high" },
-    { id: "wedding_edge", name: "Wedding edge", demandPressure: 0.68, incomeMix: "mixed" },
-    { id: "spree_office", name: "Spree office belt", demandPressure: 0.82, incomeMix: "high" },
-    { id: "museum_quarter", name: "Museum quarter", demandPressure: 0.76, incomeMix: "tourism" },
-    { id: "north_mitte", name: "North Mitte", demandPressure: 0.61, incomeMix: "mixed" },
-    { id: "rosenthaler", name: "Rosenthaler edge", demandPressure: 0.86, incomeMix: "high" },
-    { id: "tiergarten_edge", name: "Tiergarten edge", demandPressure: 0.7, incomeMix: "mixed" },
-    { id: "public_anchor", name: "Public anchor", demandPressure: 0.58, incomeMix: "protected" },
-  ],
-  owners: [
-    { id: "owner_private_001", kind: "private", riskTolerance: 0.62, socialMission: 0.1 },
-    { id: "owner_coop_001", kind: "cooperative", riskTolerance: 0.28, socialMission: 0.86 },
-    { id: "owner_company_001", kind: "company", riskTolerance: 0.78, socialMission: 0.05 },
-    { id: "owner_public_001", kind: "public", riskTolerance: 0.12, socialMission: 0.95 },
-  ],
-  units: [
-    unit("unit_001", "alexanderplatz", "owner_private_001", 62, 1050, 455000, true, false, 4200, 2, 0.34),
-    unit("unit_002", "alexanderplatz", "owner_private_001", 88, 1680, 690000, false, true, 0, 1, 0.34),
-    unit("unit_003", "wedding_edge", "owner_coop_001", 54, 690, 310000, true, false, 2350, 1, 0.36),
-    unit("unit_004", "spree_office", "owner_company_001", 74, 1420, 590000, false, false, 3900, 2, 0.33),
-    unit("unit_005", "museum_quarter", "owner_company_001", 44, 980, 405000, false, true, 0, 1, 0.35),
-    unit("unit_006", "north_mitte", "owner_private_001", 71, 1010, 430000, true, false, 2950, 2, 0.35),
-    unit("unit_007", "rosenthaler", "owner_company_001", 93, 2140, 820000, false, false, 6200, 2, 0.32),
-    unit("unit_008", "tiergarten_edge", "owner_private_001", 58, 890, 380000, true, false, 2700, 1, 0.35),
-    unit("unit_009", "public_anchor", "owner_public_001", 67, 620, 300000, true, false, 2100, 1, 0.38),
-    unit("unit_010", "public_anchor", "owner_public_001", 49, 510, 245000, true, false, 1850, 1, 0.38),
-  ],
-};
+const scenarioSeed = window.BerlinScenario.seed;
 
 const mapShapes = {
   north_mitte: {
@@ -80,16 +51,7 @@ const mapShapes = {
   },
 };
 
-const areaInfluences = [
-  { from: "alexanderplatz", to: "museum_quarter", weight: 0.62, kind: "rent spillover" },
-  { from: "alexanderplatz", to: "rosenthaler", weight: 0.58, kind: "purchase pressure" },
-  { from: "rosenthaler", to: "north_mitte", weight: 0.46, kind: "displacement pressure" },
-  { from: "museum_quarter", to: "tiergarten_edge", weight: 0.4, kind: "tourism spillover" },
-  { from: "spree_office", to: "alexanderplatz", weight: 0.54, kind: "office demand" },
-  { from: "spree_office", to: "public_anchor", weight: 0.35, kind: "land pressure" },
-  { from: "public_anchor", to: "tiergarten_edge", weight: 0.32, kind: "stabilizing pressure" },
-  { from: "wedding_edge", to: "north_mitte", weight: 0.36, kind: "affordability pull" },
-];
+const areaInfluences = window.BerlinScenario.influences;
 
 const simulationMethods = {
   agent_based: {
@@ -260,23 +222,6 @@ const controls = {
   publicControl: document.querySelector("#publicControl"),
   investorControl: document.querySelector("#investorControl"),
 };
-
-function unit(id, neighborhoodId, ownerId, sqm, rent, salePrice, regulated, vacant, income, size, tolerance) {
-  return {
-    id,
-    neighborhoodId,
-    ownerId,
-    sqm,
-    rent,
-    baseRent: rent,
-    salePrice,
-    baseSalePrice: salePrice,
-    regulated,
-    vacant,
-    household: income > 0 ? { income, size, tolerance, stress: 0 } : null,
-    convertedToSale: false,
-  };
-}
 
 function resetGame() {
   state.month = 0;

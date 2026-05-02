@@ -38,6 +38,7 @@
     "buildings": { "type": "array" },
     "units": { "type": "array" },
     "owners": { "type": "array" },
-    "households": { "type": "array" }
+    "households": { "type": "array" },
+    "influence_edges": { "type": "array" }
   }
 }

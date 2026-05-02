@@ -1,6 +1,6 @@
 {
   "name": "Mitte seed",
-  "schema_version": "0.2",
+  "schema_version": "0.3",
   "tick_length": "month",
   "metadata": {
     "source": "synthetic",
@@ -8,7 +8,7 @@
     "source_date": null,
     "license": null,
     "confidence": "low",
-    "notes": "Prototype seed data for model development before real-data import."
+    "notes": "Prototype seed data for model development before real-data import. This is the canonical source for the Python model, browser game, and method comparison page."
   },
   "districts": [
     {
@@ -35,11 +35,53 @@
       "name": "Wedding edge",
       "demand_pressure": 0.68,
       "income_mix": "mixed"
+    },
+    {
+      "id": "spree_office",
+      "district_id": "mitte",
+      "name": "Spree office belt",
+      "demand_pressure": 0.82,
+      "income_mix": "high"
+    },
+    {
+      "id": "museum_quarter",
+      "district_id": "mitte",
+      "name": "Museum quarter",
+      "demand_pressure": 0.76,
+      "income_mix": "tourism"
+    },
+    {
+      "id": "north_mitte",
+      "district_id": "mitte",
+      "name": "North Mitte",
+      "demand_pressure": 0.61,
+      "income_mix": "mixed"
+    },
+    {
+      "id": "rosenthaler",
+      "district_id": "mitte",
+      "name": "Rosenthaler edge",
+      "demand_pressure": 0.86,
+      "income_mix": "high"
+    },
+    {
+      "id": "tiergarten_edge",
+      "district_id": "mitte",
+      "name": "Tiergarten edge",
+      "demand_pressure": 0.7,
+      "income_mix": "mixed"
+    },
+    {
+      "id": "public_anchor",
+      "district_id": "mitte",
+      "name": "Public anchor",
+      "demand_pressure": 0.58,
+      "income_mix": "protected"
     }
   ],
   "parcels": [
     {
-      "id": "parcel_mitte_001",
+      "id": "parcel_alexanderplatz",
       "neighborhood_id": "alexanderplatz",
       "land_value": 1200000,
       "zoning_capacity": 24,
@@ -47,18 +89,66 @@
       "owner_id": "owner_private_001"
     },
     {
-      "id": "parcel_mitte_002",
+      "id": "parcel_wedding_edge",
       "neighborhood_id": "wedding_edge",
       "land_value": 640000,
       "zoning_capacity": 18,
       "redevelopment_friction": 0.52,
       "owner_id": "owner_coop_001"
+    },
+    {
+      "id": "parcel_spree_office",
+      "neighborhood_id": "spree_office",
+      "land_value": 1420000,
+      "zoning_capacity": 30,
+      "redevelopment_friction": 0.42,
+      "owner_id": "owner_company_001"
+    },
+    {
+      "id": "parcel_museum_quarter",
+      "neighborhood_id": "museum_quarter",
+      "land_value": 1100000,
+      "zoning_capacity": 16,
+      "redevelopment_friction": 0.58,
+      "owner_id": "owner_company_001"
+    },
+    {
+      "id": "parcel_north_mitte",
+      "neighborhood_id": "north_mitte",
+      "land_value": 760000,
+      "zoning_capacity": 20,
+      "redevelopment_friction": 0.63,
+      "owner_id": "owner_private_001"
+    },
+    {
+      "id": "parcel_rosenthaler",
+      "neighborhood_id": "rosenthaler",
+      "land_value": 1360000,
+      "zoning_capacity": 26,
+      "redevelopment_friction": 0.48,
+      "owner_id": "owner_company_001"
+    },
+    {
+      "id": "parcel_tiergarten_edge",
+      "neighborhood_id": "tiergarten_edge",
+      "land_value": 820000,
+      "zoning_capacity": 18,
+      "redevelopment_friction": 0.66,
+      "owner_id": "owner_private_001"
+    },
+    {
+      "id": "parcel_public_anchor",
+      "neighborhood_id": "public_anchor",
+      "land_value": 580000,
+      "zoning_capacity": 28,
+      "redevelopment_friction": 0.82,
+      "owner_id": "owner_public_001"
     }
   ],
   "buildings": [
     {
-      "id": "building_001",
-      "parcel_id": "parcel_mitte_001",
+      "id": "building_alexanderplatz",
+      "parcel_id": "parcel_alexanderplatz",
       "built_year": 1910,
       "condition": 0.62,
       "energy_quality": 0.42,
@@ -66,19 +156,73 @@
       "operating_cost_per_sqm": 3.8
     },
     {
-      "id": "building_002",
-      "parcel_id": "parcel_mitte_002",
+      "id": "building_wedding_edge",
+      "parcel_id": "parcel_wedding_edge",
       "built_year": 1965,
       "condition": 0.74,
       "energy_quality": 0.58,
       "renovation_level": 0.5,
       "operating_cost_per_sqm": 3.1
+    },
+    {
+      "id": "building_spree_office",
+      "parcel_id": "parcel_spree_office",
+      "built_year": 2004,
+      "condition": 0.84,
+      "energy_quality": 0.72,
+      "renovation_level": 0.68,
+      "operating_cost_per_sqm": 4.2
+    },
+    {
+      "id": "building_museum_quarter",
+      "parcel_id": "parcel_museum_quarter",
+      "built_year": 1898,
+      "condition": 0.6,
+      "energy_quality": 0.38,
+      "renovation_level": 0.44,
+      "operating_cost_per_sqm": 4.0
+    },
+    {
+      "id": "building_north_mitte",
+      "parcel_id": "parcel_north_mitte",
+      "built_year": 1978,
+      "condition": 0.68,
+      "energy_quality": 0.56,
+      "renovation_level": 0.46,
+      "operating_cost_per_sqm": 3.2
+    },
+    {
+      "id": "building_rosenthaler",
+      "parcel_id": "parcel_rosenthaler",
+      "built_year": 1996,
+      "condition": 0.82,
+      "energy_quality": 0.69,
+      "renovation_level": 0.64,
+      "operating_cost_per_sqm": 4.1
+    },
+    {
+      "id": "building_tiergarten_edge",
+      "parcel_id": "parcel_tiergarten_edge",
+      "built_year": 1954,
+      "condition": 0.66,
+      "energy_quality": 0.5,
+      "renovation_level": 0.4,
+      "operating_cost_per_sqm": 3.4
+    },
+    {
+      "id": "building_public_anchor",
+      "parcel_id": "parcel_public_anchor",
+      "built_year": 1988,
+      "condition": 0.78,
+      "energy_quality": 0.62,
+      "renovation_level": 0.58,
+      "operating_cost_per_sqm": 2.9
     }
   ],
   "units": [
     {
       "id": "unit_001",
-      "building_id": "building_001",
+      "building_id": "building_alexanderplatz",
       "sqm": 62,
       "rooms": 2,
       "tenure": "rental",
@@ -90,7 +234,7 @@
     },
     {
       "id": "unit_002",
-      "building_id": "building_001",
+      "building_id": "building_alexanderplatz",
       "sqm": 88,
       "rooms": 3,
       "tenure": "rental",
@@ -102,7 +246,7 @@
     },
     {
       "id": "unit_003",
-      "building_id": "building_002",
+      "building_id": "building_wedding_edge",
       "sqm": 54,
       "rooms": 2,
       "tenure": "rental",
@@ -111,6 +255,90 @@
       "regulated": true,
       "vacant": false,
       "household_id": "household_002"
+    },
+    {
+      "id": "unit_004",
+      "building_id": "building_spree_office",
+      "sqm": 74,
+      "rooms": 2,
+      "tenure": "rental",
+      "monthly_rent": 1420,
+      "estimated_sale_price": 590000,
+      "regulated": false,
+      "vacant": false,
+      "household_id": "household_003"
+    },
+    {
+      "id": "unit_005",
+      "building_id": "building_museum_quarter",
+      "sqm": 44,
+      "rooms": 1,
+      "tenure": "rental",
+      "monthly_rent": 980,
+      "estimated_sale_price": 405000,
+      "regulated": false,
+      "vacant": true,
+      "household_id": null
+    },
+    {
+      "id": "unit_006",
+      "building_id": "building_north_mitte",
+      "sqm": 71,
+      "rooms": 2,
+      "tenure": "rental",
+      "monthly_rent": 1010,
+      "estimated_sale_price": 430000,
+      "regulated": true,
+      "vacant": false,
+      "household_id": "household_004"
+    },
+    {
+      "id": "unit_007",
+      "building_id": "building_rosenthaler",
+      "sqm": 93,
+      "rooms": 3,
+      "tenure": "rental",
+      "monthly_rent": 2140,
+      "estimated_sale_price": 820000,
+      "regulated": false,
+      "vacant": false,
+      "household_id": "household_005"
+    },
+    {
+      "id": "unit_008",
+      "building_id": "building_tiergarten_edge",
+      "sqm": 58,
+      "rooms": 2,
+      "tenure": "rental",
+      "monthly_rent": 890,
+      "estimated_sale_price": 380000,
+      "regulated": true,
+      "vacant": false,
+      "household_id": "household_006"
+    },
+    {
+      "id": "unit_009",
+      "building_id": "building_public_anchor",
+      "sqm": 67,
+      "rooms": 2,
+      "tenure": "rental",
+      "monthly_rent": 620,
+      "estimated_sale_price": 300000,
+      "regulated": true,
+      "vacant": false,
+      "household_id": "household_007"
+    },
+    {
+      "id": "unit_010",
+      "building_id": "building_public_anchor",
+      "sqm": 49,
+      "rooms": 1,
+      "tenure": "rental",
+      "monthly_rent": 510,
+      "estimated_sale_price": 245000,
+      "regulated": true,
+      "vacant": false,
+      "household_id": "household_008"
     }
   ],
   "owners": [
@@ -127,6 +355,20 @@
       "liquidity": 90000,
       "risk_tolerance": 0.28,
       "social_mission": 0.86
+    },
+    {
+      "id": "owner_company_001",
+      "kind": "housing_company",
+      "liquidity": 420000,
+      "risk_tolerance": 0.78,
+      "social_mission": 0.05
+    },
+    {
+      "id": "owner_public_001",
+      "kind": "public",
+      "liquidity": 260000,
+      "risk_tolerance": 0.12,
+      "social_mission": 0.95
     }
   ],
   "households": [
@@ -137,7 +379,8 @@
       "size": 2,
       "rent_burden_tolerance": 0.34,
       "buying_interest": 0.22,
-      "neighborhood_preference": "alexanderplatz"
+      "neighborhood_preference": "alexanderplatz",
+      "displacement_stress": 0
     },
     {
       "id": "household_002",
@@ -146,7 +389,118 @@
       "size": 1,
       "rent_burden_tolerance": 0.36,
       "buying_interest": 0.03,
-      "neighborhood_preference": "wedding_edge"
+      "neighborhood_preference": "wedding_edge",
+      "displacement_stress": 0
+    },
+    {
+      "id": "household_003",
+      "income_monthly": 3900,
+      "savings": 18000,
+      "size": 2,
+      "rent_burden_tolerance": 0.33,
+      "buying_interest": 0.18,
+      "neighborhood_preference": "spree_office",
+      "displacement_stress": 0
+    },
+    {
+      "id": "household_004",
+      "income_monthly": 2950,
+      "savings": 9200,
+      "size": 2,
+      "rent_burden_tolerance": 0.35,
+      "buying_interest": 0.08,
+      "neighborhood_preference": "north_mitte",
+      "displacement_stress": 0
+    },
+    {
+      "id": "household_005",
+      "income_monthly": 6200,
+      "savings": 42000,
+      "size": 2,
+      "rent_burden_tolerance": 0.32,
+      "buying_interest": 0.36,
+      "neighborhood_preference": "rosenthaler",
+      "displacement_stress": 0
+    },
+    {
+      "id": "household_006",
+      "income_monthly": 2700,
+      "savings": 7600,
+      "size": 1,
+      "rent_burden_tolerance": 0.35,
+      "buying_interest": 0.06,
+      "neighborhood_preference": "tiergarten_edge",
+      "displacement_stress": 0
+    },
+    {
+      "id": "household_007",
+      "income_monthly": 2100,
+      "savings": 3100,
+      "size": 1,
+      "rent_burden_tolerance": 0.38,
+      "buying_interest": 0.02,
+      "neighborhood_preference": "public_anchor",
+      "displacement_stress": 0
+    },
+    {
+      "id": "household_008",
+      "income_monthly": 1850,
+      "savings": 2400,
+      "size": 1,
+      "rent_burden_tolerance": 0.38,
+      "buying_interest": 0.01,
+      "neighborhood_preference": "public_anchor",
+      "displacement_stress": 0
+    }
+  ],
+  "influence_edges": [
+    {
+      "from": "alexanderplatz",
+      "to": "museum_quarter",
+      "weight": 0.62,
+      "kind": "rent spillover"
+    },
+    {
+      "from": "alexanderplatz",
+      "to": "rosenthaler",
+      "weight": 0.58,
+      "kind": "purchase pressure"
+    },
+    {
+      "from": "rosenthaler",
+      "to": "north_mitte",
+      "weight": 0.46,
+      "kind": "displacement pressure"
+    },
+    {
+      "from": "museum_quarter",
+      "to": "tiergarten_edge",
+      "weight": 0.4,
+      "kind": "tourism spillover"
+    },
+    {
+      "from": "spree_office",
+      "to": "alexanderplatz",
+      "weight": 0.54,
+      "kind": "office demand"
+    },
+    {
+      "from": "spree_office",
+      "to": "public_anchor",
+      "weight": 0.35,
+      "kind": "land pressure"
+    },
+    {
+      "from": "public_anchor",
+      "to": "tiergarten_edge",
+      "weight": 0.32,
+      "kind": "stabilizing pressure"
+    },
+    {
+      "from": "wedding_edge",
+      "to": "north_mitte",
+      "weight": 0.36,
+      "kind": "affordability pull"
     }
   ]
 }
