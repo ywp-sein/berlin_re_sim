@@ -793,6 +793,39 @@ dd {
   line-height: 1.4;
 }
 
+.milestone-sidebar {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--green);
+  border-radius: 8px;
+  background: #fbfaf4;
+}
+
+.milestone-sidebar > span,
+.milestone-card > span {
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 780;
+  text-transform: uppercase;
+}
+
+.milestone-sidebar strong {
+  font-size: 18px;
+}
+
+.milestone-sidebar ul {
+  display: grid;
+  gap: 5px;
+  margin: 0;
+  padding-left: 18px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
 .notes-sidebar label {
   display: grid;
   gap: 8px;
@@ -826,7 +859,14 @@ dd {
   gap: 12px;
 }
 
+.milestone-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
 .note-card,
+.milestone-card,
 .version-card {
   display: grid;
   gap: 10px;
@@ -847,6 +887,22 @@ dd {
   color: var(--muted);
   font-size: 14px;
   line-height: 1.45;
+}
+
+.milestone-card p {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.milestone-card ul {
+  display: grid;
+  gap: 5px;
+  margin: 0;
+  padding-left: 18px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.35;
 }
 
 .note-card code {
@@ -1155,6 +1211,7 @@ canvas {
 
   .comparison-cards,
   .wiki-results,
+  .milestone-list,
   .notes-grid {
     grid-template-columns: 1fr;
   }

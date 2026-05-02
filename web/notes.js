@@ -1,6 +1,6 @@
 const currentVersion = {
-  label: "Prototype 0.5.18",
-  summary: "Real-data preflight milestone with scenario validation.",
+  label: "Prototype 0.5.19",
+  summary: "Notes sidebar now surfaces the current milestone and roadmap.",
 };
 
 const implementationNotes = [
@@ -76,7 +76,105 @@ const implementationNotes = [
   },
 ];
 
+const currentMilestone = {
+  title: "Real-data preflight",
+  summary:
+    "The prototype is being hardened so real sources can enter without breaking scenario structure or confusing synthetic values with observed data.",
+  items: [
+    "Canonical scenario feeds Python, game, and comparison UI.",
+    "Scenario validator passes for the current Mitte seed.",
+    "Synthetic observations are recorded before import.",
+    "Next: move coefficients to parameters and automate baseline reports.",
+  ],
+};
+
+const milestoneRoadmap = [
+  {
+    status: "Current",
+    title: "Real-data preflight",
+    goal:
+      "Prepare the synthetic model so real values can be imported safely and compared against a known baseline.",
+    deliverables: [
+      "Canonical scenario bundle for Python and web.",
+      "Scenario ID and range validation.",
+      "Synthetic observations baseline.",
+      "Clear synthetic-vs-observed warnings.",
+    ],
+  },
+  {
+    status: "Next",
+    title: "Parameter extraction",
+    goal:
+      "Move behavioral coefficients, Markov transitions, and MCMC target weights out of code and into editable parameter files.",
+    deliverables: [
+      "Default parameter JSON for each method.",
+      "Shared parameter loader.",
+      "Docs explaining each coefficient and valid range.",
+      "Compare page shows which parameter set is active.",
+    ],
+  },
+  {
+    status: "Next",
+    title: "Baseline reporting",
+    goal:
+      "Generate repeatable reports from the current scenario before and after every data import.",
+    deliverables: [
+      "Script that runs all non-Mesa methods.",
+      "JSON and markdown baseline outputs.",
+      "Scenario size, targets, method outputs, and error metrics in one report.",
+      "Docs page includes the latest generated baseline.",
+    ],
+  },
+  {
+    status: "Planned",
+    title: "Target provenance",
+    goal:
+      "Make every calibration value traceable before real targets replace synthetic expectations.",
+    deliverables: [
+      "Per-target source, unit, geography, period, and confidence fields.",
+      "Target validator.",
+      "Compare page displays target provenance.",
+      "Readiness gate blocks unknown-license or unmapped targets.",
+    ],
+  },
+  {
+    status: "Planned",
+    title: "Real-data staging",
+    goal:
+      "Create a controlled path from raw files to normalized values without overwriting the scenario too early.",
+    deliverables: [
+      "Raw, normalized, and imported data folders.",
+      "Import notes template.",
+      "Geography mapping table for the eight Mitte proxy areas.",
+      "Source registry status updates for candidate, approved, imported, or rejected.",
+    ],
+  },
+  {
+    status: "Later",
+    title: "Calibration and convergence",
+    goal:
+      "Compare analytical and numerical simulations against real targets and test whether methods converge or diverge.",
+    deliverables: [
+      "Parameter search or optimizer.",
+      "Convergence plots across methods.",
+      "Sensitivity report for rents, sale prices, vacancy, income, and stress.",
+      "Decision notes on which method is useful for which question.",
+    ],
+  },
+];
+
 const versions = [
+  {
+    version: "0.5.19",
+    date: "2026-05-02",
+    title: "Visible milestone roadmap",
+    changes: [
+      "Added a current milestone block to the Notes sidebar.",
+      "Added a Milestone Roadmap section with proposed stages from real-data preflight to convergence testing.",
+      "Styled milestone cards for desktop and mobile layouts.",
+      "Bumped the service-worker cache for the Notes UI update.",
+    ],
+  },
   {
     version: "0.5.18",
     date: "2026-05-02",
@@ -343,6 +441,10 @@ const openGaps = [
 ];
 
 const filterSelect = document.querySelector("#notesFilter");
+const currentMilestoneTitle = document.querySelector("#currentMilestoneTitle");
+const currentMilestoneSummary = document.querySelector("#currentMilestoneSummary");
+const currentMilestoneList = document.querySelector("#currentMilestoneList");
+const milestoneHost = document.querySelector("#milestoneRoadmap");
 const implementationHost = document.querySelector("#implementationNotes");
 const versionHost = document.querySelector("#versionHistory");
 const gapsHost = document.querySelector("#openGaps");
@@ -352,6 +454,8 @@ let versionCommits = {};
 function initializeNotes() {
   document.querySelector("#currentVersion").textContent = currentVersion.label;
   document.querySelector("#currentVersionSummary").textContent = currentVersion.summary;
+  renderCurrentMilestone();
+  renderMilestoneRoadmap();
   const areas = ["all", ...new Set(implementationNotes.map((note) => note.area).sort())];
   filterSelect.innerHTML = areas
     .map((area) => `<option value="${area}">${area === "all" ? "All areas" : area}</option>`)
@@ -360,6 +464,27 @@ function initializeNotes() {
   renderVersions();
   renderNotes();
   loadVersionCommits();
+}
+
+function renderCurrentMilestone() {
+  currentMilestoneTitle.textContent = currentMilestone.title;
+  currentMilestoneSummary.textContent = currentMilestone.summary;
+  currentMilestoneList.innerHTML = currentMilestone.items.map((item) => `<li>${item}</li>`).join("");
+}
+
+function renderMilestoneRoadmap() {
+  milestoneHost.innerHTML = milestoneRoadmap
+    .map(
+      (milestone) => `
+        <article class="milestone-card">
+          <span>${milestone.status}</span>
+          <h2>${milestone.title}</h2>
+          <p>${milestone.goal}</p>
+          <ul>${milestone.deliverables.map((item) => `<li>${item}</li>`).join("")}</ul>
+        </article>
+      `,
+    )
+    .join("");
 }
 
 async function loadVersionCommits() {

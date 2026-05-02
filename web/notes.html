@@ -45,6 +45,12 @@
           </h2>
           <strong id="currentVersion">Prototype 0.5.0</strong>
           <p id="currentVersionSummary">Documentation UI and version ledger.</p>
+          <div class="milestone-sidebar" aria-label="current milestone">
+            <span>Current milestone</span>
+            <strong id="currentMilestoneTitle">Real-data preflight</strong>
+            <p id="currentMilestoneSummary">Prepare the model before importing real data.</p>
+            <ul id="currentMilestoneList"></ul>
+          </div>
           <label>
             <span>Filter notes</span>
             <select id="notesFilter">
@@ -54,6 +60,20 @@
         </aside>
 
         <section class="notes-content">
+          <section class="notes-section">
+            <div class="section-heading">
+              <h2>
+                <span
+                  class="info"
+                  tabindex="0"
+                  data-tooltip="Planned milestones from the current pre-real-data checkpoint toward real-data calibration and convergence testing."
+                >Milestone Roadmap</span>
+              </h2>
+              <span>pre-data to calibrated model</span>
+            </div>
+            <div id="milestoneRoadmap" class="milestone-list"></div>
+          </section>
+
           <section class="notes-section">
             <div class="section-heading">
               <h2>
