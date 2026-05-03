@@ -93,6 +93,41 @@ When a change affects behavior, structure, data contracts, deployment, UI, or
 known gaps, update `web/notes.js` in the same change so the implementation notes
 and version history stay current.
 
+Use the notes updater to keep the ledger and cache version in one step:
+
+```bash
+python3 scripts/update_notes.py --title "Short title" --summary "What changed" --change "Updated the relevant files."
+```
+
+For a local smart draft from changed files:
+
+```bash
+python3 scripts/update_notes.py --smart
+```
+
+For an OpenAI-assisted draft, set `OPENAI_API_KEY` and opt in explicitly:
+
+```bash
+python3 scripts/update_notes.py --openai
+```
+
+To update Notes automatically before each new commit, install the local git hook:
+
+```bash
+python3 scripts/install_notes_hook.py
+```
+
+The hook runs the smart updater, rebuilds the docs bundle, and stages the Notes
+and cache files into the commit. It is local to your checkout because git hooks
+inside `.git/hooks/` are not committed.
+
+Useful gap options:
+
+```bash
+python3 scripts/update_notes.py --title "Real-data staging" --summary "Added staging folders." --change "Added raw and normalized data folders." --complete-gap "No raw or normalized data staging folders yet"
+python3 scripts/update_notes.py --title "New known gap" --summary "Recorded a blocker." --add-gap "Data|Gap title|Gap explanation.|related/files"
+```
+
 If the phone cannot connect:
 
 - confirm the phone is not on mobile data or a guest Wi-Fi network
@@ -125,6 +160,8 @@ If the phone cannot connect:
 - `scripts/estimate_usage.py` estimates simulation work units and energy usage.
 - `scripts/validate_scenario.py` checks scenario IDs, references, ranges, and occupancy.
 - `scripts/validate_targets.py` checks target values and per-target provenance.
+- `scripts/update_notes.py` updates the Notes ledger, open gaps, and cache version.
+- `scripts/install_notes_hook.py` installs the optional pre-commit Notes updater.
 - `scripts/build_baseline_report.py` writes baseline JSON and markdown reports.
 - `scripts/build_scenario_content.py` bundles the canonical scenario for the web app.
 - `data/baselines/latest_baseline.json` is the latest generated baseline data.

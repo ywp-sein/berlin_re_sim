@@ -1,6 +1,6 @@
 const currentVersion = {
-  label: "Prototype 0.5.24",
-  summary: "Open gaps now reflect the remaining pre-real-data blockers.",
+  label: "Prototype 0.5.27",
+  summary: "Notes can now be drafted from git changes and hooked into commits.",
 };
 
 const implementationNotes = [
@@ -168,6 +168,39 @@ const milestoneRoadmap = [
 ];
 
 const versions = [
+  {
+    version: "0.5.27",
+    date: "2026-05-03",
+    title: "Smart notes hook",
+    changes: [
+      "Added optional OpenAI-assisted notes drafting through the Responses API when explicitly requested.",
+      "Added local smart drafting from git diffs for offline notes updates.",
+      "Added scripts/install_notes_hook.py to install a pre-commit hook that updates and stages Notes automatically.",
+      "Documented smart notes and hook usage in README.",
+    ],
+  },
+  {
+    version: "0.5.26",
+    date: "2026-05-03",
+    title: "Automation update",
+    changes: [
+      "Added optional OpenAI-assisted smart notes drafting from git diffs.",
+      "Added local smart notes drafting so notes can be updated without hand-writing every field.",
+      "Documented smart and OpenAI notes update commands in README.",
+      "Updated web UI assets.",
+      "Updated project automation scripts.",
+      "Updated README guidance.",
+    ],
+  },
+  {
+    version: "0.5.25",
+    date: "2026-05-03",
+    title: "Notes update automation",
+    changes: [
+      "Added scripts/update_notes.py to update current version, version history, open gaps, and service-worker cache.",
+      "Documented the notes updater in README so notes changes do not require hand-editing every field.",
+    ],
+  },
   {
     version: "0.5.24",
     date: "2026-05-03",

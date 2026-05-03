@@ -1,4 +1,4 @@
-const CACHE_NAME = "berlin-re-sim-v39";
+const CACHE_NAME = "berlin-re-sim-v42";
 const ASSETS = [
   "./",
   "./index.html",
