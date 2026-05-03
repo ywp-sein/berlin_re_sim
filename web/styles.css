@@ -89,6 +89,7 @@ h2 {
 }
 
 .topbar p,
+.data-status-row,
 .section-heading span,
 .metrics span,
 .panel label,
@@ -177,6 +178,44 @@ dd {
   flex-wrap: wrap;
   gap: 8px;
   min-width: 0;
+}
+
+.data-status-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+  margin-top: 8px;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.data-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 4px 9px;
+  border: 1px solid #8f5e16;
+  border-radius: 999px;
+  color: #4b3210;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.data-badge.info {
+  border-bottom-style: solid;
+}
+
+.data-badge-synthetic {
+  background: #fff1c7;
+}
+
+.data-badge-observed {
+  border-color: #2f7d5b;
+  background: #dff3e9;
+  color: #1f513c;
 }
 
 button {

@@ -51,6 +51,10 @@ external policy and influence settings. The compare page has editable
 calibration targets, a reproducible random seed, mean target error, error RMSE,
 and a button to save the current target vector as JSON.
 
+The web UI shows a synthetic/observed status badge near the page title. Until
+real sources are imported with provenance, visible simulation values should be
+read as synthetic prototype outputs.
+
 The static browser app uses a generated scenario bundle from
 `data/scenarios/mitte_seed.json`, so the game, comparison page, and Python model
 share the same canonical seed.

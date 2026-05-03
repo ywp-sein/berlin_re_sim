@@ -1,6 +1,6 @@
 const currentVersion = {
-  label: "Prototype 0.5.22",
-  summary: "Calibration targets now carry provenance per value.",
+  label: "Prototype 0.5.24",
+  summary: "Open gaps now reflect the remaining pre-real-data blockers.",
 };
 
 const implementationNotes = [
@@ -87,6 +87,7 @@ const currentMilestone = {
     "Baseline reports are generated as JSON and markdown.",
     "Behavior coefficients and state-machine probabilities are editable in parameter files.",
     "Calibration target values carry their own provenance fields.",
+    "Web pages visibly mark current values as synthetic prototype data.",
     "Next: create real-data staging folders before observed values enter the scenario.",
   ],
 };
@@ -167,6 +168,28 @@ const milestoneRoadmap = [
 ];
 
 const versions = [
+  {
+    version: "0.5.24",
+    date: "2026-05-03",
+    title: "Open gaps refresh",
+    changes: [
+      "Updated Open Gaps so completed parameter extraction, target provenance, and synthetic badge work no longer read as unresolved.",
+      "Added explicit gaps for real-data staging folders and Mitte proxy geography mapping.",
+      "Clarified that current values have provenance fields but remain synthetic until observed sources are imported.",
+      "Bumped the service-worker cache for the Notes update.",
+    ],
+  },
+  {
+    version: "0.5.23",
+    date: "2026-05-03",
+    title: "Synthetic data badges",
+    changes: [
+      "Added visible synthetic/observed status badges to the game, comparison, wiki, notes, and docs pages.",
+      "Styled compact header badges with tooltips explaining that current values are synthetic prototype outputs.",
+      "Updated README and current observations so the warning is recorded outside the UI.",
+      "Bumped the service-worker cache for the web UI update.",
+    ],
+  },
   {
     version: "0.5.22",
     date: "2026-05-03",
@@ -463,10 +486,24 @@ const openGaps = [
   },
   {
     area: "Data",
-    title: "Current values are synthetic",
+    title: "Observed sources are not imported yet",
     body:
-      "The Mitte seed and targets are useful for structure and UI testing, but should not be interpreted as empirical results until real sources are imported and provenance is recorded.",
+      "The Mitte seed and targets now have clearer provenance and visible UI badges, but the values themselves are still synthetic. They should not be interpreted as empirical results until approved observed sources are imported.",
     files: "data/scenarios/mitte_seed.json, data/targets/mitte_targets.json",
+  },
+  {
+    area: "Data",
+    title: "No raw or normalized data staging folders yet",
+    body:
+      "Real datasets need a controlled path from raw files to normalized values before anything overwrites the scenario or target files.",
+    files: "data/",
+  },
+  {
+    area: "Data",
+    title: "Mitte proxy geography mapping is still manual",
+    body:
+      "The current eight areas are useful for gameplay, but real source geographies still need a mapping table that explains how raw districts, blocks, postal areas, or points map into those proxy areas.",
+    files: "data/scenarios/mitte_seed.json, docs/data/real_data_readiness.md",
   },
   {
     area: "Calibration",

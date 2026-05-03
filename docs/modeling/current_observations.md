@@ -158,8 +158,8 @@ Before pulling real data, the most useful next implementation steps are:
 5. Add a real-data import staging folder for raw and normalized files, even
    before downloading real datasets.
 6. Define how real geography will map into the current eight Mitte proxy areas.
-7. Add an explicit synthetic-vs-observed badge in the web UI, so prototype
-   values are never mistaken for real data.
+7. Keep the synthetic-vs-observed badge visible until imported values have
+   observed provenance.
 
 ## Scenario Validation
 
@@ -193,9 +193,6 @@ Remaining hardening:
 1. Add a real-data import staging folder for raw and normalized files, even
    before downloading real datasets.
 2. Define how real geography will map into the current eight Mitte proxy areas.
-3. Add an explicit synthetic-vs-observed badge in the web UI, so prototype
-   values are never mistaken for real data.
-
 The best immediate next step is real-data staging. That will create a place for
 raw and normalized files before any observed values overwrite the synthetic
 scenario.
