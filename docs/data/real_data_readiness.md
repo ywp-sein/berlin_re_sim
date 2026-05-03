@@ -36,10 +36,11 @@ Use these units inside scenarios and targets:
 1. Fill `data/source_registry.json`.
 2. Run `python3 scripts/validate_scenario.py` on the current synthetic scenario
    so the pre-import baseline is structurally clean.
+   Run `python3 scripts/validate_targets.py` before and after target edits.
 3. Store raw files outside scenario files.
 4. Convert raw units into canonical units.
 5. Map geography into Mitte area proxies.
-6. Write calibration targets first.
+6. Write calibration targets first, with per-target provenance for every value.
 7. Run `python3 scripts/build_baseline_report.py` to compare all simulation
    methods against the same targets.
 8. Only then replace scenario initialization values and run the scenario
@@ -57,6 +58,7 @@ tested.
 - Does it describe all of Mitte or only a submarket?
 - Does the source mix residential, commercial, land, and apartment values?
 - Does the source period match the period used by other targets?
+- Does each target value carry its own source, period, geography, unit, and statistic?
 - Can the license be used in a public GitHub Pages app?
 
 ## Stop Conditions
@@ -68,3 +70,4 @@ Do not import a source yet if:
 - the geography cannot be mapped
 - the source mixes incompatible markets without separation
 - the value would overwrite synthetic assumptions without provenance
+- a target file has numeric values without matching `target_provenance` entries

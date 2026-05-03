@@ -223,9 +223,20 @@ const dictionaryEntries = [
     category: "Calibration",
     summary: "A reference output value used to judge whether a method is close to an expected market state.",
     details:
-      "Targets are separate from scenarios. A scenario describes the initial world; targets describe expected outputs such as rent, sale price, vacancy, stress, rent burden, and buy years. This separation makes real-data calibration cleaner later.",
-    implementation: "Stored in data/targets/mitte_targets.json and editable in compare.html.",
-    tags: ["targets", "validation", "real data", "JSON"],
+      "Targets are separate from scenarios. A scenario describes the initial world; targets describe expected outputs such as rent, sale price, vacancy, stress, rent burden, and buy years. Each target now has its own provenance entry, because different values may come from different sources, periods, geographies, or statistic types.",
+    implementation:
+      "Stored in data/targets/mitte_targets.json, with numeric values under targets and traceability under target_provenance.",
+    tags: ["targets", "validation", "real data", "JSON", "provenance"],
+  },
+  {
+    term: "Target provenance",
+    category: "Calibration",
+    summary: "Source and meaning metadata attached to one calibration value.",
+    details:
+      "Per-target provenance prevents rent, sale price, vacancy, stress, burden, and affordability targets from sharing vague document-level metadata. Each value records source, publisher, period, geography, unit, statistic, method, license, confidence, and notes.",
+    implementation:
+      "Documented in docs/modeling/target_schema.md and stored in data/targets/mitte_targets.json under target_provenance.",
+    tags: ["targets", "source", "period", "unit", "geography", "quality"],
   },
   {
     term: "Scenario",

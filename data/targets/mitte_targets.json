@@ -1,6 +1,6 @@
 {
   "name": "Mitte prototype calibration targets",
-  "schema_version": "0.1",
+  "schema_version": "0.2",
   "metadata": {
     "source": "synthetic",
     "source_url": null,
@@ -16,5 +16,97 @@
     "average_displacement_stress": 0.28,
     "average_rent_burden": 0.32,
     "purchase_price_to_income_years": 18
+  },
+  "target_provenance": {
+    "median_rent_per_sqm": {
+      "source": "synthetic",
+      "source_id": null,
+      "source_url": null,
+      "publisher": "berlin_re_sim prototype",
+      "source_date": null,
+      "period": "pre-real-data synthetic baseline",
+      "geography": "Mitte proxy areas",
+      "unit": "EUR per square meter per month",
+      "statistic": "median",
+      "method": "manual placeholder target",
+      "license": null,
+      "confidence": "low",
+      "notes": "Synthetic comparison target, not an empirical Berlin value."
+    },
+    "median_sale_price_per_sqm": {
+      "source": "synthetic",
+      "source_id": null,
+      "source_url": null,
+      "publisher": "berlin_re_sim prototype",
+      "source_date": null,
+      "period": "pre-real-data synthetic baseline",
+      "geography": "Mitte proxy areas",
+      "unit": "EUR per square meter",
+      "statistic": "median",
+      "method": "manual placeholder target",
+      "license": null,
+      "confidence": "low",
+      "notes": "Synthetic comparison target, not an empirical Berlin value."
+    },
+    "vacancy_rate": {
+      "source": "synthetic",
+      "source_id": null,
+      "source_url": null,
+      "publisher": "berlin_re_sim prototype",
+      "source_date": null,
+      "period": "pre-real-data synthetic baseline",
+      "geography": "Mitte proxy areas",
+      "unit": "decimal share from 0 to 1",
+      "statistic": "rate",
+      "method": "manual placeholder target",
+      "license": null,
+      "confidence": "low",
+      "notes": "Synthetic comparison target, not an empirical Berlin value."
+    },
+    "average_displacement_stress": {
+      "source": "synthetic",
+      "source_id": null,
+      "source_url": null,
+      "publisher": "berlin_re_sim prototype",
+      "source_date": null,
+      "period": "pre-real-data synthetic baseline",
+      "geography": "Mitte proxy households",
+      "unit": "decimal score from 0 to 1",
+      "statistic": "mean",
+      "method": "manual placeholder target",
+      "license": null,
+      "confidence": "low",
+      "notes": "Synthetic stress index target, not an observed statistic."
+    },
+    "average_rent_burden": {
+      "source": "synthetic",
+      "source_id": null,
+      "source_url": null,
+      "publisher": "berlin_re_sim prototype",
+      "source_date": null,
+      "period": "pre-real-data synthetic baseline",
+      "geography": "Mitte proxy households",
+      "unit": "rent divided by monthly household income",
+      "statistic": "mean",
+      "method": "manual placeholder target",
+      "license": null,
+      "confidence": "low",
+      "notes": "Synthetic comparison target, not an empirical Berlin value."
+    },
+    "purchase_price_to_income_years": {
+      "source": "synthetic",
+      "source_id": null,
+      "source_url": null,
+      "publisher": "berlin_re_sim prototype",
+      "source_date": null,
+      "period": "pre-real-data synthetic baseline",
+      "geography": "Mitte proxy areas",
+      "unit": "years of average individual income",
+      "statistic": "ratio",
+      "method": "manual placeholder target",
+      "license": null,
+      "confidence": "low",
+      "notes": "Synthetic affordability target derived as a comparison reference."
+    }
   }
 }

@@ -395,18 +395,70 @@ function currentTargets() {
 }
 
 function buildTargetDocument() {
+  const sourceDate = new Date().toISOString().slice(0, 10);
   return {
     name: "Mitte calibration targets",
-    schema_version: "0.1",
+    schema_version: "0.2",
     metadata: {
       source: "user_adjusted",
       source_url: null,
-      source_date: new Date().toISOString().slice(0, 10),
+      source_date: sourceDate,
       license: null,
       confidence: "prototype",
       notes: "Saved from web/compare.html target editor.",
     },
     targets: currentTargets(),
+    target_provenance: buildTargetProvenance(sourceDate),
+  };
+}
+
+function buildTargetProvenance(sourceDate) {
+  const base = {
+    source: "user_adjusted",
+    source_id: null,
+    source_url: null,
+    publisher: "web/compare.html target editor",
+    source_date: sourceDate,
+    period: "prototype session",
+    geography: "Mitte proxy areas",
+    method: "manual value edited in comparison UI",
+    license: null,
+    confidence: "prototype",
+    notes: "User-adjusted prototype target. Replace with source registry reference before treating as real data.",
+  };
+  return {
+    median_rent_per_sqm: {
+      ...base,
+      unit: "EUR per square meter per month",
+      statistic: "median",
+    },
+    median_sale_price_per_sqm: {
+      ...base,
+      unit: "EUR per square meter",
+      statistic: "median",
+    },
+    vacancy_rate: {
+      ...base,
+      unit: "decimal share from 0 to 1",
+      statistic: "rate",
+    },
+    average_displacement_stress: {
+      ...base,
+      geography: "Mitte proxy households",
+      unit: "decimal score from 0 to 1",
+      statistic: "mean",
+    },
+    average_rent_burden: {
+      ...base,
+      geography: "Mitte proxy households",
+      unit: "rent divided by monthly household income",
+      statistic: "mean",
+    },
+    purchase_price_to_income_years: {
+      ...base,
+      unit: "years of average individual income",
+      statistic: "ratio",
+    },
   };
 }
 

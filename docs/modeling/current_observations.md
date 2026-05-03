@@ -153,8 +153,8 @@ Before pulling real data, the most useful next implementation steps are:
    copied parameter file for sensitivity tests.
 3. Keep regenerating `scripts/build_baseline_report.py` before and after any
    scenario, target, or parameter change.
-4. Add target provenance fields to every calibration target value, not only to
-   the target document as a whole.
+4. Keep target provenance updated per calibration value when editing
+   `data/targets/mitte_targets.json`.
 5. Add a real-data import staging folder for raw and normalized files, even
    before downloading real datasets.
 6. Define how real geography will map into the current eight Mitte proxy areas.
@@ -190,14 +190,12 @@ libraries are installed.
 
 Remaining hardening:
 
-1. Add target provenance fields to every calibration target value, not only to
-   the target document as a whole.
-2. Add a real-data import staging folder for raw and normalized files, even
+1. Add a real-data import staging folder for raw and normalized files, even
    before downloading real datasets.
-3. Define how real geography will map into the current eight Mitte proxy areas.
-4. Add an explicit synthetic-vs-observed badge in the web UI, so prototype
+2. Define how real geography will map into the current eight Mitte proxy areas.
+3. Add an explicit synthetic-vs-observed badge in the web UI, so prototype
    values are never mistaken for real data.
 
-The best immediate next step is target provenance. That will make real-data
-comparison safer because every calibration value will carry a source, geography,
-period, unit, and confidence field.
+The best immediate next step is real-data staging. That will create a place for
+raw and normalized files before any observed values overwrite the synthetic
+scenario.

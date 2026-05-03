@@ -42,6 +42,11 @@ The default parameter file is `data/parameters/default_parameters.json`.
 Its schema reference is `data/schema/parameters.schema.json`, and the readable
 guide is `docs/modeling/parameter_schema.md`.
 
+The default target file is `data/targets/mitte_targets.json`. Its schema
+reference is `data/schema/targets.schema.json`, and the readable guide is
+`docs/modeling/target_schema.md`. Target provenance is stored per target value
+under `target_provenance`, not only in document-level metadata.
+
 Influence edges may live in the scenario when they are part of the simulation
 state. UI-only geometry, such as SVG map paths and label positions, should stay
 in the web layer.
@@ -65,3 +70,7 @@ contains:
 The comparison page reports mean relative error and relative RMSE against this
 target vector. Mean error is easier to read; RMSE punishes one very bad mismatch
 more strongly.
+
+Each target value should have a matching `target_provenance` entry. This lets
+rent, sale price, vacancy, stress, rent burden, and buy-years targets come from
+different sources without losing traceability.

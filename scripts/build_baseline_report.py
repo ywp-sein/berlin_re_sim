@@ -83,7 +83,9 @@ def build_report(
     scenario_path: Path, target_path: Path, parameter_path: Path, steps: int, seed: int
 ) -> dict[str, Any]:
     scenario = json.loads(scenario_path.read_text(encoding="utf-8"))
-    targets = load_targets(target_path)
+    target_document = load_target_document(target_path)
+    targets = target_document.get("targets", {})
+    target_provenance = target_document.get("target_provenance", {})
     methods = [
         run_method(method, scenario_path, parameter_path, steps, seed, targets)
         for method in DEFAULT_METHODS
@@ -108,15 +110,15 @@ def build_report(
             "influence_edges": len(scenario.get("influence_edges", [])),
         },
         "targets": targets,
+        "target_provenance": target_provenance,
         "methods": methods,
     }
 
 
-def load_targets(path: Path) -> dict[str, float]:
+def load_target_document(path: Path) -> dict[str, Any]:
     if not path.exists():
         return {}
-    data = json.loads(path.read_text(encoding="utf-8"))
-    return data.get("targets", {})
+    return json.loads(path.read_text(encoding="utf-8"))
 
 
 def run_method(
@@ -206,6 +208,17 @@ def render_markdown(report: dict[str, Any]) -> str:
     lines.extend(
         [
             "",
+            "## Target Provenance",
+            "",
+            "| target | value | source | period | geography | unit | confidence |",
+            "| --- | ---: | --- | --- | --- | --- | --- |",
+        ]
+    )
+    for key in TARGET_KEYS:
+        lines.append(render_target_provenance_row(key, report))
+    lines.extend(
+        [
+            "",
             "## Notes",
             "",
             "- `agent_based` may be unavailable when Mesa is not installed.",
@@ -215,6 +228,30 @@ def render_markdown(report: dict[str, Any]) -> str:
         ],
     )
     return "\n".join(lines)
+
+
+def render_target_provenance_row(key: str, report: dict[str, Any]) -> str:
+    target = report.get("targets", {}).get(key)
+    provenance = report.get("target_provenance", {}).get(key, {})
+    return (
+        f"| `{key}` "
+        f"| {format_target_value(key, target)} "
+        f"| {provenance.get('source', '-')} "
+        f"| {provenance.get('period', '-')} "
+        f"| {provenance.get('geography', '-')} "
+        f"| {provenance.get('unit', '-')} "
+        f"| {provenance.get('confidence', '-')} |"
+    )
+
+
+def format_target_value(key: str, value: float | None) -> str:
+    if value is None:
+        return "-"
+    if key in {"vacancy_rate", "average_displacement_stress", "average_rent_burden"}:
+        return f"{value:.2%}"
+    if key == "median_sale_price_per_sqm":
+        return f"{value:.0f}"
+    return f"{value:.2f}"
 
 
 def render_method_row(method: dict[str, Any]) -> str:

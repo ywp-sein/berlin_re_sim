@@ -1,6 +1,6 @@
 const currentVersion = {
-  label: "Prototype 0.5.21",
-  summary: "Method coefficients and state probabilities now live in parameter files.",
+  label: "Prototype 0.5.22",
+  summary: "Calibration targets now carry provenance per value.",
 };
 
 const implementationNotes = [
@@ -86,7 +86,8 @@ const currentMilestone = {
     "Synthetic observations are recorded before import.",
     "Baseline reports are generated as JSON and markdown.",
     "Behavior coefficients and state-machine probabilities are editable in parameter files.",
-    "Next: add per-target provenance before replacing synthetic calibration values.",
+    "Calibration target values carry their own provenance fields.",
+    "Next: create real-data staging folders before observed values enter the scenario.",
   ],
 };
 
@@ -128,7 +129,7 @@ const milestoneRoadmap = [
     ],
   },
   {
-    status: "Next",
+    status: "Done",
     title: "Target provenance",
     goal:
       "Make every calibration value traceable before real targets replace synthetic expectations.",
@@ -140,7 +141,7 @@ const milestoneRoadmap = [
     ],
   },
   {
-    status: "Planned",
+    status: "Next",
     title: "Real-data staging",
     goal:
       "Create a controlled path from raw files to normalized values without overwriting the scenario too early.",
@@ -166,6 +167,18 @@ const milestoneRoadmap = [
 ];
 
 const versions = [
+  {
+    version: "0.5.22",
+    date: "2026-05-03",
+    title: "Per-target provenance",
+    changes: [
+      "Updated data/targets/mitte_targets.json to schema version 0.2 with target_provenance entries for every calibration metric.",
+      "Expanded data/schema/targets.schema.json and added docs/modeling/target_schema.md.",
+      "Added scripts/validate_targets.py to check target values and matching provenance.",
+      "Updated the baseline report to include active target provenance beside numeric target values.",
+      "Updated the comparison target exporter, wiki, readiness docs, current observations, README, and milestone roadmap.",
+    ],
+  },
   {
     version: "0.5.21",
     date: "2026-05-03",

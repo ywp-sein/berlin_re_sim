@@ -59,6 +59,7 @@ Validate scenario structure before changing seed data:
 
 ```bash
 python3 scripts/validate_scenario.py
+python3 scripts/validate_targets.py
 ```
 
 Regenerate the synthetic baseline report:
@@ -104,6 +105,7 @@ If the phone cannot connect:
 - `docs/modeling/current_observations.md` records what the synthetic prototype can currently show.
 - `docs/modeling/scenario_schema.md` describes the canonical scenario contract.
 - `docs/modeling/parameter_schema.md` explains editable model coefficients and transition probabilities.
+- `docs/modeling/target_schema.md` explains calibration targets and per-target provenance.
 - `docs/modeling/visualization_values.md` lists the signals worth showing in the game.
 - `docs/data/data_sources.md` maps future real datasets to model variables.
 - `docs/data/real_data_readiness.md` is the checklist before importing real data.
@@ -112,12 +114,13 @@ If the phone cannot connect:
 - `data/source_registry.json` tracks candidate real-data sources and provenance.
 - `data/scenarios/mitte_seed.json` is the first small scenario.
 - `data/parameters/default_parameters.json` keeps method coefficients and transition probabilities separate.
-- `data/targets/mitte_targets.json` stores calibration reference outputs.
+- `data/targets/mitte_targets.json` stores calibration reference outputs and per-target provenance.
 - `src/berlin_re_sim/schemas.py` defines the durable domain objects.
 - `src/berlin_re_sim/model.py` contains the Mesa-compatible model skeleton.
 - `src/berlin_re_sim/methods/` contains selectable simulation methods.
 - `scripts/estimate_usage.py` estimates simulation work units and energy usage.
 - `scripts/validate_scenario.py` checks scenario IDs, references, ranges, and occupancy.
+- `scripts/validate_targets.py` checks target values and per-target provenance.
 - `scripts/build_baseline_report.py` writes baseline JSON and markdown reports.
 - `scripts/build_scenario_content.py` bundles the canonical scenario for the web app.
 - `data/baselines/latest_baseline.json` is the latest generated baseline data.
