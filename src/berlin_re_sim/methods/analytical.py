@@ -4,6 +4,7 @@ from pathlib import Path
 from statistics import mean, median
 
 from berlin_re_sim.methods.base import SimulationMethod, load_scenario
+from berlin_re_sim.parameters import ParameterSource, load_parameters, method_parameters
 from berlin_re_sim.scenario import Scenario
 from berlin_re_sim.schemas import MarketMetrics
 
@@ -13,8 +14,11 @@ class AnalyticalSimulation:
 
     method = SimulationMethod.ANALYTICAL
 
-    def __init__(self, scenario: Scenario, seed: int | None = None) -> None:
+    def __init__(
+        self, scenario: Scenario, seed: int | None = None, parameters: ParameterSource = None
+    ) -> None:
         self.scenario = scenario
+        self.parameters = method_parameters(load_parameters(parameters), self.method.value)
         self.tick = 0
         self.metrics: list[MarketMetrics] = []
         self.demand = mean(area.demand_pressure for area in scenario.neighborhoods)
@@ -26,23 +30,43 @@ class AnalyticalSimulation:
 
     @classmethod
     def from_scenario_file(
-        cls, path: str | Path, seed: int | None = None
+        cls, path: str | Path, seed: int | None = None, parameters: ParameterSource = None
     ) -> AnalyticalSimulation:
-        return cls(load_scenario(path), seed=seed)
+        return cls(load_scenario(path), seed=seed, parameters=parameters)
 
     @classmethod
     def from_scenario(
-        cls, scenario: Scenario, seed: int | None = None
+        cls, scenario: Scenario, seed: int | None = None, parameters: ParameterSource = None
     ) -> AnalyticalSimulation:
-        return cls(scenario, seed=seed)
+        return cls(scenario, seed=seed, parameters=parameters)
 
     def step(self) -> None:
         self.tick += 1
-        self.demand = min(1.0, max(0.0, self.demand * 0.992 + 0.008 * 0.82))
-        self.rent_multiplier *= 1 + 0.0045 * self.demand
-        self.sale_multiplier *= 1 + 0.0065 * self.demand
-        self.vacancy = min(0.22, max(0.02, self.vacancy * 0.985 + 0.015 * (0.12 * self.demand)))
-        self.stress = min(1.0, max(0.0, self.stress * 0.92 + 0.08 * self.demand))
+        demand_inertia = self.parameters["demand_inertia"]
+        self.demand = min(
+            1.0,
+            max(
+                0.0,
+                self.demand * demand_inertia
+                + (1 - demand_inertia) * self.parameters["demand_pull"],
+            ),
+        )
+        self.rent_multiplier *= 1 + self.parameters["rent_growth_coefficient"] * self.demand
+        self.sale_multiplier *= 1 + self.parameters["sale_growth_coefficient"] * self.demand
+        vacancy_inertia = self.parameters["vacancy_inertia"]
+        vacancy_target = self.parameters["vacancy_demand_coefficient"] * self.demand
+        self.vacancy = min(
+            self.parameters["vacancy_max"],
+            max(
+                self.parameters["vacancy_min"],
+                self.vacancy * vacancy_inertia + (1 - vacancy_inertia) * vacancy_target,
+            ),
+        )
+        stress_inertia = self.parameters["stress_inertia"]
+        self.stress = min(
+            1.0,
+            max(0.0, self.stress * stress_inertia + (1 - stress_inertia) * self.demand),
+        )
         self.collect_metrics()
 
     def collect_metrics(self) -> None:

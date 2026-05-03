@@ -6,6 +6,7 @@ from statistics import mean, median
 from mesa import Model
 
 from berlin_re_sim.agents import HouseholdAgent, OwnerAgent
+from berlin_re_sim.parameters import ParameterSource, load_parameters, method_parameters
 from berlin_re_sim.scenario import Scenario
 from berlin_re_sim.schemas import MarketMetrics, Neighborhood, Unit
 
@@ -13,9 +14,12 @@ from berlin_re_sim.schemas import MarketMetrics, Neighborhood, Unit
 class BerlinRealEstateModel(Model):
     """Minimal Mesa-compatible model for a Mitte-first real estate game."""
 
-    def __init__(self, scenario: Scenario, seed: int | None = None) -> None:
+    def __init__(
+        self, scenario: Scenario, seed: int | None = None, parameters: ParameterSource = None
+    ) -> None:
         super().__init__(seed=seed)
         self.scenario = scenario
+        self.parameters = method_parameters(load_parameters(parameters), "agent_based")
         self.tick = 0
         self.metrics: list[MarketMetrics] = []
 
@@ -32,8 +36,10 @@ class BerlinRealEstateModel(Model):
         self.collect_metrics()
 
     @classmethod
-    def from_scenario_file(cls, path: str | Path, seed: int | None = None) -> BerlinRealEstateModel:
-        return cls(Scenario.from_file(path), seed=seed)
+    def from_scenario_file(
+        cls, path: str | Path, seed: int | None = None, parameters: ParameterSource = None
+    ) -> BerlinRealEstateModel:
+        return cls(Scenario.from_file(path), seed=seed, parameters=parameters)
 
     def step(self) -> None:
         self.tick += 1
@@ -115,5 +121,9 @@ class BerlinRealEstateModel(Model):
             ) / 4
             neighborhood.demand_pressure = min(
                 1.0,
-                max(0.0, neighborhood.demand_pressure * 0.995 + pull * 0.005),
+                max(
+                    0.0,
+                    neighborhood.demand_pressure * self.parameters["demand_inertia"]
+                    + pull * self.parameters["demand_pull_weight"],
+                ),
             )

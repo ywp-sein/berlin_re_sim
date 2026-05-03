@@ -1,6 +1,6 @@
 const currentVersion = {
-  label: "Prototype 0.5.20",
-  summary: "Automated baseline reports for pre-real-data comparison.",
+  label: "Prototype 0.5.21",
+  summary: "Method coefficients and state probabilities now live in parameter files.",
 };
 
 const implementationNotes = [
@@ -85,7 +85,8 @@ const currentMilestone = {
     "Scenario validator passes for the current Mitte seed.",
     "Synthetic observations are recorded before import.",
     "Baseline reports are generated as JSON and markdown.",
-    "Next: move coefficients and state-machine probabilities to parameter files.",
+    "Behavior coefficients and state-machine probabilities are editable in parameter files.",
+    "Next: add per-target provenance before replacing synthetic calibration values.",
   ],
 };
 
@@ -103,7 +104,7 @@ const milestoneRoadmap = [
     ],
   },
   {
-    status: "Next",
+    status: "Done",
     title: "Parameter extraction",
     goal:
       "Move behavioral coefficients, Markov transitions, and MCMC target weights out of code and into editable parameter files.",
@@ -127,7 +128,7 @@ const milestoneRoadmap = [
     ],
   },
   {
-    status: "Planned",
+    status: "Next",
     title: "Target provenance",
     goal:
       "Make every calibration value traceable before real targets replace synthetic expectations.",
@@ -165,6 +166,17 @@ const milestoneRoadmap = [
 ];
 
 const versions = [
+  {
+    version: "0.5.21",
+    date: "2026-05-03",
+    title: "Parameter extraction",
+    changes: [
+      "Moved ABM coefficients, analytical coefficients, Markov state effects, transition probabilities, and MCMC target weights into data/parameters/default_parameters.json.",
+      "Added src/berlin_re_sim/parameters.py as the shared parameter loader with override support.",
+      "Updated simulation methods and the baseline report script to consume parameter files.",
+      "Added parameter schema documentation and refreshed the wiki, observations, README, and project notes.",
+    ],
+  },
   {
     version: "0.5.20",
     date: "2026-05-02",

@@ -65,6 +65,7 @@ Regenerate the synthetic baseline report:
 
 ```bash
 python3 scripts/build_baseline_report.py
+python3 scripts/build_baseline_report.py --parameters data/parameters/default_parameters.json
 ```
 
 For terminology and implementation notes, open `web/wiki.html`. It includes a
@@ -102,6 +103,7 @@ If the phone cannot connect:
 - `docs/modeling/model_design.md` explains the data structure and simulation loop.
 - `docs/modeling/current_observations.md` records what the synthetic prototype can currently show.
 - `docs/modeling/scenario_schema.md` describes the canonical scenario contract.
+- `docs/modeling/parameter_schema.md` explains editable model coefficients and transition probabilities.
 - `docs/modeling/visualization_values.md` lists the signals worth showing in the game.
 - `docs/data/data_sources.md` maps future real datasets to model variables.
 - `docs/data/real_data_readiness.md` is the checklist before importing real data.
@@ -109,7 +111,7 @@ If the phone cannot connect:
 - `docs/operations/compute_usage.md` explains runtime and power-use estimates.
 - `data/source_registry.json` tracks candidate real-data sources and provenance.
 - `data/scenarios/mitte_seed.json` is the first small scenario.
-- `data/parameters/default_parameters.json` keeps model coefficients separate.
+- `data/parameters/default_parameters.json` keeps method coefficients and transition probabilities separate.
 - `data/targets/mitte_targets.json` stores calibration reference outputs.
 - `src/berlin_re_sim/schemas.py` defines the durable domain objects.
 - `src/berlin_re_sim/model.py` contains the Mesa-compatible model skeleton.

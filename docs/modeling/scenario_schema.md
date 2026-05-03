@@ -38,6 +38,10 @@ Use:
 - `data/parameters/` for model behavior coefficients
 - `data/targets/` for calibration and validation targets
 
+The default parameter file is `data/parameters/default_parameters.json`.
+Its schema reference is `data/schema/parameters.schema.json`, and the readable
+guide is `docs/modeling/parameter_schema.md`.
+
 Influence edges may live in the scenario when they are part of the simulation
 state. UI-only geometry, such as SVG map paths and label positions, should stay
 in the web layer.

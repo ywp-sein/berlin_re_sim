@@ -9,21 +9,125 @@
     "confidence": "low"
   },
   "agent_based": {
-    "rent_growth_coefficient": 0.012,
-    "sale_growth_coefficient": 0.011,
-    "stress_coefficient": 0.22,
-    "spillover_coefficient": 0.0038,
-    "regulated_rent_control_effect": 0.78
+    "demand_inertia": 0.995,
+    "demand_pull_weight": 0.005,
+    "household_unassigned_stress_delta": 0.08,
+    "household_stress_coefficient": 0.2,
+    "owner_rent_growth_coefficient": 0.006,
+    "owner_sale_growth_coefficient": 0.004,
+    "regulated_rent_growth_cap": 1.002
   },
   "analytical": {
     "demand_inertia": 0.992,
     "demand_pull": 0.82,
     "rent_growth_coefficient": 0.0045,
     "sale_growth_coefficient": 0.0065,
+    "vacancy_inertia": 0.985,
+    "vacancy_demand_coefficient": 0.12,
+    "vacancy_min": 0.02,
+    "vacancy_max": 0.22,
     "stress_inertia": 0.92
   },
   "state_models": {
     "initial_state": "stable_affordable",
-    "random_seed": 19
+    "random_seed": 19,
+    "mcmc_min_weight": 0.0001,
+    "state_effects": {
+      "stable_affordable": {
+        "rent_multiplier": 1.0,
+        "sale_multiplier": 1.0,
+        "vacancy_rate": 0.06,
+        "stress": 0.12
+      },
+      "rent_pressure": {
+        "rent_multiplier": 1.18,
+        "sale_multiplier": 1.08,
+        "vacancy_rate": 0.04,
+        "stress": 0.35
+      },
+      "purchase_pressure": {
+        "rent_multiplier": 1.08,
+        "sale_multiplier": 1.24,
+        "vacancy_rate": 0.05,
+        "stress": 0.22
+      },
+      "vacancy_pressure": {
+        "rent_multiplier": 1.1,
+        "sale_multiplier": 1.16,
+        "vacancy_rate": 0.18,
+        "stress": 0.26
+      },
+      "displacement_pressure": {
+        "rent_multiplier": 1.28,
+        "sale_multiplier": 1.18,
+        "vacancy_rate": 0.09,
+        "stress": 0.68
+      },
+      "speculative_conversion": {
+        "rent_multiplier": 1.14,
+        "sale_multiplier": 1.38,
+        "vacancy_rate": 0.14,
+        "stress": 0.48
+      },
+      "public_stabilized": {
+        "rent_multiplier": 0.92,
+        "sale_multiplier": 0.88,
+        "vacancy_rate": 0.03,
+        "stress": 0.08
+      }
+    },
+    "transitions": {
+      "stable_affordable": {
+        "stable_affordable": 0.46,
+        "rent_pressure": 0.18,
+        "purchase_pressure": 0.16,
+        "public_stabilized": 0.2
+      },
+      "rent_pressure": {
+        "rent_pressure": 0.38,
+        "displacement_pressure": 0.24,
+        "speculative_conversion": 0.18,
+        "public_stabilized": 0.2
+      },
+      "purchase_pressure": {
+        "purchase_pressure": 0.4,
+        "speculative_conversion": 0.28,
+        "rent_pressure": 0.16,
+        "stable_affordable": 0.16
+      },
+      "vacancy_pressure": {
+        "vacancy_pressure": 0.36,
+        "rent_pressure": 0.2,
+        "speculative_conversion": 0.22,
+        "public_stabilized": 0.22
+      },
+      "displacement_pressure": {
+        "displacement_pressure": 0.42,
+        "vacancy_pressure": 0.18,
+        "public_stabilized": 0.24,
+        "rent_pressure": 0.16
+      },
+      "speculative_conversion": {
+        "speculative_conversion": 0.44,
+        "purchase_pressure": 0.22,
+        "displacement_pressure": 0.18,
+        "public_stabilized": 0.16
+      },
+      "public_stabilized": {
+        "public_stabilized": 0.5,
+        "stable_affordable": 0.24,
+        "rent_pressure": 0.14,
+        "purchase_pressure": 0.12
+      }
+    },
+    "mcmc_target_weights": {
+      "stable_affordable": 0.16,
+      "rent_pressure": 0.18,
+      "purchase_pressure": 0.16,
+      "vacancy_pressure": 0.1,
+      "displacement_pressure": 0.14,
+      "speculative_conversion": 0.14,
+      "public_stabilized": 0.12
+    }
   }
 }

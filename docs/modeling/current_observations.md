@@ -137,6 +137,10 @@ Current values are synthetic. The following should not be treated as empirical:
 - MCMC target weights
 - response coefficients for rent, sale price, stress, and vacancy
 
+The coefficients and probabilities above now live in
+`data/parameters/default_parameters.json`, so they can be edited, versioned, and
+tested separately from the scenario.
+
 The current model is therefore ready for structure testing and sensitivity
 testing, but not for real-world conclusions.
 
@@ -145,8 +149,8 @@ testing, but not for real-world conclusions.
 Before pulling real data, the most useful next implementation steps are:
 
 1. Keep running `scripts/validate_scenario.py` after any scenario edit.
-2. Move method coefficients and state-machine probabilities into parameter files
-   instead of keeping them in code.
+2. Keep parameter changes in `data/parameters/default_parameters.json`, or in a
+   copied parameter file for sensitivity tests.
 3. Keep regenerating `scripts/build_baseline_report.py` before and after any
    scenario, target, or parameter change.
 4. Add target provenance fields to every calibration target value, not only to
@@ -186,16 +190,14 @@ libraries are installed.
 
 Remaining hardening:
 
-1. Move method coefficients and state-machine probabilities into parameter files
-   instead of keeping them in code.
-2. Add target provenance fields to every calibration target value, not only to
+1. Add target provenance fields to every calibration target value, not only to
    the target document as a whole.
-3. Add a real-data import staging folder for raw and normalized files, even
+2. Add a real-data import staging folder for raw and normalized files, even
    before downloading real datasets.
-4. Define how real geography will map into the current eight Mitte proxy areas.
-5. Add an explicit synthetic-vs-observed badge in the web UI, so prototype
+3. Define how real geography will map into the current eight Mitte proxy areas.
+4. Add an explicit synthetic-vs-observed badge in the web UI, so prototype
    values are never mistaken for real data.
 
-The best immediate next step is parameter extraction. That will make baseline
-reports more useful because scenario changes and behavioral-assumption changes
-can be compared separately.
+The best immediate next step is target provenance. That will make real-data
+comparison safer because every calibration value will carry a source, geography,
+period, unit, and confidence field.

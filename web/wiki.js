@@ -241,9 +241,10 @@ const dictionaryEntries = [
     category: "Data",
     summary: "A place for model behavior coefficients that should not live inside the scenario.",
     details:
-      "Separating parameters from scenarios lets you run the same Mitte state under different behavioral assumptions. This will matter when testing analytical, ABM, Markov, and MCMC variants against the same data.",
-    implementation: "Stored in data/parameters/default_parameters.json.",
-    tags: ["parameters", "coefficients", "model assumptions"],
+      "Separating parameters from scenarios lets you run the same Mitte state under different behavioral assumptions. The default file includes ABM response coefficients, analytical smoothing and growth coefficients, Markov state effects, Markov transition rows, and MCMC target weights.",
+    implementation:
+      "Stored in data/parameters/default_parameters.json, described by docs/modeling/parameter_schema.md, and loaded by src/berlin_re_sim/parameters.py.",
+    tags: ["parameters", "coefficients", "transition probabilities", "model assumptions"],
   },
   {
     term: "Readiness gate",

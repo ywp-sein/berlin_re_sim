@@ -208,11 +208,14 @@ $$
 D_n(t+1) =
 \operatorname{clamp}
 \left(
-  0.995D_n(t) + 0.005\operatorname{pull}_d,
+  \lambda_DD_n(t) + \omega_D\operatorname{pull}_d,
   0,
   1
 \right)
 $$
+
+where $\lambda_D$ is `agent_based.demand_inertia` and $\omega_D$ is
+`agent_based.demand_pull_weight` in `data/parameters/default_parameters.json`.
 
 In the browser game prototype, demand pressure is controlled by policy and
 investor pressure:
@@ -279,13 +282,13 @@ In the Python Mesa prototype, owners increase rent according to local demand and
 their risk tolerance:
 
 $$
-g^R_u(t) = 1 + 0.006D_n(t)q_o
+g^R_u(t) = 1 + \alpha_RD_n(t)q_o
 $$
 
 If a unit is regulated, monthly rent growth is capped:
 
 $$
-g^R_u(t) = \min(g^R_u(t), 1.002)
+g^R_u(t) = \min(g^R_u(t), c_R)
 \quad \text{if } G_u = 1
 $$
 
@@ -328,6 +331,8 @@ Interpretation:
 - high demand and high owner risk tolerance increase rents
 - regulation slows rent growth
 - the web prototype keeps a small positive minimum growth for gameplay motion
+- $\alpha_R$ is `agent_based.owner_rent_growth_coefficient`
+- $c_R$ is `agent_based.regulated_rent_growth_cap`
 
 ### Sale Price Update
 
@@ -335,7 +340,7 @@ The Python Mesa prototype updates estimated sale price from demand pressure and
 the owner's social mission:
 
 $$
-g^P_u(t) = 1 + 0.004D_n(t)(1 - m_o)
+g^P_u(t) = 1 + \alpha_PD_n(t)(1 - m_o)
 $$
 
 $$
@@ -357,6 +362,7 @@ Interpretation:
 - profit-oriented owners have lower $m_o$, so sale prices respond more strongly
 - public/cooperative ownership has high $m_o$, which dampens speculative growth
 - investor pressure amplifies sale-price growth
+- $\alpha_P$ is `agent_based.owner_sale_growth_coefficient`
 
 ### Household Rent Burden And Stress
 
@@ -372,7 +378,7 @@ $$
 X_h(t+1) =
 \operatorname{clamp}
 \left(
-  X_h(t) + 0.2(b_h(t) - B_h),
+  X_h(t) + \eta_X(b_h(t) - B_h),
   0,
   1
 \right)
@@ -395,6 +401,7 @@ Interpretation:
 - if rent burden is above tolerance, displacement stress rises
 - if rent burden is below tolerance, stress can fall
 - stress is bounded between $0$ and $1$
+- $\eta_X$ is `agent_based.household_stress_coefficient`
 
 ### Vacancy Enforcement
 
@@ -600,6 +607,8 @@ Here:
 - $i$ and $j$ are discrete scenario states
 - $T$ is the transition matrix
 - $T_{ij}$ is the probability of moving from state $i$ to state $j$
+- the current $T$ rows are stored in
+  `data/parameters/default_parameters.json` under `state_models.transitions`
 
 Example state categories:
 

@@ -1,7 +1,8 @@
 {
-  "generated_at": "2026-05-02T21:59:06+00:00",
+  "generated_at": "2026-05-03T06:43:34+00:00",
   "scenario_path": "data/scenarios/mitte_seed.json",
   "target_path": "data/targets/mitte_targets.json",
+  "parameter_path": "data/parameters/default_parameters.json",
   "steps": 12,
   "seed": 7,
   "scenario_size": {

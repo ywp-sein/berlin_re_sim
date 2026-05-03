@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Berlin Real Estate Simulation Parameters",
+  "type": "object",
+  "required": ["name", "schema_version", "metadata", "agent_based", "analytical", "state_models"],
+  "properties": {
+    "name": { "type": "string" },
+    "schema_version": { "type": "string" },
+    "metadata": { "type": "object" },
+    "agent_based": {
+      "type": "object",
+      "required": [
+        "demand_inertia",
+        "demand_pull_weight",
+        "household_unassigned_stress_delta",
+        "household_stress_coefficient",
+        "owner_rent_growth_coefficient",
+        "owner_sale_growth_coefficient",
+        "regulated_rent_growth_cap"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "demand_inertia": { "type": "number", "minimum": 0, "maximum": 1 },
+        "demand_pull_weight": { "type": "number", "minimum": 0, "maximum": 1 },
+        "household_unassigned_stress_delta": { "type": "number", "minimum": 0, "maximum": 1 },
+        "household_stress_coefficient": { "type": "number", "minimum": 0 },
+        "owner_rent_growth_coefficient": { "type": "number", "minimum": 0 },
+        "owner_sale_growth_coefficient": { "type": "number", "minimum": 0 },
+        "regulated_rent_growth_cap": { "type": "number", "minimum": 1 }
+      }
+    },
+    "analytical": {
+      "type": "object",
+      "required": [
+        "demand_inertia",
+        "demand_pull",
+        "rent_growth_coefficient",
+        "sale_growth_coefficient",
+        "vacancy_inertia",
+        "vacancy_demand_coefficient",
+        "vacancy_min",
+        "vacancy_max",
+        "stress_inertia"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "demand_inertia": { "type": "number", "minimum": 0, "maximum": 1 },
+        "demand_pull": { "type": "number", "minimum": 0, "maximum": 1 },
+        "rent_growth_coefficient": { "type": "number", "minimum": 0 },
+        "sale_growth_coefficient": { "type": "number", "minimum": 0 },
+        "vacancy_inertia": { "type": "number", "minimum": 0, "maximum": 1 },
+        "vacancy_demand_coefficient": { "type": "number", "minimum": 0, "maximum": 1 },
+        "vacancy_min": { "type": "number", "minimum": 0, "maximum": 1 },
+        "vacancy_max": { "type": "number", "minimum": 0, "maximum": 1 },
+        "stress_inertia": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "state_models": {
+      "type": "object",
+      "required": [
+        "initial_state",
+        "mcmc_min_weight",
+        "state_effects",
+        "transitions",
+        "mcmc_target_weights"
+      ],
+      "properties": {
+        "initial_state": { "type": "string" },
+        "random_seed": { "type": "integer" },
+        "mcmc_min_weight": { "type": "number", "exclusiveMinimum": 0 },
+        "state_effects": { "type": "object" },
+        "transitions": { "type": "object" },
+        "mcmc_target_weights": { "type": "object" }
+      }
+    }
+  }
+}

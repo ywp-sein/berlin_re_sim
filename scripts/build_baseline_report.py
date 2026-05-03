@@ -16,6 +16,7 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 from berlin_re_sim.methods import SimulationMethod, create_simulation  # noqa: E402
+from berlin_re_sim.parameters import DEFAULT_PARAMETER_PATH  # noqa: E402
 
 
 DEFAULT_METHODS = [
@@ -50,6 +51,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Build baseline simulation reports.")
     parser.add_argument("--scenario", default="data/scenarios/mitte_seed.json")
     parser.add_argument("--targets", default="data/targets/mitte_targets.json")
+    parser.add_argument("--parameters", default="data/parameters/default_parameters.json")
     parser.add_argument("--steps", type=int, default=12)
     parser.add_argument("--seed", type=int, default=7)
     parser.add_argument("--json-output", default="data/baselines/latest_baseline.json")
@@ -61,6 +63,7 @@ def main() -> None:
     payload = build_report(
         scenario_path=scenario_path,
         target_path=target_path,
+        parameter_path=ROOT / args.parameters,
         steps=args.steps,
         seed=args.seed,
     )
@@ -76,14 +79,22 @@ def main() -> None:
     print(f"wrote {markdown_output.relative_to(ROOT)}")
 
 
-def build_report(scenario_path: Path, target_path: Path, steps: int, seed: int) -> dict[str, Any]:
+def build_report(
+    scenario_path: Path, target_path: Path, parameter_path: Path, steps: int, seed: int
+) -> dict[str, Any]:
     scenario = json.loads(scenario_path.read_text(encoding="utf-8"))
     targets = load_targets(target_path)
-    methods = [run_method(method, scenario_path, steps, seed, targets) for method in DEFAULT_METHODS]
+    methods = [
+        run_method(method, scenario_path, parameter_path, steps, seed, targets)
+        for method in DEFAULT_METHODS
+    ]
     return {
         "generated_at": datetime.now(UTC).isoformat(timespec="seconds"),
         "scenario_path": scenario_path.relative_to(ROOT).as_posix(),
         "target_path": target_path.relative_to(ROOT).as_posix() if target_path.exists() else None,
+        "parameter_path": parameter_path.relative_to(ROOT).as_posix()
+        if parameter_path.exists()
+        else DEFAULT_PARAMETER_PATH.relative_to(ROOT).as_posix(),
         "steps": steps,
         "seed": seed,
         "scenario_size": {
@@ -111,12 +122,13 @@ def load_targets(path: Path) -> dict[str, float]:
 def run_method(
     method: SimulationMethod,
     scenario_path: Path,
+    parameter_path: Path,
     steps: int,
     seed: int,
     targets: dict[str, float],
 ) -> dict[str, Any]:
     try:
-        simulation = create_simulation(method, scenario_path, seed=seed)
+        simulation = create_simulation(method, scenario_path, seed=seed, parameters=parameter_path)
         for _ in range(steps):
             simulation.step()
         latest = simulation.metrics[-1]
@@ -169,6 +181,7 @@ def render_markdown(report: dict[str, Any]) -> str:
         f"- generated at: `{report['generated_at']}`",
         f"- scenario: `{report['scenario_path']}`",
         f"- targets: `{report['target_path']}`",
+        f"- parameters: `{report['parameter_path']}`",
         f"- steps: `{report['steps']}`",
         f"- seed: `{report['seed']}`",
         "",

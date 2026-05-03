@@ -7,9 +7,10 @@ These values are not empirical Berlin claims.
 
 ## Run Settings
 
-- generated at: `2026-05-02T21:59:06+00:00`
+- generated at: `2026-05-03T06:43:34+00:00`
 - scenario: `data/scenarios/mitte_seed.json`
 - targets: `data/targets/mitte_targets.json`
+- parameters: `data/parameters/default_parameters.json`
 - steps: `12`
 - seed: `7`
 
